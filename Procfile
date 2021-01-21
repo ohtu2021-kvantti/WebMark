@@ -1,1 +1,1 @@
-web: gunicorn WebCLI.wsgi 
+web: gunicorn WebMark.wsgi 
