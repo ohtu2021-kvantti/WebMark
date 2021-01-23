@@ -12,10 +12,33 @@ WebCLI = Application
 
 Requirements: django, django-on-heroku, gunicorn
 
-## Installation
+## Setting up the development environment
+
+Install PostgresSQL:
+
+```
+sudo apt-get install postgresql postgresql-contrib libpq-dev python3-dev
+```
+
+Create a database:
+```
+sudo -u postgres psql
+postgres=# create database kvanttidb;
+postgres=# create user kvanttiuser with encrypted password 'secret';
+postgres=# grant all privileges on database kvanttidb to kvanttiuser;
+postgres=# \q
+```
+
+Create a .env file in the project root with the following contents:
+```
+DATABASE_NAME=kvanttidb
+DATABASE_USER=kvanttiuser
+DATABASE_PASSWORD=secret
+DATABASE_HOST=127.0.0.1
+DATABASE_PORT=5432
+```
 
 Create and activate a virtual enviroment:
-
 ```
 python3 -m venv venv
 source venv/bin/activate
