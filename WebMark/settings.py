@@ -127,6 +127,11 @@ LOGIN_REDIRECT_URL = '/'
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+
 # Configure Django App for Heroku.
 
 django_on_heroku.settings(locals())
