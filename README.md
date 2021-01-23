@@ -55,9 +55,11 @@ Now you can run the development server with command:
 python manage.py runserver
 ```
 
-How to push local postgre database to heroku
+## Heroku
+
+You can push your local PostgreSQL database to Heroku with
 ```
-heroku pg:push postgres://kvanttiuser@localhost/kvanttidb  postgresql-flexible-07270 --app=quantmark
+heroku pg:push postgres://quantuser@localhost/quantdb  postgresql-flexible-07270 --app=quantmark
 ```
 
 
