@@ -14,7 +14,7 @@ Requirements: django, django-on-heroku, gunicorn
 
 ## Setting up the development environment
 
-Install PostgresSQL:
+Install PostgreSQL:
 
 ```
 sudo apt-get install postgresql postgresql-contrib libpq-dev python3-dev
