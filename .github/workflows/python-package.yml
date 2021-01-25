@@ -8,6 +8,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+    types: [opened, synchronize]
 
 jobs:
   build:
@@ -35,6 +36,12 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
-      run: |
-        pytest
-  
+      # run: |
+        # pytest
+    - name: Deploy to Heroku
+      if: ${{ github.event_name == 'push' && matrix.python_version == '3.7' }}
+      uses: akhileshns/heroku-deploy@v3.7.8 
+      with:
+        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+        heroku_app_name: "quantmark"
+        heroku_email: ${{secrets.HEROKU_EMAIL}}
