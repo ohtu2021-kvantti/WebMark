@@ -1,11 +1,13 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+# from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
 
+
 def homePageView(request):
     return render(request, 'WebCLI/index.html')
+
 
 class SignUpView(generic.CreateView):
     form_class = UserCreationForm
