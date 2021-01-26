@@ -64,7 +64,7 @@ Install [Docker](https://docs.docker.com/engine/install/) according to the instr
 You probably need to run migrations first. Navigate to the project root and
 run the command:
 ```
-sudo docker-compose up run web python manage.py migrate
+sudo docker-compose run web python manage.py migrate
 ```
 Now you can run the development server with command:
 ```
