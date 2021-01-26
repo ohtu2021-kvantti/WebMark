@@ -2,3 +2,5 @@ django
 django-on-heroku
 gunicorn
 django-dotenv
+flake8
+flake8-django
