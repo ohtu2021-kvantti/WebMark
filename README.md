@@ -12,7 +12,7 @@ WebMark = Project
 
 WebCLI = Application
 
-Requirements: django, django-on-heroku, gunicorn, django-dotenv
+Requirements: django, django-on-heroku, gunicorn, django-dotenv, flake8, flake8-django
 
 ## Setting up the development environment
 
