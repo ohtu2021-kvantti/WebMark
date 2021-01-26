@@ -71,7 +71,12 @@ Now you can run the development server with command:
 sudo docker-compose up
 ```
 
-## Heroku
+## Other commands
+
+Lint the code with
+```
+flake8
+```
 
 You can push your local PostgreSQL database to Heroku with
 ```
