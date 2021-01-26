@@ -1,5 +1,5 @@
 WebCLI/__pycache__/
-WebCLI/migrations/__pycache__/
+WebCLI/migrations/
 WebMark/__pycache__/
 venv/
 .env
