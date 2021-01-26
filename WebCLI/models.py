@@ -1,12 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Algorithm_type(models.Model):
     type_name = models.TextField()
+
 
 class Molecule(models.Model):
     name = models.TextField()
     structure = models.TextField()
+
 
 class Algorithm(models.Model):
     name = models.TextField()
@@ -20,4 +23,3 @@ class Algorithm(models.Model):
     measurements = models.IntegerField(null=True)
     circuit_depth = models.IntegerField(null=True)
     accuracy = models.FloatField(null=True)
-

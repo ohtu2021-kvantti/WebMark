@@ -1,19 +1,21 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 
-from .db import new_algorithm, new_algorithm_type, new_molecule, get_public_algorithms, get_molecules, get_algorithm_types, save_metrics
+from .db import new_algorithm, new_algorithm_type, new_molecule, save_metrics
+from .db import get_algorithm_types, get_molecules, get_public_algorithms
+
 
 class DatabaseTest(TestCase):
     def setUp(self):
         user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
         atype = new_algorithm_type('VQE')
         molecule = new_molecule('water', 'H2O')
-        algorithm = new_algorithm(user, 'fast algo', atype, 'asfasd\nafsdfasdf\nwrwrewe\n', molecule, True)
+        algorithm = new_algorithm(user, 'fast algo', atype, 'asfasd\nafasdf\nwre\n', molecule, True)
         save_metrics(algorithm, 1, 2, 3, 4.04)
 
         atype = new_algorithm_type('VQE-simple')
         molecule = new_molecule('hydrogen', 'H2')
-        algorithm = new_algorithm(user, 'super algo', atype, 'xxxd\nyyyydf\nczzzzzz\n', molecule, False)
+        algorithm = new_algorithm(user, 'super algo', atype, 'xxxd\nyydf\nzzzz\n', molecule, False)
         save_metrics(algorithm, 5, 6, 7, 8.08)
 
     def test_list_public_algorithms(self):
