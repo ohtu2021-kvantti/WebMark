@@ -1,3 +1,5 @@
+from django.core.wsgi import get_wsgi_application
+
 """
 WSGI config for gettingstarted project.
 
@@ -10,7 +12,5 @@ https://docs.djangoproject.com/en/2.1/howto/deployment/wsgi/
 import os
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "WebMark.settings")
-
-from django.core.wsgi import get_wsgi_application
 
 application = get_wsgi_application()

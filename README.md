@@ -12,7 +12,7 @@ WebMark = Project
 
 WebCLI = Application
 
-Requirements: django, django-on-heroku, gunicorn, django-dotenv
+Requirements: django, django-on-heroku, gunicorn, django-dotenv, flake8, flake8-django
 
 ## Setting up the development environment
 
@@ -57,7 +57,12 @@ Now you can run the development server with command:
 python manage.py runserver
 ```
 
-## Heroku
+## Other commands
+
+Lint your code with
+```
+flake8
+```
 
 You can push your local PostgreSQL database to Heroku with
 ```
