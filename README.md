@@ -61,14 +61,14 @@ python manage.py runserver
 
 Install [Docker](https://docs.docker.com/engine/install/) according to the instructions.
 
-You probably need to run migrations first. Navigate to the project root and
-run the command:
-```
-sudo docker-compose run web python manage.py migrate
-```
-Now you can run the development server with command:
+Navigate to the project root and run the development server with command:
 ```
 sudo docker-compose up
+```
+
+If you get a warning about unapplied migrations, shut down the server and run the command:
+```
+sudo docker-compose run web python manage.py migrate
 ```
 
 ## Heroku
