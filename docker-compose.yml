@@ -2,11 +2,13 @@ version: "3.7"
    
 services:
   db:
-    image: postgres
+    image: postgres:13.1
     environment:
       - POSTGRES_DB=${DATABASE_NAME-postgres}
       - POSTGRES_USER=${DATABASE_USER-postgres}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD-postgres}
+    container_name: db
+
   web:
     build: .
     environment:
@@ -16,6 +18,7 @@ services:
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
     command: python manage.py runserver 0.0.0.0:8000
+    container_name: web
     volumes:
       - .:/code
     ports:
