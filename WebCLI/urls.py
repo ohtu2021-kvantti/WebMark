@@ -15,9 +15,10 @@ Including another URLconf
 """
 # pages/urls.py
 from django.urls import path
-from .views import homePageView, SignUpView
+from .views import homePageView, SignUpView, AlgorithmView
 
 urlpatterns = [
     path('', homePageView, name='home'),
     path('signup/', SignUpView.as_view(), name='signup'),
+    path('newAlgorithm/', AlgorithmView, name='newAlgorithm'),
 ]
