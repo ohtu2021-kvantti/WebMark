@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Add a new molecule{% endblock %}
+
+{% block content %}
+    <h2>Existing molecules</h2>
+    {% for m in molecules %}
+        <p>{{ m.name }} - {{ m.structure }} </p>
+    {% endfor %}
+    <h2>New molecule</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+    <button type="submit">Submit</button>
+    </form>
+{% endblock %}

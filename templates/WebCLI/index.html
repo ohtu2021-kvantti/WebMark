@@ -6,9 +6,12 @@
 
     {% if user.is_authenticated %}
 
-        <p>logged in</p>
-        <p>Username: {{ request.user.username }}</p>
+        <p>logged in - Username: {{ request.user.username }}</p>
+        <br>
         <p><a href="{% url 'newAlgorithm'%}">Add a new algorithm</a></p>
+        <p><a href="{% url 'newMolecule'%}">Add a new molecule</a></p>
+        <p><a href="{% url 'newAlgorithmType'%}">Add a new algorithm type</a></p>
+        <br>
         <p><a href="{% url 'logout'%}">Click here to logout</a></p>
     {% else %}
         <p><a href="{% url 'login'%}">Click here to login</a></p>
