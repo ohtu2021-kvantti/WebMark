@@ -8,7 +8,7 @@ from .models import Algorithm, Molecule, Algorithm_type
 from django.utils import timezone
 
 def home_view(request):
-    return render(request, 'WebCLI/index.html')
+    return render(request, 'WebCLI/index.html', {'algorithms': Algorithm.objects.filter(public=True)})
 
 
 class SignUpView(generic.CreateView):
@@ -34,6 +34,10 @@ def algorithm_view(request):
         a = AlgorithmForm(request.POST)
         a.save()
     return render(request, 'WebCLI/newAlgorithm.html', {'algorithms': Algorithm.objects.filter(user=request.user), 'form': form})
+
+def algorithm_details_view(request):
+    algorithm = Algorithm.objects.filter(name=request.GET.get("name"))
+    return render(request, 'WebCLI/details.html', {'algorithm': algorithm })
 
 
 class MoleculeForm(ModelForm):

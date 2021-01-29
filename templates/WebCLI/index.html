@@ -8,6 +8,10 @@
 
         <p>logged in - Username: {{ request.user.username }}</p>
         <br>
+	{% for a in algorithms %}
+	    <a href="{% url 'details?name={a.name}'%}">{{a.name}}</a>
+	{% endfor %}
+        <br>
         <p><a href="{% url 'newAlgorithm'%}">Add a new algorithm</a></p>
         <p><a href="{% url 'newMolecule'%}">Add a new molecule</a></p>
         <p><a href="{% url 'newAlgorithmType'%}">Add a new algorithm type</a></p>
