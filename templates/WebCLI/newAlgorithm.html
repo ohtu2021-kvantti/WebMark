@@ -3,9 +3,9 @@
 {% block title %}Add a new algorithm{% endblock %}
 
 {% block content %}
-    <h2>Axisting algorithms</h2>
+    <h2>Existing algorithms</h2>
     {% for a in algorithms %}
-        <p>{{ a.name }}</p>
+        <a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a><br>
     {% endfor %}
     <h2>New algorithm</h2>
     <form method="post">

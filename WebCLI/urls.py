@@ -15,13 +15,13 @@ Including another URLconf
 """
 # pages/urls.py
 from django.urls import path
-from .views import home_view, algorithm_view, algorithm_details_view, algorithm_type_view, molecule_view, SignUpView
+from .views import home_view, new_algorithm, algorithm_details_view, new_algorithm_type, new_molecule, SignUpView
 
 urlpatterns = [
     path('', home_view, name='home'),
     path('signup/', SignUpView.as_view(), name='signup'),
-    path('newAlgorithm/', algorithm_view, name='newAlgorithm'),
-    path('newMolecule/', molecule_view, name='newMolecule'),
-    path('newAlgorithmType/', algorithm_type_view, name='newAlgorithmType'),
-    path('details/', algorithm_details_view, name='details?name={a.name}'),
+    path('newAlgorithm/', new_algorithm, name='newAlgorithm'),
+    path('newMolecule/', new_molecule, name='newMolecule'),
+    path('newAlgorithmType/', new_algorithm_type, name='newAlgorithmType'),
+    path('algorithm/', algorithm_details_view, name='algorithm_details'),
 ]

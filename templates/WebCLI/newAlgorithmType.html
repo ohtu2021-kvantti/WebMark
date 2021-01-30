@@ -5,7 +5,7 @@
 {% block content %}
     <h2>Existing algorithm types</h2>
     {% for t in types %}
-        <p>{{ t.type_name }}</p>
+        {{ t.type_name }}<br>
     {% endfor %}
     <h2>New algorithm type</h2>
     <form method="post">

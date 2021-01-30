@@ -5,7 +5,7 @@
 {% block content %}
     <h2>Existing molecules</h2>
     {% for m in molecules %}
-        <p>{{ m.name }} - {{ m.structure }} </p>
+        {{ m.name }} - {{ m.structure }} <br>
     {% endfor %}
     <h2>New molecule</h2>
     <form method="post">

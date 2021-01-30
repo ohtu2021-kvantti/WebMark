@@ -28,7 +28,7 @@ class AlgorithmForm(ModelForm):
         }
 
 
-def algorithm_view(request):
+def new_algorithm(request):
     form = AlgorithmForm(initial={'timestamp': timezone.now(), 'user': request.user})
     if request.method == "POST":
         a = AlgorithmForm(request.POST)
@@ -36,8 +36,8 @@ def algorithm_view(request):
     return render(request, 'WebCLI/newAlgorithm.html', {'algorithms': Algorithm.objects.filter(user=request.user), 'form': form})
 
 def algorithm_details_view(request):
-    algorithm = Algorithm.objects.filter(name=request.GET.get("name"))
-    return render(request, 'WebCLI/details.html', {'algorithm': algorithm })
+    algorithm = Algorithm.objects.get(pk=request.GET.get("index"))
+    return render(request, 'WebCLI/algorithm.html', {'algorithm': algorithm })
 
 
 class MoleculeForm(ModelForm):
@@ -49,7 +49,7 @@ class MoleculeForm(ModelForm):
         }
 
 
-def molecule_view(request):
+def new_molecule(request):
     form = MoleculeForm()
     if request.method == "POST":
         m = MoleculeForm(request.POST)
@@ -66,7 +66,7 @@ class AlgorithmTypeForm(ModelForm):
         }
 
 
-def algorithm_type_view(request):
+def new_algorithm_type(request):
     form = AlgorithmTypeForm()
     if request.method == "POST":
         m = AlgorithmTypeForm(request.POST)
