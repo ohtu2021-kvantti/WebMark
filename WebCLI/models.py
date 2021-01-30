@@ -4,12 +4,15 @@ from django.contrib.auth.models import User
 
 class Algorithm_type(models.Model):
     type_name = models.TextField()
+
     def __str__(self):
         return self.type_name
+
 
 class Molecule(models.Model):
     name = models.TextField()
     structure = models.TextField()
+
     def __str__(self):
         return self.name
 
