@@ -1,0 +1,35 @@
+# copy of the docker-compose.yml that exists on the staging server
+version: "3.7"
+   
+services:
+  quantmark_db:
+    image: postgres:13.1
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    container_name: quantmark_db
+    restart: unless-stopped
+
+  quantmark_web:
+    image: tapanih/quantmark_web
+    environment:
+      - DATABASE_NAME=postgres
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_HOST=quantmark_db
+      - DATABASE_PORT=5432
+      - ROOT_DIR=quantmark/
+    command: sh -c "
+      python manage.py makemigrations && 
+      python manage.py migrate && 
+      gunicorn WebMark.wsgi -b 0.0.0.0:8000"
+    container_name: quantmark_web
+    restart: unless-stopped
+    depends_on:
+      - quantmark_db
+
+networks:
+  default:
+    external: 
+      name: ohtup
