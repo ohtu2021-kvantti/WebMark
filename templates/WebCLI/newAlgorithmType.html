@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Add a new algorithm type{% endblock %}
+
+{% block content %}
+    <h2>Existing algorithm types</h2>
+    {% for t in types %}
+        {{ t.type_name }}<br>
+    {% endfor %}
+    <h2>New algorithm type</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+    <button type="submit">Submit</button>
+    </form>
+{% endblock %}

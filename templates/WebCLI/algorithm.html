@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Algorithm view{% endblock %}
+
+{% block content %}
+    <p>
+        <h3>Algorithm details</h3>
+        <b>name:</b> {{ algorithm.name }}<br>  
+        <b>algorithm type:</b> {{ algorithm.algorithm_type.type_name }}<br>
+        <b>user:</b> {{ algorithm.user.username }}<br>
+        <b>public:</b> {{ algorithm.public }}<br>
+        <b>molecule:</b> {{ algorithm.molecule.name }}<br>
+    </p>    
+    <p>
+        <h3>Metrics</h3>
+        <b>iterations:</b> {{ algorithm.iterations }}<br>
+        <b>measurements:</b> {{ algorithm.measurements }}<br>
+        <b>circuit_depth:</b> {{ algorithm.circuit_depth }}<br>
+        <b>accuracy:</b> {{ algorithm.accuracy }}<br>
+    </p>
+    <p>
+        <h3>Algorithm</h3> 
+        {{ algorithm.algorithm|linebreaks }}
+        
+    </p>
+
+    
+   
+{% endblock %}

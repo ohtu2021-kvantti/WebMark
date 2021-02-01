@@ -80,6 +80,18 @@ Lint your code with
 flake8
 ```
 
+Run tests
+```
+python manage.py test
+```
+
+Update database after change in models
+```
+python manage.py makemigrations
+python manage.py migrate
+
+```
+
 You can push your local PostgreSQL database to Heroku with
 ```
 heroku pg:push postgres://quantuser@localhost/quantdb  postgresql-flexible-07270 --app=quantmark

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Add a new algorithm{% endblock %}
+
+{% block content %}
+    <h2>Existing algorithms</h2>
+    {% for a in algorithms %}
+        <a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a><br>
+    {% endfor %}
+    <h2>New algorithm</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+    <button type="submit">Submit</button>
+    </form>
+{% endblock %}
