@@ -2,6 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <title>QuantMark</title>
@@ -10,9 +11,27 @@
 <body>
     <h1>QuantMark - {% block title %} {% endblock %}</h1>
     <div id="content">
-        {% block content %}{% endblock %}
+        {% block pagination %}
+        {% if is_paginated %}
+        <div class="pagination">
+            <span class="page-links">
+                {% if page_obj.has_previous %}
+                <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+                <span class="page-current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+                {% if page_obj.has_next %}
+                <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+        {% endif %}
+        {% endblock %}{% block content %}{% endblock %}
+
     </div>
     <br>
     <p><a href="{% url 'home' %}">Home</a></p>
 </body>
+
 </html>

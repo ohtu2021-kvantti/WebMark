@@ -6,11 +6,24 @@ from django.views import generic
 from django.forms import ModelForm, Textarea, HiddenInput
 from .models import Algorithm, Molecule, Algorithm_type
 from django.utils import timezone
+from django.core.paginator import Paginator
 
 
 def home_view(request):
-    data = {'algorithms': Algorithm.objects.filter(public=True)}
-    return render(request, 'WebCLI/index.html', data)
+    return render(request, 'WebCLI/index.html')
+
+
+class AlgorithmListView(generic.ListView):
+    model = Algorithm
+    context_object_name = "algorithm_list"
+    queryset = Algorithm.objects.filter(public=True)
+    template_name = "WebCLI/index.html"
+    paginate_by = 5
+
+def algorithm_list_by_attr(request):
+    molecule_id = Molecule.objects.filter(name=request.GET.get("molecule")).first()
+    algorithm = Algorithm.objects.filter(molecule=molecule_id)
+    return render(request, 'WebCLI/index.html', {'algorithm_list': algorithm})
 
 
 class SignUpView(generic.CreateView):

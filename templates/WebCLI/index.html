@@ -4,24 +4,41 @@
 
 {% block content %}
 
-    {% if user.is_authenticated %}
+{% if user.is_authenticated %}
 
-        <p>logged in - Username: {{ request.user.username }}</p>
+<p>logged in - Username: {{ request.user.username }}</p>
 
-        <h2>Public algorithms</h2>
-        {% for a in algorithms %}
-            <a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a><br>
-        {% endfor %}
-        <hr>
+<h2>Public algorithms</h2>
 
-        <p><a href="{% url 'newAlgorithm'%}">Add a new algorithm</a></p>
-        <p><a href="{% url 'newMolecule'%}">Add a new molecule</a></p>
-        <p><a href="{% url 'newAlgorithmType'%}">Add a new algorithm type</a></p>
-        <hr>
-        <p><a href="{% url 'logout'%}">Click here to logout</a></p>
-    {% else %}
-        <p><a href="{% url 'login'%}">Click here to login</a></p>
-        <p><a href="{% url 'signup'%}">Click here to signup</a></p>
-    {% endif %}
+
+<a>Filter results by molecule:</a>
+
+<select name="molecule" onchange="location = this.value;">
+    <option value selected>-</option>
+    {% for a in algorithm_list %}
+    <option value="{% url 'attr'%}?molecule={{a.molecule}}" onclick="filter/?molecule={{a.molecule}}">{{a.molecule}}
+    </option>
+
+    {% endfor %}
+
+</select>
+
+<br>
+<br>
+{% for a in algorithm_list %}
+<a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a>
+<br>
+{% endfor %}
+<hr>
+
+<p><a href="{% url 'newAlgorithm'%}">Add a new algorithm</a></p>
+<p><a href="{% url 'newMolecule'%}">Add a new molecule</a></p>
+<p><a href="{% url 'newAlgorithmType'%}">Add a new algorithm type</a></p>
+<hr>
+<p><a href="{% url 'logout'%}">Click here to logout</a></p>
+{% else %}
+<p><a href="{% url 'login'%}">Click here to login</a></p>
+<p><a href="{% url 'signup'%}">Click here to signup</a></p>
+{% endif %}
 
 {% endblock %}

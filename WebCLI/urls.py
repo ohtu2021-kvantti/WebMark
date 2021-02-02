@@ -16,10 +16,11 @@ Including another URLconf
 # pages/urls.py
 from django.urls import path
 from .views import home_view, new_algorithm, algorithm_details_view, new_algorithm_type
-from .views import new_molecule, SignUpView
+from .views import new_molecule, SignUpView, AlgorithmListView, algorithm_list_by_attr
 
 urlpatterns = [
-    path('', home_view, name='home'),
+    path('', AlgorithmListView.as_view(), name='home'),
+    path('filter/', algorithm_list_by_attr, name='attr'),
     path('signup/', SignUpView.as_view(), name='signup'),
     path('newAlgorithm/', new_algorithm, name='newAlgorithm'),
     path('newMolecule/', new_molecule, name='newMolecule'),
