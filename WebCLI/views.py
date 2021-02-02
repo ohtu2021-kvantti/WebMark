@@ -22,7 +22,8 @@ class SignUpView(generic.CreateView):
 class AlgorithmForm(ModelForm):
     class Meta:
         model = Algorithm
-        fields = ['user', 'timestamp', 'name', 'algorithm_type', 'molecule', 'public', 'algorithm', 'article_link', 'github_link'] 
+        fields = ['user', 'timestamp', 'name', 'algorithm_type', 'molecule', 'public',
+                  'algorithm', 'article_link', 'github_link']
         widgets = {
             'name': Textarea(attrs={'rows': 1, 'cols': 50}),
             'user': HiddenInput(),
