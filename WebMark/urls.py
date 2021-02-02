@@ -15,9 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include  # new
+import os
+
+# getting a root directory from env that is prepended to all paths
+root_dir = os.getenv("ROOT_DIR", '')
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('', include('WebCLI.urls')),  # new
+    path(root_dir + 'admin/', admin.site.urls),
+    path(root_dir + 'accounts/', include('django.contrib.auth.urls')),
+    path(root_dir + '', include('WebCLI.urls')),  # new
 ]
