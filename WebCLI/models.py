@@ -29,6 +29,8 @@ class Algorithm(models.Model):
     measurements = models.IntegerField(null=True)
     circuit_depth = models.IntegerField(null=True)
     accuracy = models.FloatField(null=True)
+    article_link = models.URLField(null=True)
+    github_link = models.URLField(null=True)
 
     def __str__(self):
         return self.name
