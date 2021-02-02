@@ -1,16 +1,22 @@
 {% extends 'base.html' %}
 
+{% load bootstrap4 %}
+
 {% block title %}Add a new algorithm{% endblock %}
 
 {% block content %}
     <h2>Existing algorithms</h2>
     {% for a in algorithms %}
-        <a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a><br>
+        <div class="text-center"><a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a></div>
     {% endfor %}
     <h2>New algorithm</h2>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-    <button type="submit">Submit</button>
+        {% bootstrap_form form %}
+        {% buttons %}
+            <div class="text-center">
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        {% endbuttons %}
     </form>
 {% endblock %}

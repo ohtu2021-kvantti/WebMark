@@ -1,16 +1,22 @@
 {% extends 'base.html' %}
 
+{% load bootstrap4 %}
+
 {% block title %}Add a new algorithm type{% endblock %}
 
 {% block content %}
     <h2>Existing algorithm types</h2>
     {% for t in types %}
-        {{ t.type_name }}<br>
+        <div class="text-center">{{ t.type_name }}</div>
     {% endfor %}
     <h2>New algorithm type</h2>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-    <button type="submit">Submit</button>
+        {% bootstrap_form form %}
+        {% buttons %}
+            <div class="text-center">
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        {% endbuttons %}
     </form>
 {% endblock %}
