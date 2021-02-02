@@ -66,13 +66,6 @@ Navigate to the project root and run the development server with command:
 sudo docker-compose up
 ```
 
-If you get a warning about unapplied migrations, shut down the server and run the command:
-```
-sudo docker-compose run web python manage.py migrate
-```
-
-## Heroku
-=======
 ## Other commands
 
 Lint your code with
