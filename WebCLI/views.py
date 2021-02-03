@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 # from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
@@ -28,6 +28,25 @@ class AlgorithmForm(ModelForm):
             'name': Textarea(attrs={'rows': 1, 'cols': 50}),
             'user': HiddenInput(),
             'timestamp': HiddenInput(),
+        }
+
+
+class MetricsForm(ModelForm):
+    class Meta:
+        model = Algorithm
+        fields = ['user', 'timestamp', 'name', 'algorithm_type', 'molecule', 'public',
+                  'algorithm', 'article_link', 'github_link', 'iterations',
+                  'measurements', 'circuit_depth', 'accuracy']
+        widgets = {
+            'name': HiddenInput(),
+            'user': HiddenInput(),
+            'timestamp': HiddenInput(),
+            'algorithm_type': HiddenInput(),
+            'molecule': HiddenInput(),
+            'public': HiddenInput(),
+            'algorithm': HiddenInput(),
+            'article_link': HiddenInput(),
+            'github_link': HiddenInput(),
         }
 
 
@@ -79,3 +98,14 @@ def new_algorithm_type(request):
         m.save()
     data = {'types': Algorithm_type.objects.all(), 'form': form}
     return render(request, 'WebCLI/newAlgorithmType.html', data)
+
+
+def add_metrics(request):
+    algorithm = Algorithm.objects.get(pk=request.GET.get("index"))
+    if request.method == "POST":
+        a = MetricsForm(request.POST, instance=algorithm)
+        a.save()
+        return redirect('/algorithm/?index='+str(algorithm.pk))
+    form = MetricsForm(instance=algorithm)
+    data = {'algorithm': algorithm, 'form': form}
+    return render(request, 'WebCLI/addMetrics.html', data)

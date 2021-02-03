@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Algorithm view{% endblock %}
+{% block title %}Add metrics manually{% endblock %}
 
 {% block content %}
     <p>
@@ -19,13 +19,11 @@
     </p>    
     <p>
         <h3>Metrics</h3>
-        <b>iterations:</b> {{ algorithm.iterations }}<br>
-        <b>measurements:</b> {{ algorithm.measurements }}<br>
-        <b>circuit_depth:</b> {{ algorithm.circuit_depth }}<br>
-        <b>accuracy:</b> {{ algorithm.accuracy }}<br>
-        {% ifequal request.user.pk algorithm.user.pk %}
-            <a href="{% url 'add_metrics'%}?index={{algorithm.pk}}">Add metrics manually</a>
-        {% endifequal %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+        <button type="submit">Submit</button>
+        </form>
     </p>
     <p>
         <h3>Algorithm</h3> 
