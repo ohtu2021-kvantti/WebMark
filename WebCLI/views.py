@@ -18,7 +18,7 @@ class AlgorithmListView(generic.ListView):
     queryset = Algorithm.objects.filter(public=True)
     template_name = "WebCLI/index.html"
 
-    
+
 def algorithm_list_by_molecule(request):
     molecule_id = Molecule.objects.filter(name=request.GET.get("attribute")).first()
     algorithm = Algorithm.objects.filter(molecule=molecule_id)
