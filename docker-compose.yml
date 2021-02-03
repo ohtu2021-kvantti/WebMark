@@ -17,7 +17,10 @@ services:
       - DATABASE_PASSWORD=${DATABASE_PASSWORD-postgres}
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
-    command: python manage.py runserver 0.0.0.0:8000
+    command: sh -c "
+      python manage.py makemigrations && 
+      python manage.py migrate && 
+      python manage.py runserver 0.0.0.0:8000"
     container_name: web
     volumes:
       - .:/code

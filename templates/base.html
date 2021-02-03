@@ -1,5 +1,7 @@
 {% load static %}
 
+{% load bootstrap4 %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,7 +10,12 @@
     <title>QuantMark</title>
 </head>
 
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+
 <body>
+<<<<<<< HEAD
     <h1>QuantMark - {% block title %} {% endblock %}</h1>
     <div id="content">
         {% block pagination %}
@@ -29,9 +36,36 @@
         {% endif %}
         {% endblock %}{% block content %}{% endblock %}
 
+=======
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'home' %}">Quantmark</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" 
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            {% if user.is_authenticated %}
+            <div class="nav navbar-nav mr-auto">
+                <a class="nav-item nav-link" href="{% url 'newAlgorithm' %}">Add an algorithm</a>
+                <a class="nav-item nav-link" href="{% url 'newMolecule' %}">Add a molecule</a>
+                <a class="nav-item nav-link" href="{% url 'newAlgorithmType' %}">Add a new algorithm type</a>
+            </div>
+            <div class="nav navbar-nav navbar-right">
+                <span class="navbar-text">logged in - {{ request.user.username }}</span>
+                <a class="nav-item nav-link" href="{% url 'logout' %}">Log out</a>
+            </div>
+            {% else %}
+            <div class="nav navbar-nav navbar-right ml-auto">
+                <a class="nav-item nav-link" href="{% url 'signup' %}">Sign up</a>
+                <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+    <div id="content" class="d-flex flex-column align-items-center">
+        {% block content %}{% endblock %}
+>>>>>>> e7baa738955e886d3eb380f1cb6ce47f0903fa2a
     </div>
-    <br>
-    <p><a href="{% url 'home' %}">Home</a></p>
 </body>
 
 </html>

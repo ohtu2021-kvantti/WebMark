@@ -3,27 +3,78 @@
 {% block title %}Algorithm view{% endblock %}
 
 {% block content %}
-    <p>
-        <h3>Algorithm details</h3>
-        <b>name:</b> {{ algorithm.name }}<br>  
-        <b>algorithm type:</b> {{ algorithm.algorithm_type.type_name }}<br>
-        <b>user:</b> {{ algorithm.user.username }}<br>
-        <b>public:</b> {{ algorithm.public }}<br>
-        <b>molecule:</b> {{ algorithm.molecule.name }}<br>
-    </p>    
-    <p>
-        <h3>Metrics</h3>
-        <b>iterations:</b> {{ algorithm.iterations }}<br>
-        <b>measurements:</b> {{ algorithm.measurements }}<br>
-        <b>circuit_depth:</b> {{ algorithm.circuit_depth }}<br>
-        <b>accuracy:</b> {{ algorithm.accuracy }}<br>
-    </p>
-    <p>
-        <h3>Algorithm</h3> 
-        {{ algorithm.algorithm|linebreaks }}
-        
-    </p>
-
-    
-   
+    <div class="p-12">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>name</th>
+                    <td>{{ algorithm.name }}</td>
+                </tr>
+                <tr>
+                    <th>type</th>
+                    <td>{{ algorithm.algorithm_type.type_name }}</td>
+                </tr>
+                <tr>
+                    <th>author</th>
+                    <td>{{ algorithm.user.username }}</td>
+                </tr>
+                <tr>
+                    <th>public?</th>
+                    <td>{{ algorithm.public }}</td>
+                </tr>
+                <tr>
+                    <th>molecule</th>
+                    <td>{{algorithm.molecule.name }}</td>
+                </tr>
+                {% if algorithm.article_link %}
+                    <tr>
+                        <th>paper</th>
+                        <td><a href="{{ algorithm.article_link }}" target="_blank">{{ algorithm.article_link }}</a></td>
+                    </tr>
+                {% endif %}
+                {% if algorithm.github_link %}
+                    <tr>
+                        <th>Github</th>
+                        <td><a href="{{ algorithm.github_link }}" target="_blank">{{ algorithm.github_link }}</a></td>
+                    </tr>
+                {% endif %}
+            </tbody>
+            <thead>
+                <tr>
+                    <th>Metrics</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>iterations</th>
+                    <td>{{ algorithm.iterations }}</td>
+                </tr>
+                <tr>
+                    <th>measurements</th>
+                    <td>{{ algorithm.measurements }}</td>
+                </tr>
+                <tr>
+                    <th>circuit depth</th>
+                    <td>{{ algorithm.circuit_depth }}</td>
+                </tr>
+                <tr>
+                    <th>accuracy</th>
+                    <td>{{ algorithm.accuracy }}</td>
+                </tr>
+                <tr>
+                    <th colspan="2">Algorithm</th>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <code>{{ algorithm.algorithm|linebreaks }}</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

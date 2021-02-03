@@ -1,16 +1,22 @@
 {% extends 'base.html' %}
 
+{% load bootstrap4 %}
+
 {% block title %}Add a new molecule{% endblock %}
 
 {% block content %}
     <h2>Existing molecules</h2>
     {% for m in molecules %}
-        {{ m.name }} - {{ m.structure }} <br>
+        <div class="text-center">{{ m.name }} - {{ m.structure }}</div>
     {% endfor %}
     <h2>New molecule</h2>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-    <button type="submit">Submit</button>
+        {% bootstrap_form form %}
+        {% buttons %}
+            <div class="text-center">
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        {% endbuttons %}
     </form>
 {% endblock %}

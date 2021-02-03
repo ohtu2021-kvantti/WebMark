@@ -4,6 +4,7 @@
 
 {% block content %}
 
+<<<<<<< HEAD
 {% if user.is_authenticated %}
 
 <p>logged in - Username: {{ request.user.username }}</p>
@@ -42,3 +43,10 @@
 {% endif %}
 
 {% endblock %}
+=======
+    {% for a in algorithms %}
+        <div class="text-center"><a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a></div>
+    {% endfor %}
+
+{% endblock %}
+>>>>>>> e7baa738955e886d3eb380f1cb6ce47f0903fa2a
