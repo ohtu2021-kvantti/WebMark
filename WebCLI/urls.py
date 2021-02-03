@@ -15,7 +15,7 @@ Including another URLconf
 """
 # pages/urls.py
 from django.urls import path
-from .views import import home_view, new_algorithm, algorithm_details_view, new_algorithm_type
+from .views import home_view, new_algorithm, algorithm_details_view, new_algorithm_type
 from .views import new_molecule, SignUpView
 
 urlpatterns = [
