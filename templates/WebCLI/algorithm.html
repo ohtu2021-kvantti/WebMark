@@ -46,7 +46,11 @@
             </tbody>
             <thead>
                 <tr>
-                    <th>Metrics</th>
+                    <th>Metrics
+                        {% ifequal request.user.pk algorithm.user.pk %}
+                            <a href="{% url 'add_metrics'%}?index={{algorithm.pk}}">Add manually</a>
+                        {% endifequal %}
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -65,11 +69,6 @@
                 <tr>
                     <th>accuracy</th>
                     <td>{{ algorithm.accuracy }}</td>
-                </tr>
-                <tr>
-                    {% ifequal request.user.pk algorithm.user.pk %}
-                        <a href="{% url 'add_metrics'%}?index={{algorithm.pk}}">Add metrics manually</a>
-                    {% endifequal %}
                 </tr>
                 <tr>
                     <th colspan="2">Algorithm</th>
