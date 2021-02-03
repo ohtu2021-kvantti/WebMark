@@ -1,39 +1,30 @@
 {% extends 'base.html' %}
 
+{% load bootstrap4 %}
+
 {% block title %}Login{% endblock %}
 
 {% block content %}
 
-  {% if form.errors %}
-    <p>Your username and password didn't match. Please try again.</p>
-  {% endif %}
-
   {% if next %}
     {% if user.is_authenticated %}
-      <p>Your account doesn't have access to this page. To proceed,
-      please login with an account that has access.</p>
+      {% bootstrap_alert "Your account doesn't have access to this page. To proceed,
+      please login with an account that has access." alert_type='danger' %}
     {% else %}
-      <p>Please login to see this page.</p>
+      {% bootstrap_alert "Please login to see this page." alert_type='danger' %}
     {% endif %}
   {% endif %}
 
+  <h2 class="text-center">Log in</h2>
   <form method="post" action="{% url 'login' %}">
     {% csrf_token %}
-    <table>
-      <tr>
-        <td>{{ form.username.label_tag }}</td>
-        <td>{{ form.username }}</td>
-      </tr>
-      <tr>
-        <td>{{ form.password.label_tag }}</td>
-        <td>{{ form.password }}</td>
-      </tr>
-    </table>
-    <input type="submit" value="login" />
+    {% bootstrap_form form %}
+    {% buttons %}
+    <div class="text-center">
+      <button class="btn btn-primary" type="submit">Log in</button>
+    </div> 
     <input type="hidden" name="next" value="{{ next }}" />
+    {% endbuttons %}
   </form>
-
-  {# Assumes you setup the password_reset view in your URLconf #}
-  <p><a href="{% url 'home' %}">Back to main page</a></p>
 
 {% endblock %}
