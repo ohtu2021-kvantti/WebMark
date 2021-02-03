@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 # from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 from django.views import generic
-from django.forms import ModelForm, Textarea, HiddenInput
+from django.forms import ModelForm, Textarea, HiddenInput, IntegerField, FloatField, Form
 from .models import Algorithm, Molecule, Algorithm_type
 from django.utils import timezone
 
@@ -31,23 +32,11 @@ class AlgorithmForm(ModelForm):
         }
 
 
-class MetricsForm(ModelForm):
-    class Meta:
-        model = Algorithm
-        fields = ['user', 'timestamp', 'name', 'algorithm_type', 'molecule', 'public',
-                  'algorithm', 'article_link', 'github_link', 'iterations',
-                  'measurements', 'circuit_depth', 'accuracy']
-        widgets = {
-            'name': HiddenInput(),
-            'user': HiddenInput(),
-            'timestamp': HiddenInput(),
-            'algorithm_type': HiddenInput(),
-            'molecule': HiddenInput(),
-            'public': HiddenInput(),
-            'algorithm': HiddenInput(),
-            'article_link': HiddenInput(),
-            'github_link': HiddenInput(),
-        }
+class MetricsForm(Form):
+    iterations = IntegerField(required=False)
+    measurements = IntegerField(required=False)
+    circuit_depth = IntegerField(required=False)
+    accuracy = FloatField(required=False)
 
 
 def new_algorithm(request):
@@ -61,6 +50,9 @@ def new_algorithm(request):
 
 def algorithm_details_view(request):
     algorithm = Algorithm.objects.get(pk=request.GET.get("index"))
+    if request.user.pk != algorithm.user.pk:
+        raise PermissionDenied
+
     return render(request, 'WebCLI/algorithm.html', {'algorithm': algorithm})
 
 
@@ -101,11 +93,31 @@ def new_algorithm_type(request):
 
 
 def add_metrics(request):
-    algorithm = Algorithm.objects.get(pk=request.GET.get("index"))
+    a = Algorithm.objects.get(pk=request.GET.get("index"))
+    if request.user.pk != a.user.pk:
+        raise PermissionDenied
+
     if request.method == "POST":
-        a = MetricsForm(request.POST, instance=algorithm)
+        form = MetricsForm(request.POST).data
+        if form['iterations']:
+            a.iterations = form['iterations']
+        else:
+            a.iterations = None
+        if form['measurements']:
+            a.measurements = form['measurements']
+        else:
+            a.measurements = None
+        if form['circuit_depth']:
+            a.circuit_depth = form['circuit_depth']
+        else:
+            a.circuit_depth = None
+        if form['accuracy']:
+            a.accuracy = form['accuracy']
+        else:
+            a.accuracy = None
         a.save()
-        return redirect('/algorithm/?index='+str(algorithm.pk))
-    form = MetricsForm(instance=algorithm)
-    data = {'algorithm': algorithm, 'form': form}
+        return redirect('/algorithm/?index='+str(a.pk))
+    form = MetricsForm(initial={'iterations': a.iterations, 'measurements': a.measurements,
+                                'circuit_depth': a.circuit_depth, 'accuracy': a.accuracy})
+    data = {'algorithm': a, 'form': form}
     return render(request, 'WebCLI/addMetrics.html', data)
