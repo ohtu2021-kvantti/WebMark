@@ -65,6 +65,18 @@ Navigate to the project root and run the development server with command:
 ```
 sudo docker-compose up
 ```
+If any new dependancies are added f.ex. to the requirements.txt start docker with
+```
+sudo docker-compose up --build
+```
+Furthermore all the next commands can be used from Docker by 
+```
+sudo docker-compose run web <command_name_with_possible_parameters>
+```
+for example:
+```
+sudo docker-compose run web python manage.py makemigration
+```
 
 ## Other commands
 
