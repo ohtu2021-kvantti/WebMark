@@ -21,8 +21,8 @@ from .views import algorithm_list_by_type
 
 urlpatterns = [
     path('', AlgorithmListView.as_view(), name='home'),
-    path('filter/', algorithm_list_by_molecule, name='molecule'),
-    path('filter/', algorithm_list_by_type, name='algorithm_type'),
+    path('filter/molecule/', algorithm_list_by_molecule, name='molecule'),
+    path('filter/algorithm_type/', algorithm_list_by_type, name='algorithm_type'),
     path('signup/', SignUpView.as_view(), name='signup'),
     path('newAlgorithm/', new_algorithm, name='newAlgorithm'),
     path('newMolecule/', new_molecule, name='newMolecule'),
