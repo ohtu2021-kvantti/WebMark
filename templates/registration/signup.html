@@ -1,12 +1,21 @@
 {% extends 'base.html' %}
 
+{% load bootstrap4 %}
+
 {% block title %}Sign Up{% endblock %}
 
 {% block content %}
-    <h2>Sign up</h2>
-    <form method="post">
+
+<div class="p-4">
+    <h2 class="text-center">Sign up</h2>
+    <form method="post" class="form">
         {% csrf_token %}
-        {{ form.as_p }}
-    <button type="submit">Sign Up</button>
+        {% bootstrap_form form %}
+        {% buttons %}
+        <div class="text-center">
+            <button class="btn btn-primary" type="submit">Sign up</button>
+        </div> 
+        {% endbuttons %}   
     </form>
+</div>
 {% endblock %}
