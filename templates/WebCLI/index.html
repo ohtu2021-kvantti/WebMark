@@ -3,50 +3,20 @@
 {% block title %}Main page{% endblock %}
 
 {% block content %}
-
-<<<<<<< HEAD
-{% if user.is_authenticated %}
-
-<p>logged in - Username: {{ request.user.username }}</p>
-
-<h2>Public algorithms</h2>
-
-
-<a>Filter results by molecule:</a>
-
-<select name="molecule" onchange="location = this.value;">
-    <option value selected>-</option>
-    {% for a in algorithm_list %}
-    <option value="{% url 'attr'%}?molecule={{a.molecule}}" onclick="filter/?molecule={{a.molecule}}">{{a.molecule}}
-    </option>
-
-    {% endfor %}
-
-</select>
-
-<br>
-<br>
-{% for a in algorithm_list %}
-<a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a>
-<br>
-{% endfor %}
-<hr>
-
-<p><a href="{% url 'newAlgorithm'%}">Add a new algorithm</a></p>
-<p><a href="{% url 'newMolecule'%}">Add a new molecule</a></p>
-<p><a href="{% url 'newAlgorithmType'%}">Add a new algorithm type</a></p>
-<hr>
-<p><a href="{% url 'logout'%}">Click here to logout</a></p>
-{% else %}
-<p><a href="{% url 'login'%}">Click here to login</a></p>
-<p><a href="{% url 'signup'%}">Click here to signup</a></p>
-{% endif %}
-
-{% endblock %}
-=======
-    {% for a in algorithms %}
-        <div class="text-center"><a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a></div>
-    {% endfor %}
-
-{% endblock %}
->>>>>>> e7baa738955e886d3eb380f1cb6ce47f0903fa2a
+<div class="text-upper">Filter results by molecule:
+    <select onchange="location = this.value;">
+        {% for a in algorithms %}
+        <option value=" {% url 'molecule' %}?attribute={{a.molecule}}">{{a.molecule}}</option>
+        {% endfor %}
+    </select>
+</div>
+<div class="text-upper">Filter results by algorithm:
+    <select onchange="location = this.value;">
+        {% for a in algorithms %}
+        <option value=" {% url 'algorithm_type' %}?attribute={{a.algorithm_type}}">{{a.algorithm_type}}</option>
+        {% endfor %}
+    </select>
+</div>
+{% for a in algorithms %}
+<div class="text-center"><a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a></div>
+{% endfor %}{% endblock %}
