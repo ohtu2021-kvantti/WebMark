@@ -48,7 +48,7 @@
                 <tr>
                     <th>Metrics
                         {% ifequal request.user.pk algorithm.user.pk %}
-                            <a href="{% url 'add_metrics'%}?index={{algorithm.pk}}">Add manually</a>
+                            - <a href="{% url 'add_metrics'%}?index={{algorithm.pk}}">add manually</a>
                         {% endifequal %}
                     </th>
                 </tr>
