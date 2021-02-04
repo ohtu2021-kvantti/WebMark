@@ -22,13 +22,13 @@ class AlgorithmListView(generic.ListView):
 
 def algorithm_list_by_molecule(request):
     molecule_id = Molecule.objects.filter(name=request.GET.get("attribute")).first()
-    algorithm = Algorithm.objects.filter(molecule=molecule_id)
+    algorithm = Algorithm.objects.filter(molecule=molecule_id).order_by('name')
     return render(request, 'WebCLI/index.html', {'algorithms': algorithm})
 
 
 def algorithm_list_by_type(request):
     type_id = Algorithm_type.objects.filter(type_name=request.GET.get("attribute")).first()
-    algorithm = Algorithm.objects.filter(algorithm_type=type_id)
+    algorithm = Algorithm.objects.filter(algorithm_type=type_id).order_by('name')
     return render(request, 'WebCLI/index.html', {'algorithms': algorithm})
 
 
@@ -72,6 +72,13 @@ def algorithm_details_view(request):
         raise PermissionDenied
 
     return render(request, 'WebCLI/algorithm.html', {'algorithm': algorithm})
+
+
+class MoleculeListView(generic.ListView):
+    model = Molecule
+    context_object_name = "molecules"
+    queryset = Molecule.objects.all()
+    template_name = "WebCLI/index.html"
 
 
 class MoleculeForm(ModelForm):

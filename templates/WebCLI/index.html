@@ -3,25 +3,41 @@
 {% block title %}Main page{% endblock %}
 
 {% block content %}
-{% regroup algorithms by molecule as molecule_list %}
-<div class="text-upper">Filter results by molecule:
-    <select onchange="location = this.value;">
-        {% for molecule in molecule_list %}
-        {{molecule}}
-        <option value=" {% url 'molecule' %}?attribute={{molecule.grouper}}">{{molecule.grouper}}</option>
+<div class="input-group mb-3">
+    <label class="input-group-text" for="select02">Filter results by molecule:</label>
+    <select class="custom-select" id="select02" onchange="location = this.value;">
+        {% for molecule in molecules %}
+        <option value=" {% url 'molecule' %}?attribute={{molecule.name}}">{{molecule.name}}</option>
         {% endfor %}
     </select>
 </div>
 {% regroup algorithms by algorithm_type as type_list %}
-<div class="text-upper">Filter results by algorithm:
-    <select onchange="location = this.value;">
+<div class="input-group mb-3">
+    <label class="input-group-text" for="select01">Filter results by algorithm:</label>
+    <select class="custom-select" id="select01" onchange="location = this.value;">
         {% for algorithm_type in type_list %}
-        {{algoirthm_type}}
+        {{algorithm_type}}
         <option value=" {% url 'algorithm_type' %}?attribute={{algorithm_type.grouper}}">{{algorithm_type.grouper}}
         </option>
         {% endfor %}
     </select>
 </div>
-{% for a in algorithms %}
-<div class="text-center"><a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a></div>
-{% endfor %}{% endblock %}
+<div class="text-center">
+    <table class="table table-striped" style="width:100%">
+        <thead class="thead-dark">
+            <tr>
+                <th>Algorithm</th>
+                <th>Type</th>
+                <th>Molecule</th>
+            </tr>
+        </thead>
+        {% for a in algorithms %}
+        <tr class="table table-bordered">
+            <td><a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a></td>
+            <td>{{a.algorithm_type}}</td>
+            <td>{{a.molecule}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
