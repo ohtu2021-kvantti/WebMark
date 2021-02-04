@@ -1,7 +1,5 @@
 # WebMark
 
-[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.png?v=103)](https://opensource.org/licenses/mit-license.php)
-
 ![Python package](https://github.com/ohtu2021-kvantti/WebMark/workflows/Python%20package/badge.svg)
 
 Web platform for benchmarking quantum computing algorithms
@@ -64,6 +62,18 @@ Install [Docker](https://docs.docker.com/engine/install/) according to the instr
 Navigate to the project root and run the development server with command:
 ```
 sudo docker-compose up
+```
+If any new dependancies are added f.ex. to the requirements.txt start docker with
+```
+sudo docker-compose up --build
+```
+Furthermore all the next commands can be used from Docker by 
+```
+sudo docker-compose run web <command_name_with_possible_parameters>
+```
+for example:
+```
+sudo docker-compose run web python manage.py makemigration
 ```
 
 ## Other commands

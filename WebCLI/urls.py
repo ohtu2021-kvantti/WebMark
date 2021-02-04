@@ -28,4 +28,5 @@ urlpatterns = [
     path('newMolecule/', new_molecule, name='newMolecule'),
     path('newAlgorithmType/', new_algorithm_type, name='newAlgorithmType'),
     path('algorithm/', algorithm_details_view, name='algorithm_details'),
+    path('addMetrics/', add_metrics, name='add_metrics'),
 ]

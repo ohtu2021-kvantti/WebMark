@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 # from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 from django.views import generic
-from django.forms import ModelForm, Textarea, HiddenInput
+from django.forms import ModelForm, Textarea, HiddenInput, IntegerField, FloatField, Form
 from .models import Algorithm, Molecule, Algorithm_type
 from django.utils import timezone
 
@@ -49,6 +50,13 @@ class AlgorithmForm(ModelForm):
         }
 
 
+class MetricsForm(Form):
+    iterations = IntegerField(required=False)
+    measurements = IntegerField(required=False)
+    circuit_depth = IntegerField(required=False)
+    accuracy = FloatField(required=False)
+
+
 def new_algorithm(request):
     form = AlgorithmForm(initial={'timestamp': timezone.now(), 'user': request.user})
     if request.method == "POST":
@@ -60,6 +68,9 @@ def new_algorithm(request):
 
 def algorithm_details_view(request):
     algorithm = Algorithm.objects.get(pk=request.GET.get("index"))
+    if request.user.pk != algorithm.user.pk:
+        raise PermissionDenied
+
     return render(request, 'WebCLI/algorithm.html', {'algorithm': algorithm})
 
 
@@ -97,3 +108,34 @@ def new_algorithm_type(request):
         m.save()
     data = {'types': Algorithm_type.objects.all(), 'form': form}
     return render(request, 'WebCLI/newAlgorithmType.html', data)
+
+
+def add_metrics(request):
+    a = Algorithm.objects.get(pk=request.GET.get("index"))
+    if request.user.pk != a.user.pk:
+        raise PermissionDenied
+
+    if request.method == "POST":
+        form = MetricsForm(request.POST).data
+        if form['iterations']:
+            a.iterations = form['iterations']
+        else:
+            a.iterations = None
+        if form['measurements']:
+            a.measurements = form['measurements']
+        else:
+            a.measurements = None
+        if form['circuit_depth']:
+            a.circuit_depth = form['circuit_depth']
+        else:
+            a.circuit_depth = None
+        if form['accuracy']:
+            a.accuracy = form['accuracy']
+        else:
+            a.accuracy = None
+        a.save()
+        return redirect('/algorithm/?index='+str(a.pk))
+    form = MetricsForm(initial={'iterations': a.iterations, 'measurements': a.measurements,
+                                'circuit_depth': a.circuit_depth, 'accuracy': a.accuracy})
+    data = {'algorithm': a, 'form': form}
+    return render(request, 'WebCLI/addMetrics.html', data)
