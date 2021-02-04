@@ -1,7 +1,5 @@
 # WebMark
 
-[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.png?v=103)](https://opensource.org/licenses/mit-license.php)
-
 ![Python package](https://github.com/ohtu2021-kvantti/WebMark/workflows/Python%20package/badge.svg)
 
 Web platform for benchmarking quantum computing algorithms
