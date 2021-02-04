@@ -10,8 +10,26 @@ from django.utils import timezone
 
 
 def home_view(request):
-    data = {'algorithms': Algorithm.objects.filter(public=True)}
-    return render(request, 'WebCLI/index.html', data)
+    return render(request, 'WebCLI/index.html')
+
+
+class AlgorithmListView(generic.ListView):
+    model = Algorithm
+    context_object_name = "algorithms"
+    queryset = Algorithm.objects.filter(public=True)
+    template_name = "WebCLI/index.html"
+
+
+def algorithm_list_by_molecule(request):
+    molecule_id = Molecule.objects.filter(name=request.GET.get("attribute")).first()
+    algorithm = Algorithm.objects.filter(molecule=molecule_id)
+    return render(request, 'WebCLI/index.html', {'algorithms': algorithm})
+
+
+def algorithm_list_by_type(request):
+    type_id = Algorithm_type.objects.filter(type_name=request.GET.get("attribute")).first()
+    algorithm = Algorithm.objects.filter(algorithm_type=type_id)
+    return render(request, 'WebCLI/index.html', {'algorithms': algorithm})
 
 
 class SignUpView(generic.CreateView):

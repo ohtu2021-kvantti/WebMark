@@ -3,9 +3,20 @@
 {% block title %}Main page{% endblock %}
 
 {% block content %}
-
-    {% for a in algorithms %}
-        <div class="text-center"><a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a></div>
-    {% endfor %}
-
-{% endblock %}
+<div class="text-upper">Filter results by molecule:
+    <select onchange="location = this.value;">
+        {% for a in algorithms %}
+        <option value=" {% url 'molecule' %}?attribute={{a.molecule}}">{{a.molecule}}</option>
+        {% endfor %}
+    </select>
+</div>
+<div class="text-upper">Filter results by algorithm:
+    <select onchange="location = this.value;">
+        {% for a in algorithms %}
+        <option value=" {% url 'algorithm_type' %}?attribute={{a.algorithm_type}}">{{a.algorithm_type}}</option>
+        {% endfor %}
+    </select>
+</div>
+{% for a in algorithms %}
+<div class="text-center"><a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a></div>
+{% endfor %}{% endblock %}
