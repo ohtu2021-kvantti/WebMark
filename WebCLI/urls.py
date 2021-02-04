@@ -16,7 +16,7 @@ Including another URLconf
 # pages/urls.py
 from django.urls import path
 from .views import home_view, new_algorithm, algorithm_details_view, new_algorithm_type
-from .views import new_molecule, SignUpView
+from .views import new_molecule, SignUpView, add_metrics
 
 urlpatterns = [
     path('', home_view, name='home'),
@@ -25,4 +25,5 @@ urlpatterns = [
     path('newMolecule/', new_molecule, name='newMolecule'),
     path('newAlgorithmType/', new_algorithm_type, name='newAlgorithmType'),
     path('algorithm/', algorithm_details_view, name='algorithm_details'),
+    path('addMetrics/', add_metrics, name='add_metrics'),
 ]

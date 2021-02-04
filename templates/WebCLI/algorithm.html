@@ -7,7 +7,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Details</th>
+                    <th>Algorithm details</th>
                 </tr>
             </thead>
             <tbody>
@@ -46,7 +46,11 @@
             </tbody>
             <thead>
                 <tr>
-                    <th>Metrics</th>
+                    <th>Metrics
+                        {% ifequal request.user.pk algorithm.user.pk %}
+                            - <a href="{% url 'add_metrics'%}?index={{algorithm.pk}}">add manually</a>
+                        {% endifequal %}
+                    </th>
                 </tr>
             </thead>
             <tbody>
