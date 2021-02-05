@@ -3,21 +3,23 @@
 {% block title %}Main page{% endblock %}
 
 {% block content %}
-{% regroup algorithms by molecule as molecule_list %}
+
 <div class="input-group mb-3">
-    <label class="input-group-text" for="select02">Filter results by molecule:</label>
+    <label class="input-group-text" for="select02">Filter results by:</label>
     <select class="custom-select" id="select02" onchange="location = this.value;">
-        {% for molecule in molecule_list %}
-        <option value=" {% url 'molecule' %}?attribute={{molecule.grouper}}">{{molecule.grouper}}</option>
+        <option selected disabled> Molecule </option>
+        {% for molecule in molecules %}
+        <option value=" {% url 'molecule' %}?attribute={{molecule.name}}">{{molecule.name}}</option>
         {% endfor %}
     </select>
 </div>
-{% regroup algorithms by algorithm_type as type_list %}
+
 <div class="input-group mb-3">
-    <label class="input-group-text" for="select01">Filter results by algorithm:</label>
+    <label class="input-group-text" for="select01">Filter results by:</label>
     <select class="custom-select" id="select01" onchange="location = this.value;">
-        {% for algorithm_type in type_list %}
-        <option value=" {% url 'algorithm_type' %}?attribute={{algorithm_type.grouper}}">{{algorithm_type.grouper}}
+        <option selected disabled> Algorithm type </option>
+        {% for type in algorithm_types %}
+        <option value=" {% url 'algorithm_type' %}?attribute={{type.type_name}}">{{type.type_name}}
         </option>
         {% endfor %}
     </select>
@@ -31,7 +33,7 @@
                 <th>Molecule</th>
             </tr>
         </thead>
-        {% for a in algorithms %}
+        {% for a in page_obj %}
         <tr class="table table-bordered">
             <td><a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a></td>
             <td>{{a.algorithm_type}}</td>
