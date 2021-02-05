@@ -31,15 +31,17 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: flake8 . --show-source --statistics
+    - name: Create env file
+      run: |
+        touch .env
+        echo DATABASE_NAME=quantdb >> .env
+        echo DATABASE_USER=quantuser >> .env
+        echo DATABASE_PASSWORD=secret >> .env
+        echo DATABASE_HOST=127.0.0.1 >> .env
+        echo DATABASE_PORT=5432 >> .env
     - name: Test with Django
       run: |
         python manage.py test
-      env:
-        DATABASE_NAME: quantdb
-        DATABASE_USER: quantuser
-        DATABASE_PASSWORD: secret
-        DATABASE_HOST: 127.0.0.1
-        DATABASE_PORT: 5432
     - name: Set up QEMU
       if: ${{ github.event_name == 'push' }}
       uses: docker/setup-qemu-action@v1
