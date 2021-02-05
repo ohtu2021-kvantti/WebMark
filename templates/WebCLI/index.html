@@ -3,17 +3,22 @@
 {% block title %}Main page{% endblock %}
 
 {% block content %}
+{% regroup algorithms by molecule as molecule_list %}
 <div class="text-upper">Filter results by molecule:
     <select onchange="location = this.value;">
-        {% for a in algorithms %}
-        <option value=" {% url 'molecule' %}?attribute={{a.molecule}}">{{a.molecule}}</option>
+        {% for molecule in molecule_list %}
+        {{molecule}}
+        <option value=" {% url 'molecule' %}?attribute={{molecule.grouper}}">{{molecule.grouper}}</option>
         {% endfor %}
     </select>
 </div>
+{% regroup algorithms by algorithm_type as type_list %}
 <div class="text-upper">Filter results by algorithm:
     <select onchange="location = this.value;">
-        {% for a in algorithms %}
-        <option value=" {% url 'algorithm_type' %}?attribute={{a.algorithm_type}}">{{a.algorithm_type}}</option>
+        {% for algorithm_type in type_list %}
+        {{algoirthm_type}}
+        <option value=" {% url 'algorithm_type' %}?attribute={{algorithm_type.grouper}}">{{algorithm_type.grouper}}
+        </option>
         {% endfor %}
     </select>
 </div>
