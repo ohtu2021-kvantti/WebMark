@@ -3,11 +3,12 @@
 {% block title %}Main page{% endblock %}
 
 {% block content %}
+{% regroup algorithms by molecule as molecule_list %}
 <div class="input-group mb-3">
     <label class="input-group-text" for="select02">Filter results by molecule:</label>
     <select class="custom-select" id="select02" onchange="location = this.value;">
-        {% for molecule in molecules %}
-        <option value=" {% url 'molecule' %}?attribute={{molecule.name}}">{{molecule.name}}</option>
+        {% for molecule in molecule_list %}
+        <option value=" {% url 'molecule' %}?attribute={{molecule.grouper}}">{{molecule.grouper}}</option>
         {% endfor %}
     </select>
 </div>
@@ -16,7 +17,6 @@
     <label class="input-group-text" for="select01">Filter results by algorithm:</label>
     <select class="custom-select" id="select01" onchange="location = this.value;">
         {% for algorithm_type in type_list %}
-        {{algorithm_type}}
         <option value=" {% url 'algorithm_type' %}?attribute={{algorithm_type.grouper}}">{{algorithm_type.grouper}}
         </option>
         {% endfor %}

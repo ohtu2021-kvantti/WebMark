@@ -74,13 +74,6 @@ def algorithm_details_view(request):
     return render(request, 'WebCLI/algorithm.html', {'algorithm': algorithm})
 
 
-class MoleculeListView(generic.ListView):
-    model = Molecule
-    context_object_name = "molecules"
-    queryset = Molecule.objects.all()
-    template_name = "WebCLI/index.html"
-
-
 class MoleculeForm(ModelForm):
     class Meta:
         model = Molecule
