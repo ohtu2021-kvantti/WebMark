@@ -86,7 +86,7 @@ def new_algorithm(request):
 
 def algorithm_details_view(request, algorithm_id):
     algorithm = Algorithm.objects.get(pk=algorithm_id)
-    if request.user.pk != algorithm.user.pk:
+    if not algorithm.public and request.user.pk != algorithm.user.pk:
         raise PermissionDenied
 
     return render(request, 'WebCLI/algorithm.html', {'algorithm': algorithm})
