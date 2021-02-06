@@ -21,7 +21,7 @@ class AlgorithmFilter(FilterSet):
     molecule_choices = [(m.name, m.name) for m in Molecule.objects.all()]
     algorithm_type_choices = [(a.type_name, a.type_name) for a in Algorithm_type.objects.all()]
     molecule = ChoiceFilter(
-        field_name='molecule__name', 
+        field_name='molecule__name',
         choices=molecule_choices,
         empty_label="All molecules"
     )
@@ -38,6 +38,7 @@ class AlgorithmFilter(FilterSet):
 
 class AlgorithmTable(Table):
     name = Column(linkify=True)
+
     class Meta:
         model = Algorithm
         exclude = ("id", "public", "algorithm")
