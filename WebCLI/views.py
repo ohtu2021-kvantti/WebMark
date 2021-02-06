@@ -8,7 +8,7 @@ from django.forms import ModelForm, Textarea, HiddenInput, IntegerField, FloatFi
 from django_tables2.columns.base import Column
 from .models import Algorithm, Molecule, Algorithm_type
 from django.utils import timezone
-from django_filters import ChoiceFilter, FilterSet
+from django_filters import AllValuesFilter, FilterSet
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin, Table
 
@@ -18,16 +18,12 @@ def home_view(request):
 
 
 class AlgorithmFilter(FilterSet):
-    molecule_choices = [(m.name, m.name) for m in Molecule.objects.all()]
-    algorithm_type_choices = [(a.type_name, a.type_name) for a in Algorithm_type.objects.all()]
-    molecule = ChoiceFilter(
+    molecule = AllValuesFilter(
         field_name='molecule__name',
-        choices=molecule_choices,
         empty_label="All molecules"
     )
-    algorithm_type = ChoiceFilter(
+    algorithm_type = AllValuesFilter(
         field_name='algorithm_type__type_name',
-        choices=algorithm_type_choices,
         empty_label="All algorithm types"
     )
 
