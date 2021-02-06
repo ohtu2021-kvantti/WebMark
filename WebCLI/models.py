@@ -32,5 +32,9 @@ class Algorithm(models.Model):
     article_link = models.URLField(blank=True)
     github_link = models.URLField(blank=True)
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('algorithm_details', args=[str(self.pk)])
+
     def __str__(self):
         return self.name

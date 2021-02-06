@@ -5,11 +5,12 @@ from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 from django.views import generic
 from django.forms import ModelForm, Textarea, HiddenInput, IntegerField, FloatField, Form
+from django_tables2.columns.base import Column
 from .models import Algorithm, Molecule, Algorithm_type
 from django.utils import timezone
 from django_filters import ChoiceFilter, FilterSet
 from django_filters.views import FilterView
-from django_tables2 import SingleTableMixin
+from django_tables2 import SingleTableMixin, Table
 
 
 def home_view(request):
@@ -35,6 +36,13 @@ class AlgorithmFilter(FilterSet):
         fields = ['molecule', 'algorithm_type']
 
 
+class AlgorithmTable(Table):
+    name = Column(linkify=True)
+    class Meta:
+        model = Algorithm
+        exclude = ("id", "public", "algorithm")
+
+
 class AlgorithmListView(SingleTableMixin, FilterView):
     model = Algorithm
     template_name = "WebCLI/index.html"
@@ -42,6 +50,7 @@ class AlgorithmListView(SingleTableMixin, FilterView):
     context_object_name = 'algorithms'
     queryset = Algorithm.objects.filter(public=True)
     filterset_class = AlgorithmFilter
+    table_class = AlgorithmTable
 
 
 class SignUpView(generic.CreateView):
@@ -78,8 +87,8 @@ def new_algorithm(request):
     return render(request, 'WebCLI/newAlgorithm.html', data)
 
 
-def algorithm_details_view(request):
-    algorithm = Algorithm.objects.get(pk=request.GET.get("index"))
+def algorithm_details_view(request, algorithm_id):
+    algorithm = Algorithm.objects.get(pk=algorithm_id)
     if request.user.pk != algorithm.user.pk:
         raise PermissionDenied
 
