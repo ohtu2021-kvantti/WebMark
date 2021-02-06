@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
+from django.utils.html import format_html
 from django.views import generic
 from django.forms import ModelForm, Textarea, HiddenInput, IntegerField, FloatField, Form
 from django_tables2.columns.base import Column
@@ -34,10 +35,18 @@ class AlgorithmFilter(FilterSet):
 
 class AlgorithmTable(Table):
     name = Column(linkify=True)
+    github_link = Column(verbose_name="Github")
+    article_link = Column(verbose_name="Article")
 
     class Meta:
         model = Algorithm
         exclude = ("id", "public", "algorithm")
+
+    def render_github_link(self, value):
+        return format_html(f'<a href={value}>Github</a>')
+
+    def render_article_link(self, value):
+        return format_html(f'<a href={value}>Article</a>')
 
 
 class AlgorithmListView(SingleTableMixin, FilterView):
