@@ -18,9 +18,17 @@ def home_view(request):
 
 class AlgorithmFilter(FilterSet):
     molecule_choices = [(m.name, m.name) for m in Molecule.objects.all()]
-    type_choices = [(a.type_name, a.type_name) for a in Algorithm_type.objects.all()]
-    molecule = ChoiceFilter(field_name='molecule__name', choices=molecule_choices)
-    algorithm_type = ChoiceFilter(field_name='algorithm_type__type_name', choices=type_choices)
+    algorithm_type_choices = [(a.type_name, a.type_name) for a in Algorithm_type.objects.all()]
+    molecule = ChoiceFilter(
+        field_name='molecule__name', 
+        choices=molecule_choices,
+        empty_label="All molecules"
+    )
+    algorithm_type = ChoiceFilter(
+        field_name='algorithm_type__type_name',
+        choices=algorithm_type_choices,
+        empty_label="All algorithm types"
+    )
 
     class Meta:
         model = Algorithm
