@@ -156,7 +156,7 @@ def add_metrics(request):
         else:
             a.accuracy = None
         a.save()
-        return redirect('/algorithm/?index='+str(a.pk))
+        return redirect(a)
     form = MetricsForm(initial={'iterations': a.iterations, 'measurements': a.measurements,
                                 'circuit_depth': a.circuit_depth, 'accuracy': a.accuracy})
     data = {'algorithm': a, 'form': form}
