@@ -9,7 +9,7 @@
     <select class="custom-select" id="select02" onchange="location = this.value;">
         <option selected disabled> Molecule </option>
         {% for molecule in molecules %}
-        <option value=" {% url 'molecule' %}?attribute={{molecule.name}}">{{molecule.name}}</option>
+        <option value=" {% url 'home' %}?molecule={{molecule.name}}">{{molecule.name}}</option>
         {% endfor %}
     </select>
 </div>
@@ -19,11 +19,12 @@
     <select class="custom-select" id="select01" onchange="location = this.value;">
         <option selected disabled> Algorithm type </option>
         {% for type in algorithm_types %}
-        <option value=" {% url 'algorithm_type' %}?attribute={{type.type_name}}">{{type.type_name}}
+        <option value=" {% url 'home' %}?algorithm_type={{type.type_name}}">{{type.type_name}}
         </option>
         {% endfor %}
     </select>
 </div>
+
 <div class="text-center">
     <table class="table table-striped" style="width:100%">
         <thead class="thead-dark">

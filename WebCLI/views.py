@@ -7,50 +7,37 @@ from django.views import generic
 from django.forms import ModelForm, Textarea, HiddenInput, IntegerField, FloatField, Form
 from .models import Algorithm, Molecule, Algorithm_type
 from django.utils import timezone
-from django.core.paginator import Paginator
+from django_filters import CharFilter, FilterSet
+from django_filters.views import FilterView
 
 
 def home_view(request):
     return render(request, 'WebCLI/index.html')
 
 
-class AlgorithmListView(generic.ListView):
+class AlgorithmFilter(FilterSet):
+    molecule = CharFilter(field_name='molecule__name')
+    algorithm_type = CharFilter(field_name='algorithm_type__type_name')
+
+    class Meta:
+        model = Algorithm
+        fields = ['molecule', 'algorithm_type']
+
+
+class AlgorithmListView(FilterView):
     model = Algorithm
     template_name = "WebCLI/index.html"
     paginate_by = 5
-    
-    def get_queryset(self, **kwargs):
-        queryset = Algorithm.objects.filter(public=True)
-        return queryset
-    
+    context_object_name = 'algorithms'
+    queryset = Algorithm.objects.filter(public=True)
+    filterset_class = AlgorithmFilter
+
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        context_data['algorithms'] = Algorithm.objects.filter(public=True)
         context_data['molecules'] = Molecule.objects.all()
         context_data['algorithm_types'] = Algorithm_type.objects.all()
         return context_data
 
-
-def algorithm_list_by_molecule(request):
-    molecule_id = Molecule.objects.filter(name=request.GET.get("attribute")).first()
-    algorithm = Algorithm.objects.filter(molecule=molecule_id).order_by('name')
-    paginator = Paginator(algorithm, 5)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    return render(request, 'WebCLI/index.html', {'page_obj': page_obj,
-    'molecules': Molecule.objects.all(),
-    'algorithm_types': Algorithm_type.objects.all()})
-
-
-def algorithm_list_by_type(request):
-    type_id = Algorithm_type.objects.filter(type_name=request.GET.get("attribute")).first()
-    algorithm = Algorithm.objects.filter(algorithm_type=type_id).order_by('name')
-    paginator = Paginator(algorithm, 5)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    return render(request, 'WebCLI/index.html', {'page_obj': page_obj,
-    'molecules': Molecule.objects.all(),
-    'algorithm_types': Algorithm_type.objects.all()})
 
 class SignUpView(generic.CreateView):
     form_class = UserCreationForm
