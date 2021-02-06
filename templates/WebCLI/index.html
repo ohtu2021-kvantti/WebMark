@@ -3,7 +3,6 @@
 {% load render_table from django_tables2 %}
 {% load bootstrap4 %}
 
-
 {% block title %}Main page{% endblock %}
 
 {% block content %}
@@ -14,6 +13,6 @@
         {% bootstrap_form filter.form layout='inline' %}
     </form>
 {% endif %}
-{% render_table table 'django_tables2/bootstrap.html' %}
+{% render_table table 'django_tables2/bootstrap4.html' %}
 
 {% endblock %}
