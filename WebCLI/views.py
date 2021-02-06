@@ -9,6 +9,7 @@ from .models import Algorithm, Molecule, Algorithm_type
 from django.utils import timezone
 from django_filters import CharFilter, FilterSet
 from django_filters.views import FilterView
+from django_tables2 import SingleTableMixin
 
 
 def home_view(request):
@@ -24,7 +25,7 @@ class AlgorithmFilter(FilterSet):
         fields = ['molecule', 'algorithm_type']
 
 
-class AlgorithmListView(FilterView):
+class AlgorithmListView(SingleTableMixin, FilterView):
     model = Algorithm
     template_name = "WebCLI/index.html"
     paginate_by = 5

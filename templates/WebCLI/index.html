@@ -1,46 +1,19 @@
 {% extends 'base.html' %}
 
+{% load render_table from django_tables2 %}
+{% load bootstrap4 %}
+
+
 {% block title %}Main page{% endblock %}
 
 {% block content %}
 
-<div class="input-group mb-3">
-    <label class="input-group-text" for="select02">Filter results by:</label>
-    <select class="custom-select" id="select02" onchange="location = this.value;">
-        <option selected disabled> Molecule </option>
-        {% for molecule in molecules %}
-        <option value=" {% url 'home' %}?molecule={{molecule.name}}">{{molecule.name}}</option>
-        {% endfor %}
-    </select>
-</div>
+{% if filter %}
+    <form action="" method="get" class="form form-inline">
+        {% bootstrap_form filter.form layout='inline' %}
+        {% bootstrap_button 'filter' %}
+    </form>
+{% endif %}
+{% render_table table 'django_tables2/bootstrap.html' %}
 
-<div class="input-group mb-3">
-    <label class="input-group-text" for="select01">Filter results by:</label>
-    <select class="custom-select" id="select01" onchange="location = this.value;">
-        <option selected disabled> Algorithm type </option>
-        {% for type in algorithm_types %}
-        <option value=" {% url 'home' %}?algorithm_type={{type.type_name}}">{{type.type_name}}
-        </option>
-        {% endfor %}
-    </select>
-</div>
-
-<div class="text-center">
-    <table class="table table-striped" style="width:100%">
-        <thead class="thead-dark">
-            <tr>
-                <th>Algorithm</th>
-                <th>Type</th>
-                <th>Molecule</th>
-            </tr>
-        </thead>
-        {% for a in page_obj %}
-        <tr class="table table-bordered">
-            <td><a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a></td>
-            <td>{{a.algorithm_type}}</td>
-            <td>{{a.molecule}}</td>
-        </tr>
-        {% endfor %}
-    </table>
-</div>
 {% endblock %}

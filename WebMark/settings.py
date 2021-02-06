@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'WebCLI',
     'bootstrap4',
+    'django_tables2'
 ]
 
 MIDDLEWARE = [
