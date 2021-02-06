@@ -45,7 +45,7 @@ class AlgorithmListView(SingleTableMixin, FilterView):
     template_name = "WebCLI/index.html"
     paginate_by = 5
     context_object_name = 'algorithms'
-    queryset = Algorithm.objects.filter(public=True)
+    queryset = Algorithm.objects.filter(public=True).order_by("timestamp")
     filterset_class = AlgorithmFilter
     table_class = AlgorithmTable
 
