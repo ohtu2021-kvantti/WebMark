@@ -35,12 +35,6 @@ class AlgorithmListView(SingleTableMixin, FilterView):
     queryset = Algorithm.objects.filter(public=True)
     filterset_class = AlgorithmFilter
 
-    def get_context_data(self, **kwargs):
-        context_data = super().get_context_data(**kwargs)
-        context_data['molecules'] = Molecule.objects.all()
-        context_data['algorithm_types'] = Algorithm_type.objects.all()
-        return context_data
-
 
 class SignUpView(generic.CreateView):
     form_class = UserCreationForm
