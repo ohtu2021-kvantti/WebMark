@@ -9,9 +9,9 @@
 {% block content %}
 
 {% if filter %}
-    <form action="" method="get" class="form form-inline">
+    <form action="" method="get" name="filterForm" class="form form-inline"
+          onchange="document.getElementsByName('filterForm')[0].submit();">
         {% bootstrap_form filter.form layout='inline' %}
-        {% bootstrap_button 'filter' %}
     </form>
 {% endif %}
 {% render_table table 'django_tables2/bootstrap.html' %}

@@ -7,7 +7,7 @@ from django.views import generic
 from django.forms import ModelForm, Textarea, HiddenInput, IntegerField, FloatField, Form
 from .models import Algorithm, Molecule, Algorithm_type
 from django.utils import timezone
-from django_filters import CharFilter, FilterSet
+from django_filters import ChoiceFilter, FilterSet
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
@@ -17,8 +17,10 @@ def home_view(request):
 
 
 class AlgorithmFilter(FilterSet):
-    molecule = CharFilter(field_name='molecule__name')
-    algorithm_type = CharFilter(field_name='algorithm_type__type_name')
+    molecule_choices = [(m.name, m.name) for m in Molecule.objects.all()]
+    type_choices = [(a.type_name, a.type_name) for a in Algorithm_type.objects.all()]
+    molecule = ChoiceFilter(field_name='molecule__name', choices=molecule_choices)
+    algorithm_type = ChoiceFilter(field_name='algorithm_type__type_name', choices=type_choices)
 
     class Meta:
         model = Algorithm
