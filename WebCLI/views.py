@@ -12,7 +12,7 @@ from .models import Algorithm, Molecule, Algorithm_type
 from django.utils import timezone
 from django_filters import AllValuesFilter, FilterSet
 from django_filters.views import FilterView
-from django_tables2 import SingleTableMixin, Table
+from django_tables2 import SingleTableMixin, Table, DateTimeColumn
 
 
 class AlgorithmFilter(FilterSet):
@@ -34,6 +34,7 @@ class AlgorithmTable(Table):
     name = Column(linkify=True)
     github_link = Column(verbose_name="Github")
     article_link = Column(verbose_name="Article")
+    timestamp = DateTimeColumn(format='d.m.Y', verbose_name='Date')
 
     class Meta:
         model = Algorithm
