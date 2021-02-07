@@ -1,3 +1,4 @@
+from WebMark.settings import ALGORITHMS_PER_PAGE
 from django.shortcuts import render, redirect
 # from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
@@ -41,6 +42,7 @@ class AlgorithmTable(Table):
     class Meta:
         model = Algorithm
         exclude = ("id", "public", "algorithm")
+        attrs = {"class": "table table-hover table-sm"}
 
     def render_github_link(self, value):
         return format_html(f'<a href={value}>Github</a>')
@@ -52,7 +54,7 @@ class AlgorithmTable(Table):
 class AlgorithmListView(SingleTableMixin, FilterView):
     model = Algorithm
     template_name = "WebCLI/index.html"
-    paginate_by = 20
+    paginate_by = ALGORITHMS_PER_PAGE
     context_object_name = 'algorithms'
     queryset = Algorithm.objects.filter(public=True).order_by("timestamp")
     filterset_class = AlgorithmFilter
