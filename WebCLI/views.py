@@ -52,7 +52,7 @@ class AlgorithmTable(Table):
 class AlgorithmListView(SingleTableMixin, FilterView):
     model = Algorithm
     template_name = "WebCLI/index.html"
-    paginate_by = 5
+    paginate_by = 20
     context_object_name = 'algorithms'
     queryset = Algorithm.objects.filter(public=True).order_by("timestamp")
     filterset_class = AlgorithmFilter
