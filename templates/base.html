@@ -10,19 +10,12 @@
     <title>QuantMark</title>
 </head>
 
-{# Load CSS and JavaScript #}
 {% bootstrap_css %}
-{% bootstrap_javascript jquery='full' %}
 
 <body>
     <nav class="navbar navbar-expand-md navbar-light bg-light">
         <a class="navbar-brand" href="{% url 'home' %}">Quantmark</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
-            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            {% if user.is_authenticated %}
+        {% if user.is_authenticated %}
             <div class="nav navbar-nav mr-auto">
                 <a class="nav-item nav-link" href="{% url 'newAlgorithm' %}">Add an algorithm</a>
                 <a class="nav-item nav-link" href="{% url 'newMolecule' %}">Add a molecule</a>
@@ -32,13 +25,12 @@
                 <span class="navbar-text">logged in - {{ request.user.username }}</span>
                 <a class="nav-item nav-link" href="{% url 'logout' %}">Log out</a>
             </div>
-            {% else %}
+        {% else %}
             <div class="nav navbar-nav navbar-right ml-auto">
                 <a class="nav-item nav-link" href="{% url 'signup' %}">Sign up</a>
                 <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
             </div>
-            {% endif %}
-        </div>
+        {% endif %}
     </nav>
     <div id="content" class="d-flex flex-column align-items-center">
         {% block content %}
