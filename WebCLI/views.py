@@ -15,10 +15,6 @@ from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin, Table
 
 
-def home_view(request):
-    return render(request, 'WebCLI/index.html')
-
-
 class AlgorithmFilter(FilterSet):
     molecule = AllValuesFilter(
         field_name='molecule__name',
