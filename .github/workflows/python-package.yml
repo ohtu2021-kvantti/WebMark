@@ -46,10 +46,6 @@ jobs:
     - uses: harmon758/postgresql-action@v1
       with:
         postgresql version: '11'
-    - name: Run migrations
-      run: python manage.py migrate
-    - name: Lint with flake8
-      run: flake8 . --show-source --statistics
     - name: Create env file
       run: |
         touch .env
@@ -58,6 +54,10 @@ jobs:
         echo DATABASE_PASSWORD=secret >> .env
         echo DATABASE_HOST=127.0.0.1 >> .env
         echo DATABASE_PORT=5432 >> .env
+    - name: Run migrations
+      run: python manage.py migrate
+    - name: Lint with flake8
+      run: flake8 . --show-source --statistics
     - name: Test with Django
       run: |
         python manage.py test
