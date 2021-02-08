@@ -1,43 +1,18 @@
 {% extends 'base.html' %}
 
+{% load render_table from django_tables2 %}
+{% load bootstrap4 %}
+
 {% block title %}Main page{% endblock %}
 
 {% block content %}
-{% regroup algorithms by molecule as molecule_list %}
-<div class="input-group mb-3">
-    <label class="input-group-text" for="select02">Filter results by molecule:</label>
-    <select class="custom-select" id="select02" onchange="location = this.value;">
-        {% for molecule in molecule_list %}
-        <option value=" {% url 'molecule' %}?attribute={{molecule.grouper}}">{{molecule.grouper}}</option>
-        {% endfor %}
-    </select>
-</div>
-{% regroup algorithms by algorithm_type as type_list %}
-<div class="input-group mb-3">
-    <label class="input-group-text" for="select01">Filter results by algorithm:</label>
-    <select class="custom-select" id="select01" onchange="location = this.value;">
-        {% for algorithm_type in type_list %}
-        <option value=" {% url 'algorithm_type' %}?attribute={{algorithm_type.grouper}}">{{algorithm_type.grouper}}
-        </option>
-        {% endfor %}
-    </select>
-</div>
-<div class="text-center">
-    <table class="table table-striped" style="width:100%">
-        <thead class="thead-dark">
-            <tr>
-                <th>Algorithm</th>
-                <th>Type</th>
-                <th>Molecule</th>
-            </tr>
-        </thead>
-        {% for a in algorithms %}
-        <tr class="table table-bordered">
-            <td><a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a></td>
-            <td>{{a.algorithm_type}}</td>
-            <td>{{a.molecule}}</td>
-        </tr>
-        {% endfor %}
-    </table>
-</div>
+
+{% if filter %}
+    <form action="" method="get" name="filterForm" class="form form-inline"
+          onchange="document.getElementsByName('filterForm')[0].submit();">
+        {% bootstrap_form filter.form layout='inline' %}
+    </form>
+{% endif %}
+{% render_table table 'django_tables2/bootstrap4.html' %}
+
 {% endblock %}

@@ -1,35 +1,61 @@
+from WebMark.settings import ALGORITHMS_PER_PAGE
 from django.shortcuts import render, redirect
 # from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
+from django.utils.html import format_html
 from django.views import generic
 from django.forms import ModelForm, Textarea, HiddenInput, IntegerField, FloatField, Form
+from django_tables2.columns.base import Column
 from .models import Algorithm, Molecule, Algorithm_type
 from django.utils import timezone
+from django_filters import AllValuesFilter, FilterSet
+from django_filters.views import FilterView
+from django_tables2 import SingleTableMixin, Table, DateTimeColumn
 
 
-def home_view(request):
-    return render(request, 'WebCLI/index.html')
+class AlgorithmFilter(FilterSet):
+    molecule = AllValuesFilter(
+        field_name='molecule__name',
+        empty_label="All molecules"
+    )
+    algorithm_type = AllValuesFilter(
+        field_name='algorithm_type__type_name',
+        empty_label="All algorithm types"
+    )
+
+    class Meta:
+        model = Algorithm
+        fields = ['molecule', 'algorithm_type']
 
 
-class AlgorithmListView(generic.ListView):
+class AlgorithmTable(Table):
+    name = Column(linkify=True)
+    github_link = Column(verbose_name="Github")
+    article_link = Column(verbose_name="Article")
+    timestamp = DateTimeColumn(format='d.m.Y', verbose_name='Date')
+
+    class Meta:
+        model = Algorithm
+        exclude = ("id", "public", "algorithm")
+        attrs = {"class": "table table-hover table-sm"}
+
+    def render_github_link(self, value):
+        return format_html(f'<a href={value}>Github</a>')
+
+    def render_article_link(self, value):
+        return format_html(f'<a href={value}>Article</a>')
+
+
+class AlgorithmListView(SingleTableMixin, FilterView):
     model = Algorithm
-    context_object_name = "algorithms"
-    queryset = Algorithm.objects.filter(public=True)
     template_name = "WebCLI/index.html"
-
-
-def algorithm_list_by_molecule(request):
-    molecule_id = Molecule.objects.filter(name=request.GET.get("attribute")).first()
-    algorithm = Algorithm.objects.filter(molecule=molecule_id).order_by('name')
-    return render(request, 'WebCLI/index.html', {'algorithms': algorithm})
-
-
-def algorithm_list_by_type(request):
-    type_id = Algorithm_type.objects.filter(type_name=request.GET.get("attribute")).first()
-    algorithm = Algorithm.objects.filter(algorithm_type=type_id).order_by('name')
-    return render(request, 'WebCLI/index.html', {'algorithms': algorithm})
+    paginate_by = ALGORITHMS_PER_PAGE
+    context_object_name = 'algorithms'
+    queryset = Algorithm.objects.filter(public=True).order_by("timestamp")
+    filterset_class = AlgorithmFilter
+    table_class = AlgorithmTable
 
 
 class SignUpView(generic.CreateView):
@@ -66,8 +92,8 @@ def new_algorithm(request):
     return render(request, 'WebCLI/newAlgorithm.html', data)
 
 
-def algorithm_details_view(request):
-    algorithm = Algorithm.objects.get(pk=request.GET.get("index"))
+def algorithm_details_view(request, algorithm_id):
+    algorithm = Algorithm.objects.get(pk=algorithm_id)
     if not algorithm.public and request.user.pk != algorithm.user.pk:
         raise PermissionDenied
 
@@ -134,7 +160,7 @@ def add_metrics(request):
         else:
             a.accuracy = None
         a.save()
-        return redirect('/algorithm/?index='+str(a.pk))
+        return redirect(a)
     form = MetricsForm(initial={'iterations': a.iterations, 'measurements': a.measurements,
                                 'circuit_depth': a.circuit_depth, 'accuracy': a.accuracy})
     data = {'algorithm': a, 'form': form}

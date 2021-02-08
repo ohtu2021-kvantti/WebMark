@@ -7,7 +7,7 @@
 {% block content %}
     <h2>Existing algorithms</h2>
     {% for a in algorithms %}
-        <div class="text-center"><a href="{% url 'algorithm_details'%}?index={{a.pk}}">{{a.name}}</a></div>
+        <div class="text-center"><a href="{{ a.get_absolute_url }}">{{a.name}}</a></div>
     {% endfor %}
     <h2>New algorithm</h2>
     <form method="post">

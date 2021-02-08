@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.contrib.auth.models import User
 
 from .db import new_algorithm, new_algorithm_type, new_molecule, save_metrics
@@ -35,3 +35,38 @@ class DatabaseTest(TestCase):
     def test_list_types(self):
         at = get_algorithm_types()
         self.assertEqual(len(at), 2)
+
+
+class WebFunctionTest(TestCase):
+
+    def test_signup(self):
+        c = Client()
+        response = c.post(
+            '/signup/',
+            {'username': 'testuser1', 'password1': 'sekred010', 'password2': 'sekred010'}
+        )
+        self.assertEqual(response.status_code, 302)
+
+    def test_login(self):
+        c = Client()
+        response = c.post(
+            '/signup/',
+            {'username': 'testuser2', 'password1': 'sekred010', 'password2': 'sekred010'}
+        )
+        response = c.login(username='testuser2', password='sekred010')
+        self.assertEqual(response, True)
+
+
+"""
+    def test_authorized_content_unseen(self):
+        c = Client()
+        c.post('/newMolecule/', {'name': 'test_molecule', 'structure': 'test_structure'})
+        c.post('/newAlgorithmType/', {'type_name': 'test_type'})
+        c.post('/newAlgorithm',
+           {'name': 'test_algorithm', 'algorithm_type': 1,
+            'molecule': 1, 'public': True, 'algorithm': 'exec()',
+            'article_link': 'https://kela.fi', 'github_link': 'https://kela.fi'}
+        )
+        response = c.get('/algorithm/?index=1')
+        self.assertEqual(response.status_code, 403)
+"""
