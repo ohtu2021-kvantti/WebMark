@@ -43,6 +43,10 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Shutting down docker for now and log
+      run: |
+        sudo docker-compose down
+        netstat | grep 5432
     - uses: harmon758/postgresql-action@v1
       with:
         postgresql version: '11'
