@@ -32,8 +32,8 @@ jobs:
         python-version: [3.7, 3.8, 3.9]
 
     steps:
-    - name: Cleanup pre-installed tools
-      run: |
+    # - name: Cleanup pre-installed tools
+        run: |
         # This is a fix for https://github.com/actions/virtual-environments/issues/1918
         sudo rm -rf /usr/share/dotnet
         sudo rm -rf /opt/ghc
