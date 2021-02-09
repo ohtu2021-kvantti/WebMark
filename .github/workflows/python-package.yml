@@ -46,7 +46,7 @@ jobs:
     - name: Shutting down docker for now and log
       run: |
         sudo docker-compose down
-        netstat | grep 5432
+        sudo lsof -i tcp:5432
     - uses: harmon758/postgresql-action@v1
       with:
         postgresql version: '11'
