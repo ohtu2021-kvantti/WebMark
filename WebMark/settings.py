@@ -85,7 +85,7 @@ DATABASES = {
         'USER': os.getenv("DATABASE_USER"),
         'PASSWORD': os.getenv("DATABASE_PASSWORD"),
         'HOST': os.getenv("DATABASE_HOST"),
-        'PORT': os.getenv("DATABASE_PORT", "5431"),
+        'PORT': os.getenv("DATABASE_PORT", "5432"),
     }
 }
 
@@ -97,7 +97,7 @@ if os.environ.get('GITHUB_WORKFLOW'):
            'USER': 'postgres',
            'PASSWORD': 'postgres',
            'HOST': '127.0.0.1',
-           'PORT': '5431',
+           'PORT': '5432',
         }
     }
 
