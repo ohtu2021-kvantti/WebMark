@@ -44,7 +44,10 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Kuka siin netis on
-      run: sudo lsof -i tcp:5432
+      run: |
+        sudo lsof -i tcp:5432
+        sudo docker-compose down
+        sudo lsof -i tcp:5432
     - uses: harmon758/postgresql-action@v1
       with:
         postgresql version: '11'
