@@ -45,8 +45,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Shutting down docker for now and log
       run: |
-        sudo docker-compose down
-        sudo lsof -t -i tcp:5432 | xargs kill -9
+        sudo kill $(sudo lsof -t -i tcp:5432) 
     - uses: harmon758/postgresql-action@v1
       with:
         postgresql version: '11'
