@@ -47,7 +47,7 @@ jobs:
       run: |
         sudo lsof -i tcp:5432
         sudo docker-compose down
-        sudo /etc/init.d/docker restart
+        sudo kill -9 $(sudo lsof -t -i tcp:5432)
         sudo lsof -i tcp:5432
     - uses: harmon758/postgresql-action@v1
       with:
