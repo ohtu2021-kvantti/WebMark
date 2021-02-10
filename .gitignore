@@ -1,6 +1,5 @@
-WebCLI/__pycache__/
-WebCLI/migrations/
-WebMark/__pycache__/
+__pycache__/
+migrations/
 venv/
 .env
 .vscode
