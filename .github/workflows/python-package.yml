@@ -34,14 +34,6 @@ jobs:
         python-version: [3.7, 3.8, 3.9]
 
     steps:
-    - name: Create env file
-      run: |
-        touch .env
-        echo DATABASE_NAME=quantdb >> .env
-        echo DATABASE_USER=quantuser >> .env
-        echo DATABASE_PASSWORD=secret >> .env
-        echo DATABASE_HOST=127.0.0.1 >> .env
-        echo DATABASE_PORT=5432 >> .env
     - uses: actions/checkout@v1
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
@@ -57,7 +49,14 @@ jobs:
       with:
         postgresql version: '11'
     - name: Run migrations
-      run: python manage.py migrate
+      run: |
+        touch .env
+        echo DATABASE_NAME=quantdb >> .env
+        echo DATABASE_USER=quantuser >> .env
+        echo DATABASE_PASSWORD=secret >> .env
+        echo DATABASE_HOST=127.0.0.1 >> .env
+        echo DATABASE_PORT=5432 >> .env
+        python manage.py migrate
     - name: Lint with flake8
       run: flake8 . --show-source --statistics
     - name: Test with Django
