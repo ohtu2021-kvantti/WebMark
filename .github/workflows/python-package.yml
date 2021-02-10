@@ -19,9 +19,9 @@ jobs:
       postgres:
         image: postgres:10.8
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: github_actions
+          POSTGRES_USER: quantuser
+          POSTGRES_PASSWORD: secret
+          POSTGRES_DB: quantdb
           POSTGRES_HOST: postgres
           POSTGRES_PORT: ${{ job.services.postgres.port[5432] }}
         ports:
@@ -48,6 +48,11 @@ jobs:
     - name: Run migrations
       run: |
         touch .env
+        echo DATABASE_NAME=quantdb >> .env
+        echo DATABASE_USER=quantuser >> .env
+        echo DATABASE_PASSWORD=secret >> .env
+        echo DATABASE_HOST=127.0.0.1 >> .env
+        echo DATABASE_PORT=5431 >> .env
         python manage.py makemigrations WebCLI
         python manage.py migrate
     - name: Lint with flake8
