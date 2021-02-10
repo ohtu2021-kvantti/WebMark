@@ -53,7 +53,7 @@ jobs:
         echo DATABASE_PASSWORD=secret >> .env
         echo DATABASE_HOST=127.0.0.1 >> .env
         echo DATABASE_PORT=5431 >> .env
-        python manage.py makemigrations
+        python manage.py makemigrations WebCLI
         python manage.py migrate
     - name: Lint with flake8
       run: flake8 . --show-source --statistics
