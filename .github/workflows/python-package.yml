@@ -14,20 +14,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:10.8
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: github_actions
-          POSTGRES_HOST: postgres
-          POSTGRES_PORT: ${{ job.services.postgres.port[5432] }}
-        ports:
-          - 5432:5432
-        # needed because the postgres container does not provide a healthcheck
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     strategy:
       matrix:
 
@@ -48,6 +34,11 @@ jobs:
     - name: Run migrations
       run: |
         touch .env
+        echo DATABASE_NAME=quantdb >> .env
+        echo DATABASE_USER=quantuser >> .env
+        echo DATABASE_PASSWORD=secret >> .env
+        echo DATABASE_HOST=127.0.0.1 >> .env
+        echo DATABASE_PORT=5431 >> .env
         python manage.py makemigrations
         python manage.py migrate
     - name: Lint with flake8
