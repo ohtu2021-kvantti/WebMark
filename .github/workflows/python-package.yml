@@ -56,7 +56,7 @@ jobs:
     - uses: harmon758/postgresql-action@v1
       with:
         postgresql version: '11'
-   - name: Run migrations
+    - name: Run migrations
       run: python manage.py migrate
     - name: Lint with flake8
       run: flake8 . --show-source --statistics
