@@ -19,10 +19,10 @@ jobs:
       postgres:
         image: postgres:10.8
         env:
-          POSTGRES_USER: quantuser
-          POSTGRES_PASSWORD: secret
-          POSTGRES_DB: quantdb
-          POSTGRES_HOST: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: github_actions
+          POSTGRES_HOST: 127.0.0.1
           POSTGRES_PORT: ${{ job.services.postgres.port[5432] }}
         ports:
           - 5432:5432
@@ -47,12 +47,6 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Run migrations
       run: |
-        touch .env
-        echo DATABASE_NAME=quantdb >> .env
-        echo DATABASE_USER=quantuser >> .env
-        echo DATABASE_PASSWORD=secret >> .env
-        echo DATABASE_HOST=postgres >> .env
-        echo DATABASE_PORT=5431 >> .env
         python manage.py makemigrations
         python manage.py migrate
     - name: Lint with flake8
