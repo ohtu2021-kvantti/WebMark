@@ -48,6 +48,14 @@ jobs:
     - uses: harmon758/postgresql-action@v1
       with:
         postgresql version: '11'
+    - name: Create env file
+      run: |
+        touch .env
+        echo DATABASE_NAME=quantdb >> .env
+        echo DATABASE_USER=quantuser >> .env
+        echo DATABASE_PASSWORD=secret >> .env
+        echo DATABASE_HOST=127.0.0.1 >> .env
+        echo DATABASE_PORT=5432 >> .env
     - name: Run migrations
       run: python manage.py migrate
     - name: Lint with flake8
