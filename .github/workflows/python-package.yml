@@ -23,6 +23,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: github_actions
           POSTGRES_HOST: postgres
+          POSTGRES_PORT: ${{ job.services.postgres.port[5432] }}
         ports:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
