@@ -165,3 +165,22 @@ def add_metrics(request):
                                 'circuit_depth': a.circuit_depth, 'accuracy': a.accuracy})
     data = {'algorithm': a, 'form': form}
     return render(request, 'WebCLI/addMetrics.html', data)
+
+
+def compare_algorithms(request, a1_id, a2_id):
+    queryset = Algorithm.objects.filter(pk=a1_id) | Algorithm.objects.filter(pk=a2_id)
+
+    if len(queryset) < 2:  # check that we have found two unique algorithms
+        return redirect("home")
+
+    # dummy data
+    graph_data = [[0, 0, 0], [1, 2, 4], [2, 4, 8], [3, 6, 10], [4, 6, 10]]
+
+    (a1, a2) = queryset
+    if not a1.public and request.user.pk != a1.user.pk:
+        raise PermissionDenied
+    if not a2.public and request.user.pk != a2.user.pk:
+        raise PermissionDenied
+
+    return render(request, 'WebCLI/compareAlgorithms.html',
+                  {'a1': a1, 'a2': a2, 'graph_data': graph_data})
