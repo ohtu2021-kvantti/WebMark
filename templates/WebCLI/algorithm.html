@@ -44,11 +44,31 @@
                     </tr>
                 {% endif %}
             </tbody>
+        </table>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Versions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in versions %}
+                    <tr>
+                        <th>
+                            <div class="text-center">{{ v.timestamp }}</div>
+                        </th>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Metrics
                         {% ifequal request.user.pk algorithm.user.pk %}
-                            - <a href="{% url 'add_metrics'%}?index={{algorithm.pk}}">add manually</a>
+                            - <a href="{% url 'add_metrics'%}?index={{last.pk}}">add manually</a>
                         {% endifequal %}
                     </th>
                 </tr>
@@ -56,26 +76,37 @@
             <tbody>
                 <tr>
                     <th>iterations</th>
-                    <td>{{ algorithm.iterations }}</td>
+                    <td>{{ last.iterations }}</td>
                 </tr>
                 <tr>
                     <th>measurements</th>
-                    <td>{{ algorithm.measurements }}</td>
+                    <td>{{ last.measurements }}</td>
                 </tr>
                 <tr>
                     <th>circuit depth</th>
-                    <td>{{ algorithm.circuit_depth }}</td>
+                    <td>{{ last.circuit_depth }}</td>
                 </tr>
                 <tr>
                     <th>accuracy</th>
-                    <td>{{ algorithm.accuracy }}</td>
+                    <td>{{ last.accuracy }}</td>
                 </tr>
+            </tbody>
+        </table>
+
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <th colspan="2">Algorithm</th>
+                    <th colspan="2">Algorithm
+                        {% ifequal request.user.pk algorithm.user.pk %}
+                        - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
+                        {% endifequal %}
+                    </th>
                 </tr>
+            </thead>
+            <tbody>
                 <tr>
                     <td colspan="2">
-                        <code>{{ algorithm.algorithm|linebreaks }}</code>
+                        <code>{{ last.algorithm|linebreaks }}</code>
                     </td>
                 </tr>
             </tbody>

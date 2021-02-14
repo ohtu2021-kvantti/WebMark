@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+
+{% block title %}Update algorithm{% endblock %}
+
+{% block content %}
+<div class="p-12">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Update algorithm</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>name</th>
+                <td>{{ algorithm.name }}</td>
+            </tr>
+            <tr>
+                <th>type</th>
+                <td>{{ algorithm.algorithm_type.type_name }}</td>
+            </tr>
+            <tr>
+                <th>molecule</th>
+                <td>{{ algorithm.molecule.name }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% buttons %}
+        <div class="text-center">
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
+    {% endbuttons %}
+</form>
+   
+{% endblock %}
