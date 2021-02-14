@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load bootstrap4 %}
+
 {% block title %}Algorithm view{% endblock %}
 
 {% block content %}
@@ -46,29 +48,26 @@
             </tbody>
         </table>
 
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Versions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for v in versions %}
-                    <tr>
-                        <th>
-                            <div class="text-center">{{ v.timestamp }}</div>
-                        </th>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+        <form method="POST" name="selectVersion" onchange="document.getElementsByName('selectVersion')[0].submit();">
+            {% csrf_token %}
+            <select name="item_id">
+            {% for v in versions %}
+                {% ifequal v selectedVersion %}
+                    <option value="{{ v.pk }}" selected="selected">{{ v.timestamp }}</option>
+                {% else %}
+                    <option value="{{ v.pk }}">{{ v.timestamp }}</option>
+                {% endifequal %}
+            {% endfor %}
+            </select>
+        </form>
 
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Metrics
                         {% ifequal request.user.pk algorithm.user.pk %}
-                            - <a href="{% url 'add_metrics'%}?index={{last.pk}}">add manually</a>
+                            - <a href="{% url 'add_metrics'%}?index={{selectedVersion.pk}}">add manually</a>
                         {% endifequal %}
                     </th>
                 </tr>
@@ -76,19 +75,19 @@
             <tbody>
                 <tr>
                     <th>iterations</th>
-                    <td>{{ last.iterations }}</td>
+                    <td>{{ selectedVersion.iterations }}</td>
                 </tr>
                 <tr>
                     <th>measurements</th>
-                    <td>{{ last.measurements }}</td>
+                    <td>{{ selectedVersion.measurements }}</td>
                 </tr>
                 <tr>
                     <th>circuit depth</th>
-                    <td>{{ last.circuit_depth }}</td>
+                    <td>{{ selectedVersion.circuit_depth }}</td>
                 </tr>
                 <tr>
                     <th>accuracy</th>
-                    <td>{{ last.accuracy }}</td>
+                    <td>{{ selectedVersion.accuracy }}</td>
                 </tr>
             </tbody>
         </table>
@@ -106,7 +105,7 @@
             <tbody>
                 <tr>
                     <td colspan="2">
-                        <code>{{ last.algorithm|linebreaks }}</code>
+                        <code>{{ selectedVersion.algorithm|linebreaks }}</code>
                     </td>
                 </tr>
             </tbody>

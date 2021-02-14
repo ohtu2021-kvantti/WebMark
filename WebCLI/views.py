@@ -11,7 +11,7 @@ from .models import Algorithm, Molecule, Algorithm_type, Algorithm_version
 from django.utils import timezone
 from django_filters import AllValuesFilter, FilterSet
 from django_filters.views import FilterView
-from django_tables2 import SingleTableMixin, Table, DateTimeColumn
+from django_tables2 import SingleTableMixin, Table
 
 
 class AlgorithmFilter(FilterSet):
@@ -77,6 +77,7 @@ class AlgorithmForm(ModelForm):
 class AlgorithmVersionForm(Form):
     algorithm = CharField(widget=Textarea)
 
+
 class MetricsForm(Form):
     iterations = IntegerField(required=False)
     measurements = IntegerField(required=False)
@@ -92,7 +93,8 @@ def new_algorithm(request):
         algorithm = AlgorithmVersionForm(request.POST).data['algorithm']
         v = Algorithm_version(timestamp=timezone.now(), algorithm_id=a, algorithm=algorithm)
         v.save()
-    data = {'algorithms': Algorithm.objects.filter(user=request.user), 'aform': aform, 'vform': vform}
+    data = {'algorithms': Algorithm.objects.filter(user=request.user), 'aform': aform,
+            'vform': vform}
     return render(request, 'WebCLI/newAlgorithm.html', data)
 
 
@@ -103,7 +105,11 @@ def algorithm_details_view(request, algorithm_id):
         raise PermissionDenied
 
     versions = Algorithm_version.objects.filter(algorithm_id=algorithm).order_by('-timestamp')
-    return render(request, 'WebCLI/algorithm.html', {'algorithm': algorithm, 'versions': versions, 'last': versions[0]})
+    selectedVersion = versions[0]
+    if request.method == "POST":
+        selectedVersion = Algorithm_version.objects.get(pk=request.POST.get('item_id'))
+    data = {'algorithm': algorithm, 'versions': versions, 'selectedVersion': selectedVersion}
+    return render(request, 'WebCLI/algorithm.html', data)
 
 
 class MoleculeForm(ModelForm):
@@ -179,20 +185,11 @@ def add_version(request):
         raise PermissionDenied
 
     if request.method == "POST":
-        version = Algorithm_version(algorithm_id=a, timestamp=timezone.now(), algorithm=AlgorithmVersionForm(request.POST).data['algorithm'])
+        algorithm = AlgorithmVersionForm(request.POST).data['algorithm']
+        version = Algorithm_version(algorithm_id=a, timestamp=timezone.now(), algorithm=algorithm)
         version.save()
         return redirect(a)
     last_version = Algorithm_version.objects.filter(algorithm_id=a).order_by('-timestamp')[0]
     form = AlgorithmVersionForm(initial={'algorithm': last_version.algorithm})
     data = {'algorithm': a, 'form': form}
     return render(request, 'WebCLI/addVersion.html', data)
-
-
-class VersionFilter(FilterSet):
-    version = AllValuesFilter(
-        field_name='molecule__timestamp',
-    )
-
-    class Meta:
-        model = Algorithm_version
-        fields = ['timestamp']
