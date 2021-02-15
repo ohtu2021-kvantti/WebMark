@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from .db import new_algorithm, new_algorithm_type, new_molecule, save_metrics
 from .db import get_algorithm_types, get_molecules, get_public_algorithms
 from django.urls import reverse
+from WebCLI.models import Algorithm, Algorithm_type, Molecule
 
 
 class DatabaseTest(TestCase):
@@ -76,23 +77,36 @@ class WebFunctionTest(TestCase):
 class AlgorithmComparisonTest(SimpleTestCase):
 
     def setUp(self):
-        user = User.objects.create_user("testuser", "test@example.com", "secret")
-        self.client.login(username="testuser", password="testuserpassword")
-        other_user = User.objects.create_user("otheruser", "other@example.com", "secret")
-        algorithm_type = new_algorithm_type("VQE")
-        molecule = new_molecule("water", "H2O")
-        self.my_algorithm = new_algorithm(
-            user, "my algo", algorithm_type, "execute()", molecule, public=True
-        )
-        self.my_private_algorithm = new_algorithm(
-            user, "my private algo", algorithm_type, "execute()", molecule, public=False
-        )
-        self.other_user_private_algorithm = new_algorithm(
-            other_user, "private algo", algorithm_type, "exec()", molecule, public=False
-        )
-        self.other_user_public_algorithm = new_algorithm(
-            other_user, "public algo", algorithm_type, "exec()", molecule, public=True
-        )
+        self.client.post('/signup/',
+                         {'username': 'testuser', 'password1': 'secret', 'password2': 'secret'})
+        self.client.post('/signup/',
+                         {'username': 'otheruser', 'password1': 'secret', 'password2': 'secret'})
+        self.client.post('/accounts/login/',
+                         {'username': 'testuser', 'password': 'secret'})
+        self.client.post('/newAlgorithmType')
+        self.client.post('/newMolecule/',
+                         {'name': 'Water', 'structure': 'H2O'})
+        user_id = User.objects.get(username='testuser').pk
+        other_user_id = User.objects.get(username='otheruser').pk
+        base_algorithm_data = {
+                     'name': 'Test algorithm',
+                     'algorithm_type': Algorithm_type.objects.get(type_name='VQE').pk,
+                     'molecule': Molecule.objects.get(name='Water').pk,
+                     'algorithm': 'exec()',
+                     'article_link': 'https://kela.fi',
+                     'github_link': 'https://github.com'}
+        self.c.post('/newAlgorithm/',
+                    {'user': user_id, 'name': 'a1', 'public': 'on', **base_algorithm_data})
+        self.c.post('/newAlgorithm/',
+                    {'user': user_id, 'name': 'a2', 'public': 'off', **base_algorithm_data})
+        self.c.post('/newAlgorithm/',
+                    {'user': other_user_id, 'name': 'a3', 'public': 'on', **base_algorithm_data})
+        self.c.post('/newAlgorithm/',
+                    {'user': other_user_id, 'name': 'a4', 'public': 'off', **base_algorithm_data})
+        self.my_algorithm = Algorithm.objects.get(name="a1")
+        self.my_private_algorithm = Algorithm.objects.get(name="a2")
+        self.other_user_private_algorithm = Algorithm.objects.get(name="a3")
+        self.other_user_public_algorithm = Algorithm.objects.get(name="a4")
 
     def random_parameters_are_handled_correctly(self):
         response = self.client.get("/compare/a/exec()")
