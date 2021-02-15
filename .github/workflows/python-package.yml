@@ -34,10 +34,6 @@ jobs:
         python-version: [3.7, 3.8, 3.9]
 
     steps:
-    - name: "Upload coverage to Codecov"
-      uses: codecov/codecov-action@v1
-      with:
-        fail_ci_if_error: true
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
@@ -64,6 +60,12 @@ jobs:
     - name: Test with Django
       run: |
         python manage.py test
+        coverage erase
+        coverage run manage.py test
+    - name: "Upload coverage to Codecov"
+      uses: codecov/codecov-action@v1
+      with:
+        fail_ci_if_error: true
     - name: Set up QEMU
       if: ${{ github.event_name == 'push' && matrix.python-version == '3.9' }}
       uses: docker/setup-qemu-action@v1

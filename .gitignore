@@ -3,3 +3,8 @@ migrations/
 venv/
 .env
 .vscode
+htmlcov/
+.coverage
+.coverage*
+coverage.xml
+*.cover
