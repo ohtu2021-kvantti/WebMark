@@ -1,44 +1,9 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
-
-from .db import new_algorithm, new_algorithm_type, new_molecule, save_metrics
-from .db import get_algorithm_types, get_molecules, get_public_algorithms
+from .models import Molecule, Algorithm_type, Algorithm, Algorithm_version
 
 
-class DatabaseTest(TestCase):
-    def setUp(self):
-        user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
-        atype = new_algorithm_type('VQE')
-        molecule = new_molecule('water', 'H2O')
-        algorithm = new_algorithm(user, 'fast algo', atype, 'asfasd\nafasdf\nwre\n', molecule, True)
-        save_metrics(algorithm, 1, 2, 3, 4.04)
-
-        atype = new_algorithm_type('VQE-simple')
-        molecule = new_molecule('hydrogen', 'H2')
-        algorithm = new_algorithm(user, 'super algo', atype, 'xxxd\nyydf\nzzzz\n', molecule, False)
-        save_metrics(algorithm, 5, 6, 7, 8.08)
-
-    def test_list_public_algorithms(self):
-        a = get_public_algorithms()
-        self.assertEqual(len(a), 1)
-        self.assertEqual(a[0].accuracy, 4.04)
-        self.assertEqual(a[0].molecule.name, 'water')
-        self.assertEqual(a[0].molecule.structure, 'H2O')
-        self.assertEqual(a[0].algorithm_type.type_name, 'VQE')
-        self.assertEqual(a[0].user.username, 'john')
-        self.assertEqual(a[0].name, 'fast algo')
-
-    def test_list_molecules(self):
-        m = get_molecules()
-        self.assertEqual(len(m), 2)
-
-    def test_list_types(self):
-        at = get_algorithm_types()
-        self.assertEqual(len(at), 2)
-
-
-class WebFunctionTest(TestCase):
-
+class WebFunctionTestLogin(TestCase):
     def test_signup(self):
         c = Client()
         response = c.post(
@@ -55,6 +20,54 @@ class WebFunctionTest(TestCase):
         )
         response = c.login(username='testuser2', password='sekred010')
         self.assertEqual(response, True)
+
+
+class WebFunctionTestAddData(TestCase):
+    def setUp(self):
+        self.c = Client()
+        self.c.post('/signup/',
+                    {'username': 'testuser3', 'password1': 'sekred010', 'password2': 'sekred010'})
+        self.c.post('/accounts/login/',
+                    {'username': 'testuser3', 'password': 'sekred010'})
+
+    def test_add_molecule(self):
+        self.c.post('/newMolecule/',
+                    {'name': 'Lithium hydride', 'structure': 'LiH'})
+        result = Molecule.objects.get(name='Lithium hydride')
+        self.assertIsNotNone(result)
+
+    def test_add_type(self):
+        self.c.post('/newAlgorithmType/',
+                    {'type_name': 'VQE (UCCSD)'})
+        result = Algorithm_type.objects.get(type_name='VQE (UCCSD)')
+        self.assertIsNotNone(result)
+
+    def test_add_algorithm_with_2_versions(self):
+        user_id = User.objects.get(username='testuser3').pk
+        self.c.post('/newAlgorithmType/',
+                    {'type_name': 'VQE'})
+        self.c.post('/newMolecule/',
+                    {'name': 'Hydrogen', 'structure': 'H2'})
+        self.c.post('/newAlgorithm/',
+                    {'user': user_id,
+                     'name': 'test_algorithm',
+                     'algorithm_type': Algorithm_type.objects.get(type_name='VQE').pk,
+                     'molecule': Molecule.objects.get(name='Hydrogen').pk,
+                     'public': 'on',
+                     'algorithm': 'exec()',
+                     'article_link': 'https://kela.fi',
+                     'github_link': 'https://vn.fi'})
+        self.c.post('/addVersion/?index='+str(user_id),
+                    {'algorithm': 'print(1)\nexec()'})
+        a = Algorithm.objects.get(name='test_algorithm')
+        v = Algorithm_version.objects.filter(algorithm_id=a)
+
+        self.assertEqual(a.public, True)
+        self.assertEqual(a.algorithm_type.type_name, 'VQE')
+        self.assertEqual(a.user.username, 'testuser3')
+        self.assertEqual(a.molecule.name, 'Hydrogen')
+        self.assertEqual(len(v), 2)
+        self.assertEqual(v[1].algorithm, 'print(1)\nexec()')
 
 
 """
