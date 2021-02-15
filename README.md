@@ -1,6 +1,7 @@
 # WebMark
 
 ![Python package](https://github.com/ohtu2021-kvantti/WebMark/workflows/Python%20package/badge.svg)
+[![codecov](https://codecov.io/gh/ohtu2021-kvantti/WebMark/branch/main/graph/badge.svg?token=40N85S73PK)](https://codecov.io/gh/ohtu2021-kvantti/WebMark)
 
 Web platform for benchmarking quantum computing algorithms
 
