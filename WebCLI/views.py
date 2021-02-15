@@ -170,7 +170,7 @@ def add_metrics(request):
 def compare_algorithms(request, a1_id, a2_id):
     queryset = Algorithm.objects.filter(pk=a1_id) | Algorithm.objects.filter(pk=a2_id)
 
-    if len(queryset) < 2:  # check that we have found two unique algorithms
+    if len(queryset) != 2:  # check that we have found two unique algorithms
         return redirect("home")
 
     # dummy data
