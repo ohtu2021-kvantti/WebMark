@@ -96,6 +96,13 @@ Run tests
 python manage.py test
 ```
 
+Run code coverage
+```
+coverage erase
+coverage run manage.py test
+coverage report
+```
+
 Update database after change in models
 ```
 python manage.py makemigrations
