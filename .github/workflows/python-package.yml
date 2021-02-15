@@ -34,6 +34,10 @@ jobs:
         python-version: [3.7, 3.8, 3.9]
 
     steps:
+    - name: "Upload coverage to Codecov"
+      uses: codecov/codecov-action@v1
+      with:
+        fail_ci_if_error: true
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
