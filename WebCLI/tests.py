@@ -1,10 +1,9 @@
-from django.test import SimpleTestCase, TestCase, Client
+from django.test import TestCase, Client
 from django.contrib.auth.models import User
 
 from .db import new_algorithm, new_algorithm_type, new_molecule, save_metrics
 from .db import get_algorithm_types, get_molecules, get_public_algorithms
 from django.urls import reverse
-from WebCLI.models import Algorithm, Algorithm_type, Molecule
 
 
 class DatabaseTest(TestCase):
@@ -74,67 +73,57 @@ class WebFunctionTest(TestCase):
 """
 
 
-class AlgorithmComparisonTest(SimpleTestCase):
+class AlgorithmComparisonTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        user = User.objects.create_user("testuser", "test@example.com", "secret")
+        other_user = User.objects.create_user("otheruser", "other@example.com", "secret")
+        algorithm_type = new_algorithm_type("VQE")
+        molecule = new_molecule("water", "H2O")
+        cls.my_algorithm = new_algorithm(
+            user, "my algo", algorithm_type, "execute()", molecule, public=True
+        )
+        cls.my_private_algorithm = new_algorithm(
+            user, "my private algo", algorithm_type, "execute()", molecule, public=False
+        )
+        cls.other_user_private_algorithm = new_algorithm(
+            other_user, "private algo", algorithm_type, "exec()", molecule, public=False
+        )
+        cls.other_user_public_algorithm = new_algorithm(
+            other_user, "public algo", algorithm_type, "exec()", molecule, public=True
+        )
 
     def setUp(self):
-        self.client.post('/signup/',
-                         {'username': 'testuser', 'password1': 'secret', 'password2': 'secret'})
-        self.client.post('/signup/',
-                         {'username': 'otheruser', 'password1': 'secret', 'password2': 'secret'})
-        self.client.post('/accounts/login/',
-                         {'username': 'testuser', 'password': 'secret'})
-        self.client.post('/newAlgorithmType')
-        self.client.post('/newMolecule/',
-                         {'name': 'Water', 'structure': 'H2O'})
-        user_id = User.objects.get(username='testuser').pk
-        other_user_id = User.objects.get(username='otheruser').pk
-        base_algorithm_data = {
-                     'name': 'Test algorithm',
-                     'algorithm_type': Algorithm_type.objects.get(type_name='VQE').pk,
-                     'molecule': Molecule.objects.get(name='Water').pk,
-                     'algorithm': 'exec()',
-                     'article_link': 'https://kela.fi',
-                     'github_link': 'https://github.com'}
-        self.c.post('/newAlgorithm/',
-                    {'user': user_id, 'name': 'a1', 'public': 'on', **base_algorithm_data})
-        self.c.post('/newAlgorithm/',
-                    {'user': user_id, 'name': 'a2', 'public': 'off', **base_algorithm_data})
-        self.c.post('/newAlgorithm/',
-                    {'user': other_user_id, 'name': 'a3', 'public': 'on', **base_algorithm_data})
-        self.c.post('/newAlgorithm/',
-                    {'user': other_user_id, 'name': 'a4', 'public': 'off', **base_algorithm_data})
-        self.my_algorithm = Algorithm.objects.get(name="a1")
-        self.my_private_algorithm = Algorithm.objects.get(name="a2")
-        self.other_user_private_algorithm = Algorithm.objects.get(name="a3")
-        self.other_user_public_algorithm = Algorithm.objects.get(name="a4")
+        self.client.login(username="testuser", password="secret")
 
-    def random_parameters_are_handled_correctly(self):
+    def test_random_parameters_are_handled_correctly(self):
         response = self.client.get("/compare/a/exec()")
         self.assertRedirects(response, reverse("home"), status_code=302, target_status_code=200)
 
-    def cannot_compare_nonexistent_algorithms(self):
+    def test_cannot_compare_nonexistent_algorithms(self):
         response = self.client.get("/compare/10/11")
         self.assertRedirects(response, reverse("home"), status_code=302, target_status_code=200)
 
-    def cannot_compare_algorithm_to_itself(self):
+    def test_cannot_compare_algorithm_to_itself(self):
         response = self.client.get(
             f"/compare/{self.my_algorithm.pk}/{self.my_algorithm.pk}"
         )
         self.assertRedirects(response, reverse("home"), status_code=302, target_status_code=200)
 
-    def can_compare_to_private_by_current_user(self):
+    def test_can_compare_to_private_by_current_user(self):
         response = self.client.get(
             f"/compare/{self.my_algorithm.pk}/{self.my_private_algorithm.pk}"
         )
         self.assertEqual(response.status_code, 200)
 
-    def cannot_compare_to_private_algorithm_by_other_user(self):
+    def test_cannot_compare_to_private_algorithm_by_other_user(self):
         response = self.client.get(
             f"/compare/{self.my_algorithm.pk}/{self.other_user_private_algorithm.pk}"
         )
         self.assertEqual(response.status_code, 403)
 
-    def can_compare_to_public_algorithm_by_other_user(self):
+    def test_can_compare_to_public_algorithm_by_other_user(self):
         response = self.client.get(
             f"/compare/{self.my_algorithm.pk}/{self.other_user_public_algorithm.pk}"
         )
