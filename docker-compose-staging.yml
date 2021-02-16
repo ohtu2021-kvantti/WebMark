@@ -21,7 +21,7 @@ services:
       - DATABASE_PORT=5432
       - ROOT_DIR=quantmark/
     command: sh -c "
-      python manage.py makemigrations && 
+      python manage.py makemigrations WebCLI && 
       python manage.py migrate && 
       gunicorn WebMark.wsgi -b 0.0.0.0:8000"
     container_name: quantmark_web
