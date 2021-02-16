@@ -1,6 +1,7 @@
 from WebMark.settings import ALGORITHMS_PER_PAGE
 from django.shortcuts import render, redirect
 # from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
@@ -83,11 +84,14 @@ class MetricsForm(Form):
     accuracy = FloatField(required=False)
 
 
+@login_required
 def new_algorithm(request):
     form = AlgorithmForm(initial={'timestamp': timezone.now(), 'user': request.user})
     if request.method == "POST":
-        a = AlgorithmForm(request.POST)
-        a.save()
+        algorithm_form = AlgorithmForm(request.POST)
+        new_algorithm = algorithm_form.save(commit=False)
+        new_algorithm.user = request.user
+        new_algorithm.save()
     data = {'algorithms': Algorithm.objects.filter(user=request.user), 'form': form}
     return render(request, 'WebCLI/newAlgorithm.html', data)
 
@@ -109,6 +113,7 @@ class MoleculeForm(ModelForm):
         }
 
 
+@login_required
 def new_molecule(request):
     form = MoleculeForm()
     if request.method == "POST":
@@ -127,6 +132,7 @@ class AlgorithmTypeForm(ModelForm):
         }
 
 
+@login_required
 def new_algorithm_type(request):
     form = AlgorithmTypeForm()
     if request.method == "POST":
@@ -136,6 +142,7 @@ def new_algorithm_type(request):
     return render(request, 'WebCLI/newAlgorithmType.html', data)
 
 
+@login_required
 def add_metrics(request):
     a = Algorithm.objects.get(pk=request.GET.get("index"))
     if request.user.pk != a.user.pk:
