@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from .db import new_algorithm, new_algorithm_type, new_molecule, save_metrics
 from .db import get_algorithm_types, get_molecules, get_public_algorithms
 from django.urls import reverse
+from django.utils import timezone
+from WebCLI.models import Algorithm, Algorithm_type, Molecule
 
 
 class DatabaseTest(TestCase):
@@ -79,20 +81,34 @@ class AlgorithmComparisonTest(TestCase):
     def setUpTestData(cls):
         user = User.objects.create_user("testuser", "test@example.com", "secret")
         other_user = User.objects.create_user("otheruser", "other@example.com", "secret")
-        algorithm_type = new_algorithm_type("VQE")
-        molecule = new_molecule("water", "H2O")
-        cls.my_algorithm = new_algorithm(
-            user, "my algo", algorithm_type, "execute()", molecule, public=True
+
+        algorithm_type = Algorithm_type.objects.create(type_name="VQE")
+        algorithm_type.save()
+
+        molecule = Molecule.objects.create(name="water", structure="H2O")
+        molecule.save()
+
+        cls.my_algorithm = Algorithm.objects.create(
+            user=user, name="my public algorithm", timestamp=timezone.now(),
+            algorithm_type=algorithm_type, algorithm="execute()", molecule=molecule, public=True
         )
-        cls.my_private_algorithm = new_algorithm(
-            user, "my private algo", algorithm_type, "execute()", molecule, public=False
+        cls.my_private_algorithm = Algorithm.objects.create(
+            user=user, name="my private algorithm", timestamp=timezone.now(),
+            algorithm_type=algorithm_type, algorithm="execute()", molecule=molecule, public=False
         )
-        cls.other_user_private_algorithm = new_algorithm(
-            other_user, "private algo", algorithm_type, "exec()", molecule, public=False
+        cls.other_user_public_algorithm = Algorithm.objects.create(
+            user=other_user, name="other user public algorithm", timestamp=timezone.now(),
+            algorithm_type=algorithm_type, algorithm="execute()", molecule=molecule, public=True
         )
-        cls.other_user_public_algorithm = new_algorithm(
-            other_user, "public algo", algorithm_type, "exec()", molecule, public=True
+        cls.other_user_private_algorithm = Algorithm.objects.create(
+            user=other_user, name="other user private algorithm", timestamp=timezone.now(),
+            algorithm_type=algorithm_type, algorithm="execute()", molecule=molecule, public=False
         )
+
+        cls.my_algorithm.save()
+        cls.my_private_algorithm.save()
+        cls.other_user_private_algorithm.save()
+        cls.other_user_public_algorithm.save()
 
     def setUp(self):
         self.client.login(username="testuser", password="secret")
