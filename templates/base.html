@@ -17,6 +17,7 @@
         <a class="navbar-brand" href="{% url 'home' %}">Quantmark</a>
         {% if user.is_authenticated %}
             <div class="nav navbar-nav mr-auto">
+                <a class="nav-item nav-link" href="{% url 'myAlgorithms' %}">My algorithms</a>
                 <a class="nav-item nav-link" href="{% url 'newAlgorithm' %}">Add an algorithm</a>
                 <a class="nav-item nav-link" href="{% url 'newMolecule' %}">Add a molecule</a>
                 <a class="nav-item nav-link" href="{% url 'newAlgorithmType' %}">Add a new algorithm type</a>

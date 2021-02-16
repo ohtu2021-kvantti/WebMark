@@ -1,6 +1,7 @@
 from WebMark.settings import ALGORITHMS_PER_PAGE
 from django.shortcuts import render, redirect
 # from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
@@ -10,6 +11,7 @@ from django.forms import ModelForm, Textarea, HiddenInput, IntegerField, FloatFi
 from django_tables2.columns.base import Column
 from .models import Algorithm, Molecule, Algorithm_type
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django_filters import AllValuesFilter, FilterSet
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin, Table, DateTimeColumn
@@ -56,6 +58,16 @@ class AlgorithmListView(SingleTableMixin, FilterView):
     queryset = Algorithm.objects.filter(public=True).order_by("timestamp")
     filterset_class = AlgorithmFilter
     table_class = AlgorithmTable
+
+
+class MyAlgorithmListView(AlgorithmListView):
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        return super(MyAlgorithmListView, self).get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return Algorithm.objects.filter(user=self.request.user).order_by("timestamp")
 
 
 class SignUpView(generic.CreateView):
