@@ -7,6 +7,7 @@ from django.utils.html import format_html
 from django.views import generic
 from django.forms import ModelForm, Textarea, HiddenInput, IntegerField, FloatField, Form, CharField
 from django_tables2.columns.base import Column
+from django_tables2.columns import TemplateColumn
 from .models import Algorithm, Molecule, Algorithm_type, Algorithm_version
 from django.utils import timezone
 from django_filters import AllValuesFilter, FilterSet
@@ -33,12 +34,17 @@ class AlgorithmTable(Table):
     name = Column(linkify=True)
     github_link = Column(verbose_name='Github')
     article_link = Column(verbose_name='Article')
+    pk = TemplateColumn(verbose_name='Compare', 
+    template_name="WebCLI/compare.html", orderable=False)
 #    timestamp = DateTimeColumn(format='d.m.Y', verbose_name='Date')
 
     class Meta:
         model = Algorithm
         exclude = ('id', 'public')
         attrs = {'class': 'table table-hover table-sm'}
+        row_attrs = {
+            "id": lambda record : (record.pk)
+        }
 
     def render_github_link(self, value):
         return format_html(f'<a href={value}>Github</a>')
@@ -46,6 +52,11 @@ class AlgorithmTable(Table):
     def render_article_link(self, value):
         return format_html(f'<a href={value}>Article</a>')
 
+    def render_compareTo(self, value):
+        
+        return format_html(f'<input type="checkbox">')
+    
+    
 
 class AlgorithmListView(SingleTableMixin, FilterView):
     model = Algorithm

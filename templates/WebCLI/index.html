@@ -8,11 +8,32 @@
 {% block content %}
 
 {% if filter %}
-    <form action="" method="get" name="filterForm" class="form form-inline"
-          onchange="document.getElementsByName('filterForm')[0].submit();">
-        {% bootstrap_form filter.form layout='inline' %}
-    </form>
+<form action="" method="get" name="filterForm" class="form form-inline"
+    onchange="document.getElementsByName('filterForm')[0].submit();">
+    {% bootstrap_form filter.form layout='inline' %}
+</form>
 {% endif %}
-{% render_table table 'django_tables2/bootstrap4.html' %}
 
+{% render_table table 'django_tables2/bootstrap4.html' %}
+<a id="compare" href="/compare/" class="btn btn-primary">Compare</a>
+<script>
+    var ind;
+    var elements = document.getElementsByTagName("TR");
+    var first = 0;
+    var second = 0;
+    for (ind = 0; ind < elements.length; ind++) {
+        elements[ind].addEventListener("click", function () {
+            if (second == 0 && first != 0) {
+                second = this.id;
+            }
+            if (first == 0) {
+                first = this.id;
+            }
+            var btn = document.getElementById("compare");
+            btn.href = "/compare/" + first + "/" + second;
+        }, { passive: true });
+    }
+
+
+</script>
 {% endblock %}
