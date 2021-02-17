@@ -59,7 +59,12 @@ jobs:
       run: flake8 . --show-source --statistics
     - name: Test with Django
       run: |
-        python manage.py test
+        coverage erase
+        coverage run manage.py test
+    - name: "Upload coverage to Codecov"
+      uses: codecov/codecov-action@v1
+      with:
+        fail_ci_if_error: true
     - name: Set up QEMU
       if: ${{ github.event_name == 'push' && matrix.python-version == '3.9' }}
       uses: docker/setup-qemu-action@v1
