@@ -11,24 +11,53 @@ class WebFunctionTestLogin(TestCase):
             {'username': 'testuser1', 'password1': 'sekred010', 'password2': 'sekred010'}
         )
         self.assertEqual(response.status_code, 302)
+        response = c.login(username='testuser1', password='sekred010')
+        self.assertEqual(response, True)
 
     def test_login(self):
         c = Client()
-        response = c.post(
+        c.post(
             '/signup/',
             {'username': 'testuser2', 'password1': 'sekred010', 'password2': 'sekred010'}
         )
-        response = c.login(username='testuser2', password='sekred010')
-        self.assertEqual(response, True)
+        c.post(
+            '/accounts/login/',
+            {'username': 'testuser2', 'password': 'sekred010'})
+        response = str(c.get('/').content)
+        self.assertFalse(response.find('logged in - testuser2') < 0)
+
+    def test_logout(self):
+        c = Client()
+        c.post(
+            '/signup/',
+            {'username': 'testuser4', 'password1': 'sekred010', 'password2': 'sekred010'}
+        )
+        c.post(
+            '/accounts/login/',
+            {'username': 'testuser4', 'password': 'sekred010'})
+        c.get('/accounts/logout/')
+        response = str(c.get('/').content)
+        self.assertTrue(response.find('logged in - testuser4') < 0)
 
 
-class WebFunctionTestAddData(TestCase):
+class WebFunctionTestAddDataAsUser(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        c = Client()
+        c.post('/signup/',
+               {'username': 'testuser3', 'password1': 'sekred010', 'password2': 'sekred010'})
+
     def setUp(self):
         self.c = Client()
-        self.c.post('/signup/',
-                    {'username': 'testuser3', 'password1': 'sekred010', 'password2': 'sekred010'})
         self.c.post('/accounts/login/',
                     {'username': 'testuser3', 'password': 'sekred010'})
+
+    def tearDown(self):
+        self.c.get('/accounts/logout/')
+
+    @classmethod
+    def tearDownClass(cls):
+        pass
 
     def test_add_molecule(self):
         self.c.post('/newMolecule/',
