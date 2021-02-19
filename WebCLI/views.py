@@ -211,19 +211,23 @@ def compare_algorithms(request, a1_id, a2_id):
         return redirect("home")
 
     queryset = Algorithm.objects.filter(pk=a1_id) | Algorithm.objects.filter(pk=a2_id)
-
+    queryset2 = Algorithm_version.objects.filter(pk=a1_id) | Algorithm_version.objects.filter(pk=a2_id)
     if len(queryset) != 2:  # check that we have found two unique algorithms
         return redirect("home")
 
     # dummy data
     graph_data = [[0, 0, 0], [1, 2, 4], [2, 4, 8], [3, 6, 10], [4, 6, 10]]
-
+    # simple barchart data
+    (av1, av2) = queryset2
     (a1, a2) = queryset
+    algo_data = [["Algorithm comparison", a1.name, a2.name], ["Iterations", av1.iterations, av2.iterations], 
+    ["Measurements", av1.measurements, av2.measurements], ["Circuit depth", av1.circuit_depth, av2.circuit_depth], ["Accuracy", av1.accuracy, av2.accuracy]]
+    
     if not a1.public and request.user.pk != a1.user.pk:
         raise PermissionDenied
     if not a2.public and request.user.pk != a2.user.pk:
         raise PermissionDenied
 
     return render(request, 'WebCLI/compareAlgorithms.html',
-                  {'a1': a1, 'a2': a2, 'graph_data': graph_data})
+                  {'a1': a1, 'av1': av1, 'a2': a2, 'av2': av2, 'graph_data': graph_data, 'algo_data': algo_data})
     
