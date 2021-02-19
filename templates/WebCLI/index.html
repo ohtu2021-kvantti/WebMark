@@ -21,10 +21,16 @@
     var elements = document.getElementsByTagName("TR");
     var first = 0;
     var second = 0;
+    var checked = 0;
+    // This need a system for determining whether both have been selected
+    // If so, the unchecking must be done in a way that does not
+    // give false input
     for (ind = 0; ind < elements.length; ind++) {
         elements[ind].addEventListener("click", function () {
+
             if (second == 0 && first != 0) {
                 second = this.id;
+                checked = 1;
             }
             if (first == 0) {
                 first = this.id;
