@@ -112,3 +112,16 @@ class WebFunctionTestAddDataAsUser(TestCase):
         response = c.get('/algorithm/?index=1')
         self.assertEqual(response.status_code, 403)
 """
+
+
+class WebFunctionTestMyAlgorithmsView(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create_user("testuser", "test@example.com", "secret")
+
+    def setUp(self):
+        self.client.login(username="testuser", password="secret")
+
+    def test_my_algorithms_view(self):
+        response = self.client.get("/myAlgorithms/")
+        self.assertEqual(response.status_code, 200)
