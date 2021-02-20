@@ -66,7 +66,7 @@ class MyAlgorithmListView(AlgorithmListView):
         return super(MyAlgorithmListView, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
-        return Algorithm.objects.filter(user=self.request.user).order_by("timestamp")
+        return Algorithm.objects.filter(user=self.request.user).order_by("name")
 
 
 class SignUpView(generic.CreateView):
