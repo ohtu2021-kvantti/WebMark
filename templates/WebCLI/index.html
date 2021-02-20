@@ -16,30 +16,56 @@
 
 {% render_table table 'django_tables2/bootstrap4.html' %}
 <a id="compare" href="/" class="btn btn-primary">Compare</a>
+<button class="btn btn-danger" id="clearSelections" onclick="clearSelectionsAndReload()">
+    Clear selections
+</button>
 <script>
     var ind;
     var elements = document.getElementsByTagName("TR");
-    var first = 0;
-    var second = 0;
-    var checked = 0;
+    var firstStr = window.sessionStorage.getItem("first") || "0";
+    var secondStr = window.sessionStorage.getItem("second") || "0";
+    var first = JSON.parse(firstStr);
+    var second = JSON.parse(secondStr);
+    var checked = [];
+    if (first !== 0) {
+        checked.push(first);
+    }
+    if (second !== 0) {
+        checked.push(second);
+    }
+    var btn = document.getElementById("compare");
+    btn.href = "/compare/" + first + "/" + second;
     // This need a system for determining whether both have been selected
     // If so, the unchecking must be done in a way that does not
     // give false input
     for (ind = 0; ind < elements.length; ind++) {
+        if (checked.indexOf(elements[ind].id) !== -1) {
+            document.getElementById("checkbox" + elements[ind].id).checked = true;
+        }
         elements[ind].addEventListener("click", function () {
 
-            if (second == 0 && first != 0) {
+            if (second === 0 && first !== 0) {
                 second = this.id;
-                checked = 1;
+                window.sessionStorage.setItem("second", JSON.stringify(second));
+                checked.push(second)
             }
-            if (first == 0) {
+            if (first === 0) {
                 first = this.id;
+                window.sessionStorage.setItem("first", JSON.stringify(first));
+                checked.push(first)
             }
             var btn = document.getElementById("compare");
             btn.href = "/compare/" + first + "/" + second;
         }, { passive: true });
     }
 
-
+    function clearSelectionsAndReload() {
+        first = 0;
+        second = 0;
+        checked = [];
+        window.sessionStorage.removeItem("first");
+        window.sessionStorage.removeItem("second");
+        window.location.reload();
+    }
 </script>
 {% endblock %}

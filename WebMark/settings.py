@@ -128,7 +128,7 @@ LOGOUT_REDIRECT_URL = 'home'
 
 # Custom settings
 
-ALGORITHMS_PER_PAGE = 20
+ALGORITHMS_PER_PAGE = 3
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
