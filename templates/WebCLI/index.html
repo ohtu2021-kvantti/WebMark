@@ -21,7 +21,7 @@
 </button>
 <script>
     var ind;
-    var elements = document.getElementsByTagName("TR");
+    var elements = document.getElementsByName("checkbox");
     var firstStr = window.sessionStorage.getItem("first") || "0";
     var secondStr = window.sessionStorage.getItem("second") || "0";
     var first = JSON.parse(firstStr);
@@ -40,10 +40,9 @@
 
         // check checkboxes again after a reload
         if (checked.indexOf(elements[ind].id) !== -1) {
-            var checkbox = document.getElementById("checkbox" + elements[ind].id);
-            checkbox.checked = true;
+            elements[ind].checked = true;
         }
-        elements[ind].addEventListener("click", function () {
+        elements[ind].onclick = function () {
             if (first === this.id) {
                 first = 0;
                 window.sessionStorage.removeItem("first");
@@ -65,7 +64,7 @@
             }
             var btn = document.getElementById("compare");
             btn.href = "/compare/" + first + "/" + second;
-        }, { passive: false }); // needs to be 'false' because of preventDefault()
+        }, { passive: true };
     }
 
     function clearSelectionsAndReload() {
