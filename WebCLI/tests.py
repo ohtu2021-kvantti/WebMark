@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from .models import Molecule, Algorithm_type, Algorithm, Algorithm_version
-
+import datetime
 
 class WebFunctionTestLogin(TestCase):
     def test_signup(self):
@@ -125,3 +125,77 @@ class WebFunctionTestMyAlgorithmsView(TestCase):
     def test_my_algorithms_view(self):
         response = self.client.get("/myAlgorithms/")
         self.assertEqual(response.status_code, 200)
+
+class WebFunctionTestViewData(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        u1 = User.objects.create_user('Bob', 'bob@example.com', 'bobpassword')
+        u1.save()
+        u2 = User.objects.create_user('Alice', 'alice@example.com', 'alicepassword')
+        u2.save()
+        m1 = Molecule(name='molecule1', structure='structure1')
+        m1.save()
+        m2 = Molecule(name='molecule2', structure='structure2')
+        m2.save()
+        m3 = Molecule(name='molecule3', structure='structure3')
+        m3.save()
+        at1 = Algorithm_type(type_name='type1')
+        at1.save()
+        at2 = Algorithm_type(type_name='type2')
+        at2.save()
+        at3 = Algorithm_type(type_name='type3')
+        at3.save()
+        a1 = Algorithm(name='Algo1', public=True, molecule=m1, algorithm_type=at1, user=u1, article_link='https://alink1.com', github_link='https://gtlink1.com')
+        a1.save()
+        a2 = Algorithm(name='Algo2', public=False, molecule=m1, algorithm_type=at2, user=u1, article_link='https://alink2.com', github_link='https://gtlink2.com')
+        a2.save()
+        a3 = Algorithm(name='Algo3', public=True, molecule=m2, algorithm_type=at1, user=u1, article_link='https://alink4.com', github_link='https://gtlink3.com')
+        a3.save()
+        a4 = Algorithm(name='Algo4', public=True, molecule=m3, algorithm_type=at2, user=u2, article_link='https://alink4.com', github_link='https://gtlink4.com')
+        a4.save()
+        a5 = Algorithm(name='Algo5', public=False, molecule=m2, algorithm_type=at3, user=u2, article_link='https://alink5.com', github_link='https://gtlink5.com')
+        a5.save()
+        a6 = Algorithm(name='Algo6', public=False, molecule=m1, algorithm_type=at2, user=u2, article_link='https://alink6.com', github_link='https://gtlink2.com')
+        a6.save()
+        av = Algorithm_version(algorithm_id=a1, timestamp=datetime.datetime(2021, 2, 10, 10, 0), algorithm='algorithm1\nversion1\n')
+        av.save()
+        av = Algorithm_version(algorithm_id=a1, timestamp=datetime.datetime(2021, 2, 10, 11, 0), algorithm='algorithm1\nversion2\n')
+        av.save()
+        av = Algorithm_version(algorithm_id=a2, timestamp=datetime.datetime(2021, 2, 11, 10, 0), algorithm='algorithm2\nversion1\n')
+        av.save()
+        av = Algorithm_version(algorithm_id=a2, timestamp=datetime.datetime(2021, 2, 11, 11, 0), algorithm='algorithm2\nversion2\n')
+        av.save()
+        av = Algorithm_version(algorithm_id=a3, timestamp=datetime.datetime(2021, 2, 12, 10, 0), algorithm='algorithm3\nversion1\n')
+        av.save()
+        av = Algorithm_version(algorithm_id=a3, timestamp=datetime.datetime(2021, 2, 15, 11, 0), algorithm='algorithm3\nversion2\n')
+        av.save()
+        av = Algorithm_version(algorithm_id=a4, timestamp=datetime.datetime(2021, 2, 17, 10, 0), algorithm='algorithm4\nversion1\n')
+        av.save()
+        av = Algorithm_version(algorithm_id=a4, timestamp=datetime.datetime(2021, 2, 18, 11, 0), algorithm='algorithm4\nversion2\n')
+        av.save()
+        av = Algorithm_version(algorithm_id=a5, timestamp=datetime.datetime(2021, 2, 17, 18, 0), algorithm='algorithm5\nversion1\n')
+        av.save()
+        av = Algorithm_version(algorithm_id=a5, timestamp=datetime.datetime(2021, 2, 18, 12, 0), algorithm='algorithm5\nversion2\n')
+        av.save()
+        av = Algorithm_version(algorithm_id=a6, timestamp=datetime.datetime(2021, 2, 17, 9, 0), algorithm='algorithm6\nversion1\n')
+        av.save()
+        av = Algorithm_version(algorithm_id=a6, timestamp=datetime.datetime(2021, 2, 18, 15, 0), algorithm='algorithm6\nversion2\n')
+        av.save()
+
+    def setUp(self):
+        self.client.login(username="Bob", password="bobpassword")
+
+    def test_my_algorithms_view_name(self):
+        response = str(self.client.get("/myAlgorithms/").content)
+        self.assertFalse(response.find('Algo1') < 0)
+        self.assertFalse(response.find('Algo2') < 0)
+        self.assertFalse(response.find('Algo3') < 0)
+        self.assertTrue(response.find('Algo4') < 0)
+        self.assertTrue(response.find('Algo5') < 0)
+        self.assertTrue(response.find('Algo6') < 0)
+
+    def test_my_algorithms_view_other_information(self):
+        self.assertFalse(response.find('Algo6') < 0)
+
+
