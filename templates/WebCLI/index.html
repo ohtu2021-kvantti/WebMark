@@ -26,6 +26,7 @@
     var secondStr = window.sessionStorage.getItem("second") || "0";
     var first = JSON.parse(firstStr);
     var second = JSON.parse(secondStr);
+    console.log(first, second);
     var checked = [];
     if (first !== 0) {
         checked.push(first);
@@ -39,24 +40,25 @@
     for (ind = 0; ind < elements.length; ind++) {
 
         // check checkboxes again after a reload
-        if (checked.indexOf(elements[ind].id) !== -1) {
+        if (checked.indexOf(elements[ind].getAttribute("algorithm")) !== -1) {
             elements[ind].checked = true;
         }
         elements[ind].onclick = function () {
-            if (first === this.id) {
+            var algorithm_id = this.getAttribute('algorithm');
+            if (first === algorithm_id) {
                 first = 0;
                 window.sessionStorage.removeItem("first");
-                checked.splice(checked.indexOf(this.id), 1);
-            } else if (second === this.id) {
+                checked.splice(checked.indexOf(algorithm_id), 1);
+            } else if (second === algorithm_id) {
                 second = 0;
                 window.sessionStorage.removeItem("second");
-                checked.splice(checked.indexOf(this.id), 1);
+                checked.splice(checked.indexOf(algorithm_id), 1);
             } else if (second === 0) {
-                second = this.id;
+                second = algorithm_id;
                 window.sessionStorage.setItem("second", JSON.stringify(second));
                 checked.push(second);
             } else if (first === 0) {
-                first = this.id;
+                first = algorithm_id;
                 window.sessionStorage.setItem("first", JSON.stringify(first));
                 checked.push(first);
             } else {
