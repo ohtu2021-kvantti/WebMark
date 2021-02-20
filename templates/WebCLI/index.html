@@ -15,10 +15,12 @@
 {% endif %}
 
 {% render_table table 'django_tables2/bootstrap4.html' %}
-<a id="compare" href="/" class="btn btn-primary">Compare</a>
-<button class="btn btn-danger" id="clearSelections" onclick="clearSelectionsAndReload()">
-    Clear selections
-</button>
+<div class="d-flex flex-row">
+    <a id="compare" href="/" class="btn btn-primary mr-2">Compare</a>
+    <button class="btn btn-danger" id="clearSelections" onclick="clearSelectionsAndReload()">
+        Clear selections
+    </button>
+</div>
 <script>
     var ind;
     var elements = document.getElementsByName("checkbox");
