@@ -55,6 +55,13 @@ Now you can run the development server with command:
 python manage.py runserver
 ```
 
+If you get an error message when running the server, for example "psycopg2.errors.UndefinedTable: relation "WebCLI_algorithm" does not exist" you can try making migrations
+```
+python manage.py makemigrations WebCLI
+python manage.py migrate
+```
+And then run the development server again.
+
 ### Setting up the development environment using Docker (alternative)
 
 Install [Docker](https://docs.docker.com/engine/install/) according to the instructions.
