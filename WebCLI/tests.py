@@ -201,4 +201,62 @@ class WebFunctionTestViewData(TestCase):
         self.assertFalse(response.find('https://alink1.com') < 0)
         self.assertFalse(response.find('https://gtlink1.com') < 0)
 
+    def test_index_view(self):
+        response = str(self.client.get("/").content)
+        self.assertFalse(response.find('Algo1') < 0)
+        self.assertTrue(response.find('Algo2') < 0)
+        self.assertFalse(response.find('Algo4') < 0)
+        self.assertTrue(response.find('Algo5') < 0)
+
+    def test_add_metrics(self):
+        a = Algorithm.objects.get(name='Algo1')
+        v = Algorithm_version.objects.filter(algorithm_id=a)[0]
+        self.client.post('/addMetrics/?index=' + str(v.pk),
+               {'iterations': '1', 'measurements': '2', 'circuit_depth': '4', 'accuracy': '5.2'})
+        v2 = Algorithm_version.objects.get(pk=v.pk)
+        self.assertEqual(v2.iterations, 1)
+        self.assertEqual(v2.measurements, 2)
+        self.assertEqual(v2.circuit_depth, 4)
+        self.assertEqual(v2.accuracy, 5.2)
+
+    def test_add_private_metrics(self):
+        a = Algorithm.objects.get(name='Algo2')
+        v = Algorithm_version.objects.filter(algorithm_id=a)[0]
+        self.client.post('/addMetrics/?index=' + str(v.pk),
+               {'iterations': '1', 'measurements': '2', 'circuit_depth': '4', 'accuracy': '5.2'})
+        v2 = Algorithm_version.objects.get(pk=v.pk)
+        self.assertEqual(v2.iterations, 1)
+        self.assertEqual(v2.measurements, 2)
+        self.assertEqual(v2.circuit_depth, 4)
+        self.assertEqual(v2.accuracy, 5.2)
+
+    def test_add_other_users_public_metrics(self):
+        a = Algorithm.objects.get(name='Algo4')
+        v = Algorithm_version.objects.filter(algorithm_id=a)[0]
+        self.client.post('/addMetrics/?index=' + str(v.pk),
+               {'iterations': '1', 'measurements': '2', 'circuit_depth': '4', 'accuracy': '5.2'})
+        v2 = Algorithm_version.objects.get(pk=v.pk)
+        self.assertEqual(v2.iterations, None)
+
+    def test_add_other_users_private_metrics(self):
+        a = Algorithm.objects.get(name='Algo5')
+        v = Algorithm_version.objects.filter(algorithm_id=a)[0]
+        self.client.post('/addMetrics/?index=' + str(v.pk),
+               {'iterations': '1', 'measurements': '2', 'circuit_depth': '4', 'accuracy': '5.2'})
+        v2 = Algorithm_version.objects.get(pk=v.pk)
+        self.assertEqual(v2.iterations, None)
+
+    def test_add_one_metric(self):
+        a = Algorithm.objects.get(name='Algo3')
+        v = Algorithm_version.objects.filter(algorithm_id=a)[0]
+        self.client.post('/addMetrics/?index=' + str(v.pk),
+               {'iterations': '1', 'measurements': '', 'circuit_depth': '', 'accuracy': ''})
+        v2 = Algorithm_version.objects.get(pk=v.pk)
+        self.assertEqual(v2.iterations, 1)
+        self.assertEqual(v2.measurements, None)
+        self.assertEqual(v2.circuit_depth, None)
+        self.assertEqual(v2.accuracy, None)
+        
+
+
 
