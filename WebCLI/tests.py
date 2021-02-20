@@ -196,6 +196,9 @@ class WebFunctionTestViewData(TestCase):
         self.assertTrue(response.find('Algo6') < 0)
 
     def test_my_algorithms_view_other_information(self):
-        self.assertFalse(response.find('Algo6') < 0)
+        response = str(self.client.get("/myAlgorithms/").content)
+        self.assertFalse(response.find('molecule1') < 0)
+        self.assertFalse(response.find('https://alink1.com') < 0)
+        self.assertFalse(response.find('https://gtlink1.com') < 0)
 
 
