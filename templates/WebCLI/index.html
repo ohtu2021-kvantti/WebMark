@@ -35,28 +35,37 @@
     }
     var btn = document.getElementById("compare");
     btn.href = "/compare/" + first + "/" + second;
-    // This need a system for determining whether both have been selected
-    // If so, the unchecking must be done in a way that does not
-    // give false input
+
     for (ind = 0; ind < elements.length; ind++) {
+
+        // check checkboxes again after a reload
         if (checked.indexOf(elements[ind].id) !== -1) {
-            document.getElementById("checkbox" + elements[ind].id).checked = true;
+            var checkbox = document.getElementById("checkbox" + elements[ind].id);
+            checkbox.checked = true;
         }
         elements[ind].addEventListener("click", function () {
-
-            if (second === 0 && first !== 0) {
+            if (first === this.id) {
+                first = 0;
+                window.sessionStorage.removeItem("first");
+                checked.splice(checked.indexOf(this.id), 1);
+            } else if (second === this.id) {
+                second = 0;
+                window.sessionStorage.removeItem("second");
+                checked.splice(checked.indexOf(this.id), 1);
+            } else if (second === 0) {
                 second = this.id;
                 window.sessionStorage.setItem("second", JSON.stringify(second));
-                checked.push(second)
-            }
-            if (first === 0) {
+                checked.push(second);
+            } else if (first === 0) {
                 first = this.id;
                 window.sessionStorage.setItem("first", JSON.stringify(first));
-                checked.push(first)
+                checked.push(first);
+            } else {
+                event.preventDefault(); // TODO: give better feedback than a press doing nothing
             }
             var btn = document.getElementById("compare");
             btn.href = "/compare/" + first + "/" + second;
-        }, { passive: true });
+        }, { passive: false }); // needs to be 'false' because of preventDefault()
     }
 
     function clearSelectionsAndReload() {
