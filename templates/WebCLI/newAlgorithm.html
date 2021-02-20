@@ -12,7 +12,8 @@
     <h2>New algorithm</h2>
     <form method="post">
         {% csrf_token %}
-        {% bootstrap_form form %}
+        {% bootstrap_form aform %}
+        {% bootstrap_form vform %}
         {% buttons %}
             <div class="text-center">
                 <button class="btn btn-primary" type="submit">Submit</button>
