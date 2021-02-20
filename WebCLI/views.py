@@ -54,9 +54,6 @@ class AlgorithmTable(Table):
     def render_article_link(self, value):
         return format_html(f'<a href={value}>Article</a>')
 
-    def render_compareTo(self, value):
-        return format_html('<input type="checkbox">')
-
 
 class AlgorithmListView(SingleTableMixin, FilterView):
     model = Algorithm
