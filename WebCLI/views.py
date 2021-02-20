@@ -1,6 +1,5 @@
 from WebMark.settings import ALGORITHMS_PER_PAGE
 from django.shortcuts import render, redirect
-# from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import PermissionDenied
@@ -76,7 +75,7 @@ class MyAlgorithmListView(AlgorithmListView):
         return super(MyAlgorithmListView, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
-        return Algorithm.objects.filter(user=self.request.user).order_by("timestamp")
+        return Algorithm.objects.filter(user=self.request.user).order_by("name")
 
 
 class SignUpView(generic.CreateView):
