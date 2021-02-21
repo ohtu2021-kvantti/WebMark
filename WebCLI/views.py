@@ -44,9 +44,6 @@ class AlgorithmTable(Table):
         model = Algorithm
         exclude = ('id', 'public')
         attrs = {'class': 'table table-hover table-sm'}
-        row_attrs = {
-            "id": lambda record: (record.pk)
-        }
 
     def render_github_link(self, value):
         return format_html(f'<a href={value}>Github</a>')

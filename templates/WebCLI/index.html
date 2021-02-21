@@ -70,7 +70,7 @@
             updateCheckboxStates();
         }, { passive: true };
     }
-    updateCheckboxStates(); // done here so checkboxes are checked again after a reload
+    updateCheckboxStates();
 
     function updateCheckboxStates() {
         if (checkboxesDisabled && checked.length !== 2) {
@@ -108,7 +108,7 @@
         var compareBtn = document.getElementById("compare");
 
         if (checked.length !== 2) {
-            compareBtn.href = ""; // disables a link
+            compareBtn.href = ""; // disables the link
             compareBtn.classList.add('disabled');
         } else {
             compareBtn.href = "/compare/" + first + "/" + second;
