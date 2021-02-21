@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Algorithm comparison{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-row flex-wrap justify-content-center">
+    <div class="p-4">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Algorithm comparison</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>name</th>
+                    <td>{{ a1.name }}</td>
+                    <td>{{ a2.name }}</td>
+                </tr>
+                <tr>
+                    <th>type</th>
+                    <td>{{ a1.algorithm_type.type_name }}</td>
+                    <td>{{ a2.algorithm_type.type_name }}</td>
+                </tr>
+                <tr>
+                    <th>author</th>
+                    <td>{{ a1.user.username }}</td>
+                    <td>{{ a2.user.username }}</td>
+                </tr>
+                <tr>
+                    <th>molecule</th>
+                    <td>{{ a1.molecule.name }}</td>
+                    <td>{{ a2.molecule.name }}</td>
+                </tr>
+                <tr>
+                    <th>iterations</th>
+                    <td>{{ av1.iterations }}</td>
+                    <td>{{ av2.iterations }}</td>
+                </tr>
+                <tr>
+                    <th>measurements</th>
+                    <td>{{ av1.measurements }}</td>
+                    <td>{{ av2.measurements }}</td>
+                </tr>
+                <tr>
+                    <th>circuit depth</th>
+                    <td>{{ av1.circuit_depth }}</td>
+                    <td>{{ av2.circuit_depth }}</td>
+                </tr>
+                <tr>
+                    <th>accuracy</th>
+                    <td>{{ av1.accuracy }}</td>
+                    <td>{{ av2.accuracy }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="chart_div" class="m-auto"></div>
+    <div id="columnchart_material" style="width: 800px; height: 500px;"></div>
+</div>
+
+
+<!-- parse template variables to JSON so they can be safely accessed in JS code -->
+{{ a1.name|json_script:"a1-name" }}
+{{ a2.name|json_script:"a2-name" }}
+{{ graph_data|json_script:"graph-data"}}
+{{ algo_data|json_script:"algo-data"}}
+
+
+<!-- TODO: move to its own file -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', { packages: ['bar', 'corechart', 'line'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var data = new google.visualization.DataTable();
+        var a1Name = JSON.parse(document.getElementById('a1-name').textContent);
+        var a2Name = JSON.parse(document.getElementById('a2-name').textContent);
+        var graphData = JSON.parse(document.getElementById('graph-data').textContent);
+        var algoData = JSON.parse(document.getElementById('algo-data').textContent);
+        var columnData = google.visualization.arrayToDataTable(algoData);
+        data.addColumn('number', 'X');
+        data.addColumn('number', a1Name);
+        data.addColumn('number', a2Name);
+        data.addRows(graphData);
+
+        var options = {
+            width: 600,
+            height: 480,
+            title: "NOTE: Graphs are a work-in-progress and currently show dummy data",
+            hAxis: {
+                title: 'Iterations'
+            },
+            vAxis: {
+                title: 'Accuracy'
+            }
+        };
+
+        var optionsColumn = {
+            chart: {
+                title: a1Name + " vs. " + a2Name,
+            }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        var chart2 = new google.charts.Bar(document.getElementById('columnchart_material'));
+        chart.draw(data, options);
+        chart2.draw(columnData, google.charts.Bar.convertOptions(options));
+    }
+</script>
+{% endblock %}
