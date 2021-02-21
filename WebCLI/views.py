@@ -1,4 +1,4 @@
-from WebMark.settings import ALGORITHMS_PER_PAGE
+from WebMark.settings import ALGORITHMS_PER_PAGE, ROOT_DIR
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
@@ -60,6 +60,11 @@ class AlgorithmListView(SingleTableMixin, FilterView):
     queryset = Algorithm.objects.filter(public=True).order_by("name")
     filterset_class = AlgorithmFilter
     table_class = AlgorithmTable
+
+    def get_context_data(self, **kwargs):
+        context = super(AlgorithmListView, self).get_context_data(**kwargs)
+        context['root_dir'] = ROOT_DIR
+        return context
 
 
 class MyAlgorithmListView(AlgorithmListView):

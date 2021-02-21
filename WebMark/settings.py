@@ -128,6 +128,8 @@ LOGOUT_REDIRECT_URL = 'home'
 
 # Custom settings
 
+ROOT_DIR = os.getenv("ROOT_DIR", '')
+
 ALGORITHMS_PER_PAGE = 20
 
 # Static files (CSS, JavaScript, Images)
