@@ -16,7 +16,7 @@
 
 {% render_table table 'django_tables2/bootstrap4.html' %}
 <div class="d-flex flex-row">
-    <a id="compare" href="/" class="btn btn-primary mr-2">Compare</a>
+    <a id="compare" href="" class="btn btn-primary mr-2">Compare</a>
     <button class="btn btn-danger" id="clearSelections" onclick="clearSelectionsAndReload()">
         Clear selections
     </button>
@@ -36,8 +36,7 @@
     if (second !== 0) {
         checked.push(second);
     }
-    var btn = document.getElementById("compare");
-    btn.href = "/compare/" + first + "/" + second;
+    updateButtonStates();
 
     for (ind = 0; ind < elements.length; ind++) {
 
@@ -66,9 +65,23 @@
             } else {
                 event.preventDefault(); // TODO: give better feedback than a press doing nothing
             }
-            var btn = document.getElementById("compare");
-            btn.href = "/compare/" + first + "/" + second;
+            updateButtonStates();
         }, { passive: true };
+    }
+
+    function updateButtonStates() {
+        var compareBtn = document.getElementById("compare");
+
+        if (checked.length !== 2) {
+            compareBtn.href = "";
+            compareBtn.classList.add('disabled');
+        } else {
+            compareBtn.href = "/compare/" + first + "/" + second;
+            compareBtn.classList.remove("disabled");
+        }
+
+        var clearBtn = document.getElementById("clearSelections");
+        clearBtn.disabled = checked.length === 0;
     }
 
     function clearSelectionsAndReload() {
