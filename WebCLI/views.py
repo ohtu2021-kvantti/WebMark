@@ -223,15 +223,17 @@ def compare_algorithms(request, a1_id, a2_id):
         return redirect("home")
 
     queryset = Algorithm.objects.filter(pk=a1_id) | Algorithm.objects.filter(pk=a2_id)
-    queryset2 = Algorithm_version.objects.filter(pk=a1_id) | \
-        Algorithm_version.objects.filter(pk=a2_id)
     if len(queryset) != 2:  # check that we have found two unique algorithms
         return redirect("home")
 
+    # simple barchart data
+    (av1, av2) = (
+        Algorithm_version.objects.filter(algorithm_id=queryset[0]).order_by('-timestamp')[0],
+        Algorithm_version.objects.filter(algorithm_id=queryset[1]).order_by('-timestamp')[0]
+    )
+
     # dummy data
     graph_data = [[0, 0, 0], [1, 2, 4], [2, 4, 8], [3, 6, 10], [4, 6, 10]]
-    # simple barchart data
-    (av1, av2) = queryset2
     (a1, a2) = queryset
     algo_data = [["Algorithm comparison", a1.name, a2.name],
                  ["Iterations", av1.iterations, av2.iterations],
