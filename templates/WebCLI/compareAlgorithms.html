@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% load version_selector_form %}
 {% block title %}Algorithm comparison{% endblock %}
 
 {% block content %}
@@ -8,7 +9,9 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Algorithm comparison</th>
+                    <th>Select version:</th>
+                    <td>{% version_selector_form 'selector1' 'item1_id' versions1 av1 %}</td>
+                    <td>{% version_selector_form 'selector2' 'item2_id' versions2 av2 %}</td>
                 </tr>
             </thead>
             <tbody>
