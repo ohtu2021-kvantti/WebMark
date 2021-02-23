@@ -9,7 +9,7 @@ updateButtonStates();
 initializeCheckboxes();
 updateCheckboxStates();
 
-const initializeCheckboxes = () => {
+function initializeCheckboxes() {
     for (const checkbox of checkboxes) {
 
         // check checkboxes again after a reload
