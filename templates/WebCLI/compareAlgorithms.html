@@ -69,47 +69,7 @@
 {{ graph_data|json_script:"graph-data"}}
 {{ algo_data|json_script:"algo-data"}}
 
+{% load manifest %}
+<script src="{% manifest 'compareAlgorithms.js' %}"></script>
 
-<!-- TODO: move to its own file -->
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
-    google.charts.load('current', { packages: ['bar', 'corechart', 'line'] });
-    google.charts.setOnLoadCallback(drawChart);
-
-    function drawChart() {
-        var data = new google.visualization.DataTable();
-        var a1Name = JSON.parse(document.getElementById('a1-name').textContent);
-        var a2Name = JSON.parse(document.getElementById('a2-name').textContent);
-        var graphData = JSON.parse(document.getElementById('graph-data').textContent);
-        var algoData = JSON.parse(document.getElementById('algo-data').textContent);
-        var columnData = google.visualization.arrayToDataTable(algoData);
-        data.addColumn('number', 'X');
-        data.addColumn('number', a1Name);
-        data.addColumn('number', a2Name);
-        data.addRows(graphData);
-
-        var options = {
-            width: 600,
-            height: 480,
-            title: "NOTE: Graphs are a work-in-progress and currently show dummy data",
-            hAxis: {
-                title: 'Iterations'
-            },
-            vAxis: {
-                title: 'Accuracy'
-            }
-        };
-
-        var optionsColumn = {
-            chart: {
-                title: a1Name + " vs. " + a2Name,
-            }
-        };
-
-        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-        var chart2 = new google.charts.Bar(document.getElementById('columnchart_material'));
-        chart.draw(data, options);
-        chart2.draw(columnData, google.charts.Bar.convertOptions(options));
-    }
-</script>
 {% endblock %}

@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'WebCLI',
     'bootstrap4',
-    'django_tables2'
+    'django_tables2',
+    'manifest_loader',
 ]
 
 MIDDLEWARE = [
@@ -132,12 +133,19 @@ ROOT_DIR = os.getenv("ROOT_DIR", '')
 
 ALGORITHMS_PER_PAGE = 20
 
+MANIFEST_LOADER = {
+    'output_dir': None,
+    'manifest_file': 'manifest.json',
+    'cache': False  # switch to True on production
+}
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
+    BASE_DIR / "build",
 ]
 
 
