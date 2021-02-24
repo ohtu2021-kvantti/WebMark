@@ -129,7 +129,10 @@ def algorithm_details_view(request, algorithm_id):
     selectedVersion = versions[0]
     if request.method == "POST":
         selectedVersion = Algorithm_version.objects.get(pk=request.POST.get('item_id'))
-    data = {'algorithm': algorithm, 'types': types, 'molecules': molecules, 'versions': versions, 'selectedVersion': selectedVersion}
+    data = {
+        'algorithm': algorithm, 'types': types, 'molecules': molecules,
+        'versions': versions, 'selectedVersion': selectedVersion
+    }
     return render(request, 'WebCLI/algorithm.html', data)
 
 
@@ -218,6 +221,7 @@ def add_version(request):
     data = {'algorithm': a, 'form': form}
     return render(request, 'WebCLI/addVersion.html', data)
 
+
 def update_algorithm(request):
     print(request.GET.get("item_id"))
     algorithm = Algorithm.objects.filter(pk=request.GET.get("item_id")).first()
@@ -225,7 +229,7 @@ def update_algorithm(request):
     molecules = Molecule.objects.all()
     new_type_name = ""
     name = ""
-    moleule = ""
+    molecule = ""
 
     if request.method == "POST":
         name = request.POST.get("name")
@@ -234,7 +238,7 @@ def update_algorithm(request):
         if not new_type_name and not name and not molecule:
             print("No input received!")
         else:
-            if  not new_type_name and not molecule:
+            if not new_type_name and not molecule:
                 algorithm.name = name
                 algorithm.save()
             if not name and not molecule:
@@ -247,8 +251,12 @@ def update_algorithm(request):
                 algorithm.save()
     versions = Algorithm_version.objects.filter(algorithm_id=algorithm).order_by('-timestamp')
     selectedVersion = versions[0]
-    data = {'algorithm': algorithm, 'types': types, 'molecules': molecules, 'versions': versions, 'selectedVersion': selectedVersion}
+    data = {
+        'algorithm': algorithm, 'types': types, 'molecules': molecules,
+        'versions': versions, 'selectedVersion': selectedVersion
+    }
     return render(request, 'WebCLI/algorithm.html', data)
+
 
 def compare_algorithms(request, a1_id, a2_id):
     if not a1_id.isnumeric() or not a2_id.isnumeric():  # ignore garbage values
