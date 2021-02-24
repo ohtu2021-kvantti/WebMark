@@ -18,6 +18,8 @@ services:
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
     command: sh -c "
+      apk add --no-cache npm &&
+      (npm run start &) &&
       python manage.py makemigrations && 
       python manage.py migrate && 
       python manage.py runserver 0.0.0.0:8000"
