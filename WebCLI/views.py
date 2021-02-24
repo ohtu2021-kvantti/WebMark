@@ -6,7 +6,8 @@ from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 from django.utils.html import format_html
 from django.views import generic
-from django.forms import ModelForm, Textarea, HiddenInput, IntegerField, FloatField, Form, CharField, ValidationError
+from django.forms import ModelForm, Textarea, HiddenInput, IntegerField, FloatField, Form
+from django.forms import CharField
 from django_tables2.columns.base import Column
 from django_tables2.columns import TemplateColumn
 from .models import Algorithm, Molecule, Algorithm_type, Algorithm_version
@@ -15,8 +16,7 @@ from django.utils.decorators import method_decorator
 from django_filters import AllValuesFilter, FilterSet
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin, Table
-from django.core.validators import MinValueValidator
-from django.utils.translation import gettext as _
+from django.http import HttpResponseBadRequest
 
 
 class AlgorithmFilter(FilterSet):
@@ -101,6 +101,7 @@ class MetricsForm(Form):
     circuit_depth = IntegerField(required=False, min_value=0)
     accuracy = FloatField(required=False, min_value=0.0)
 
+
 @login_required
 def new_algorithm(request):
     aform = AlgorithmForm(initial={'user': request.user})
@@ -179,50 +180,18 @@ def add_metrics(request):
 
     if request.method == "POST":
         form = MetricsForm(request.POST).data
-        if form['iterations']:
-            av.iterations = form['iterations']
-            if not av.iterations.isnumeric():
-                raise ValidationError(
-                    _('Metrics input needs to be numeric; "%(value)s" was not numeric'),
-                    params={'value': av.iterations},
-                )
-            elif int(av.iterations) < 0:
-                raise ValidationError('Input value must be positive')
-        else:
-            av.iterations = None
-        if form['measurements']:
-            av.measurements = form['measurements']
-            if not av.measurements.isnumeric():
-                raise ValidationError(
-                    _('Metrics input needs to be numeric; "%(value)s" was not numeric'),
-                    params={'value': av.measurements},
-                )
-            elif int(av.measurements) < 0:
-                raise ValidationError('Input value must be positive')
-        else:
-            av.measurements = None
-        if form['circuit_depth']:
-            av.circuit_depth = form['circuit_depth']
-            if not av.circuit_depth.isnumeric():
-                raise ValidationError(
-                    _('Metrics input needs to be numeric; "%(value)s" was not numeric'),
-                    params={'value': av.circuit_depth},
-                )
-            elif int(av.circuit_depth) < 0:
-                raise ValidationError('Input value must be positive')
-        else:
-            av.circuit_depth = None
-        if form['accuracy']:
-            av.accuracy = form['accuracy']
-            if not av.accuracy.isnumeric():
-                raise ValidationError(
-                    _('Metrics input needs to be numeric; "%(value)s" was not numeric'),
-                    params={'value': av.accuracy},
-                )
-            elif int(av.accuracy) < 0:
-                raise ValidationError('Input value must be positive')
-        else:
-            av.accuracy = None
+        for f in ['iterations', 'measurements', 'circuit_depth', 'accuracy']:
+            if form[f]:
+                data = form[f]
+                try:
+                    number = float(data)
+                    if number < 0:
+                        return HttpResponseBadRequest('Input value must be positive')
+                    setattr(av, f, data)
+                except ValueError:
+                    return HttpResponseBadRequest('Metrics input needs to be numeric')
+            else:
+                setattr(av, f, None)
         av.save()
         return redirect(av.algorithm_id)
     form = MetricsForm(initial={'iterations': av.iterations, 'measurements': av.measurements,
