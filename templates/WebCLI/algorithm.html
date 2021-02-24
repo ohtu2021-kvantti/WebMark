@@ -5,112 +5,142 @@
 {% block title %}Algorithm view{% endblock %}
 
 {% block content %}
-    <div class="p-12">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Algorithm details</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th>name</th>
-                    <td>{{ algorithm.name }}</td>
-                </tr>
-                <tr>
-                    <th>type</th>
-                    <td>{{ algorithm.algorithm_type.type_name }}</td>
-                </tr>
-                <tr>
-                    <th>author</th>
-                    <td>{{ algorithm.user.username }}</td>
-                </tr>
-                <tr>
-                    <th>public?</th>
-                    <td>{{ algorithm.public }}</td>
-                </tr>
-                <tr>
-                    <th>molecule</th>
-                    <td>{{algorithm.molecule.name }}</td>
-                </tr>
-                {% if algorithm.article_link %}
-                    <tr>
-                        <th>paper</th>
-                        <td><a href="{{ algorithm.article_link }}" target="_blank">{{ algorithm.article_link }}</a></td>
-                    </tr>
-                {% endif %}
-                {% if algorithm.github_link %}
-                    <tr>
-                        <th>Github</th>
-                        <td><a href="{{ algorithm.github_link }}" target="_blank">{{ algorithm.github_link }}</a></td>
-                    </tr>
-                {% endif %}
-            </tbody>
-        </table>
+<div class="p-12">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Algorithm details</th>
+                <th></th>
+                <th>Update</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>name</th>
+                <td>{{ algorithm.name }}</td>
+                <td>
+                    <form method="POST" id="updateForm" action="/updateAlgorithm/?item_id={{ algorithm.pk }}">
+                        {% csrf_token %}<input name="name" type="text"></input>
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <th>type</th>
+                <td>{{ algorithm.algorithm_type.type_name }}</td>
+                <td>
+                    <form method="POST" id="updateForm" action="/updateAlgorithm/?item_id={{ algorithm.pk }}">
+                        {% csrf_token %}
+                        <select name="type_name">
+                            <option value="" selected></option>
+                            {% for at in types %}
+                            <option value="{{ at.type_name }}">{{ at.type_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-primary mr-2">Send</button>
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <th>molecule</th>
+                <td>{{algorithm.molecule.name }}</td>
+                <td>
+                    <form method="POST" id="updateForm" action="/updateAlgorithm/?item_id={{ algorithm.pk }}">
+                        {% csrf_token %}<select name="molecule">
+                            <option value="" selected></option>
+                            {% for m in molecules %}
+                            <option value="{{ m.name }}">{{ m.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-primary mr-2">Send</button>
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <th>author</th>
+                <td>{{ algorithm.user.username }}</td>
+            </tr>
+            <tr>
+                <th>public?</th>
+                <td>{{ algorithm.public }}</td>
+            </tr>
+            {% if algorithm.article_link %}
+            <tr>
+                <th>paper</th>
+                <td><a href="{{ algorithm.article_link }}" target="_blank">{{ algorithm.article_link }}</a></td>
+            </tr>
+            {% endif %}
+            {% if algorithm.github_link %}
+            <tr>
+                <th>Github</th>
+                <td><a href="{{ algorithm.github_link }}" target="_blank">{{ algorithm.github_link }}</a></td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
 
 
-        {% timezone "Europe/Helsinki" %}
-        <form method="POST" name="selectVersion" onchange="document.getElementsByName('selectVersion')[0].submit();">
-            {% csrf_token %}
-            <select name="item_id">
+    {% timezone "Europe/Helsinki" %}
+    <form method="POST" name="selectVersion" onchange="document.getElementsByName('selectVersion')[0].submit();">
+        {% csrf_token %}
+        <select name="item_id">
             {% for v in versions %}
-                {% ifequal v selectedVersion %}
-                    <option value="{{ v.pk }}" selected="selected">{{ v.timestamp|date:'d.n.Y, G:i' }}</option>
-                {% else %}
-                    <option value="{{ v.pk }}">{{ v.timestamp|date:'d.n.Y, G:i' }}</option>
-                {% endifequal %}
+            {% ifequal v selectedVersion %}
+            <option value="{{ v.pk }}" selected="selected">{{ v.timestamp|date:'d.n.Y, G:i' }}</option>
+            {% else %}
+            <option value="{{ v.pk }}">{{ v.timestamp|date:'d.n.Y, G:i' }}</option>
+            {% endifequal %}
             {% endfor %}
-            </select>
-        </form>
-        {% endtimezone %}
+        </select>
+    </form>
+    {% endtimezone %}
 
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Metrics
-                        {% ifequal request.user.pk algorithm.user.pk %}
-                            - <a href="{% url 'add_metrics'%}?index={{selectedVersion.pk}}">add manually</a>
-                        {% endifequal %}
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th>iterations</th>
-                    <td>{{ selectedVersion.iterations }}</td>
-                </tr>
-                <tr>
-                    <th>measurements</th>
-                    <td>{{ selectedVersion.measurements }}</td>
-                </tr>
-                <tr>
-                    <th>circuit depth</th>
-                    <td>{{ selectedVersion.circuit_depth }}</td>
-                </tr>
-                <tr>
-                    <th>accuracy</th>
-                    <td>{{ selectedVersion.accuracy }}</td>
-                </tr>
-            </tbody>
-        </table>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Metrics
+                    {% ifequal request.user.pk algorithm.user.pk %}
+                    - <a href="{% url 'add_metrics'%}?index={{selectedVersion.pk}}">add manually</a>
+                    {% endifequal %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>iterations</th>
+                <td>{{ selectedVersion.iterations }}</td>
+            </tr>
+            <tr>
+                <th>measurements</th>
+                <td>{{ selectedVersion.measurements }}</td>
+            </tr>
+            <tr>
+                <th>circuit depth</th>
+                <td>{{ selectedVersion.circuit_depth }}</td>
+            </tr>
+            <tr>
+                <th>accuracy</th>
+                <td>{{ selectedVersion.accuracy }}</td>
+            </tr>
+        </tbody>
+    </table>
 
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th colspan="2">Algorithm
-                        {% ifequal request.user.pk algorithm.user.pk %}
-                        - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
-                        {% endifequal %}
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td colspan="2">
-                        <code>{{ selectedVersion.algorithm|linebreaks }}</code>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th colspan="2">Algorithm
+                    {% ifequal request.user.pk algorithm.user.pk %}
+                    - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
+                    {% endifequal %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="2">
+                    <code>{{ selectedVersion.algorithm|linebreaks }}</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 {% endblock %}
