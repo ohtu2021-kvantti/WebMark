@@ -6,7 +6,8 @@ from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 from django.utils.html import format_html
 from django.views import generic
-from django.forms import ModelForm, Textarea, HiddenInput, IntegerField, FloatField, Form, CharField
+from django.forms import ModelForm, Textarea, HiddenInput, IntegerField, FloatField, Form
+from django.forms import CharField
 from django_tables2.columns.base import Column
 from django_tables2.columns import TemplateColumn
 from .models import Algorithm, Molecule, Algorithm_type, Algorithm_version
@@ -15,6 +16,7 @@ from django.utils.decorators import method_decorator
 from django_filters import AllValuesFilter, FilterSet
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin, Table
+from django.http import HttpResponseBadRequest
 
 
 class AlgorithmFilter(FilterSet):
@@ -99,10 +101,10 @@ class AlgorithmVersionForm(Form):
 
 
 class MetricsForm(Form):
-    iterations = IntegerField(required=False)
-    measurements = IntegerField(required=False)
-    circuit_depth = IntegerField(required=False)
-    accuracy = FloatField(required=False)
+    iterations = IntegerField(required=False, min_value=0)
+    measurements = IntegerField(required=False, min_value=0)
+    circuit_depth = IntegerField(required=False, min_value=0)
+    accuracy = FloatField(required=False, min_value=0.0)
 
 
 @login_required
@@ -183,22 +185,18 @@ def add_metrics(request):
 
     if request.method == "POST":
         form = MetricsForm(request.POST).data
-        if form['iterations']:
-            av.iterations = form['iterations']
-        else:
-            av.iterations = None
-        if form['measurements']:
-            av.measurements = form['measurements']
-        else:
-            av.measurements = None
-        if form['circuit_depth']:
-            av.circuit_depth = form['circuit_depth']
-        else:
-            av.circuit_depth = None
-        if form['accuracy']:
-            av.accuracy = form['accuracy']
-        else:
-            av.accuracy = None
+        for f in ['iterations', 'measurements', 'circuit_depth', 'accuracy']:
+            if form[f]:
+                data = form[f]
+                try:
+                    number = float(data)
+                    if number < 0:
+                        return HttpResponseBadRequest('Input value must be positive')
+                    setattr(av, f, data)
+                except ValueError:
+                    return HttpResponseBadRequest('Metrics input needs to be numeric')
+            else:
+                setattr(av, f, None)
         av.save()
         return redirect(av.algorithm_id)
     form = MetricsForm(initial={'iterations': av.iterations, 'measurements': av.measurements,
