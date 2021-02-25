@@ -386,6 +386,50 @@ class WebFunctionTestViewData(TestCase):
         self.assertEqual(v2.circuit_depth, None)
         self.assertEqual(v2.accuracy, None)
 
+    def test_add_negative_iteration_metrics(self):
+        a = Algorithm.objects.get(name='Algo3')
+        v = Algorithm_version.objects.filter(algorithm_id=a)[0]
+        response = self.client.post('/addMetrics/?index=' + str(v.pk),
+                                    {'iterations': '-1',
+                                     'measurements': '1',
+                                     'circuit_depth': '2',
+                                     'accuracy': '3.1'})
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(str(response.content).find('Input value must be positive') < 0)
+
+    def test_add_nonumeric_iteration_metrics(self):
+        a = Algorithm.objects.get(name='Algo3')
+        v = Algorithm_version.objects.filter(algorithm_id=a)[0]
+        response = self.client.post('/addMetrics/?index=' + str(v.pk),
+                                    {'iterations': 'aa',
+                                     'measurements': '1',
+                                     'circuit_depth': '2',
+                                     'accuracy': '3.1'})
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(str(response.content).find('Metrics input needs to be numeric') < 0)
+
+    def test_add_negative_accuracy_metrics(self):
+        a = Algorithm.objects.get(name='Algo3')
+        v = Algorithm_version.objects.filter(algorithm_id=a)[0]
+        response = self.client.post('/addMetrics/?index=' + str(v.pk),
+                                    {'iterations': '7',
+                                     'measurements': '1',
+                                     'circuit_depth': '2',
+                                     'accuracy': '-3.1'})
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(str(response.content).find('Input value must be positive') < 0)
+
+    def test_add_nonumeric_accuracy_metrics(self):
+        a = Algorithm.objects.get(name='Algo3')
+        v = Algorithm_version.objects.filter(algorithm_id=a)[0]
+        response = self.client.post('/addMetrics/?index=' + str(v.pk),
+                                    {'iterations': '7',
+                                     'measurements': '1',
+                                     'circuit_depth': '2',
+                                     'accuracy': 'aa'})
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(str(response.content).find('Metrics input needs to be numeric') < 0)
+
     def test_add_metrics_view(self):
         a = Algorithm.objects.get(name='Algo3')
         v = Algorithm_version.objects.filter(algorithm_id=a)[0]
