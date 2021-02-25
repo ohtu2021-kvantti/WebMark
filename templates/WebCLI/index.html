@@ -111,7 +111,7 @@
             compareBtn.href = ""; // disables the link
             compareBtn.classList.add('disabled');
         } else {
-            compareBtn.href = "/compare/" + first + "/" + second;
+            compareBtn.href = "/{{ root_dir }}" + "compare/" + first + "/" + second;
             compareBtn.classList.remove("disabled");
         }
 

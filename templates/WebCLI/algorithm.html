@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
-
-{% load tz %}
-
+{% load version_selector_form %}
 {% block title %}Algorithm view{% endblock %}
 
 {% block content %}
@@ -52,21 +50,7 @@
         </tbody>
     </table>
 
-
-    {% timezone "Europe/Helsinki" %}
-    <form method="POST" name="selectVersion" onchange="document.getElementsByName('selectVersion')[0].submit();">
-        {% csrf_token %}
-        <select name="item_id">
-            {% for v in versions %}
-            {% ifequal v selectedVersion %}
-            <option value="{{ v.pk }}" selected="selected">{{ v.timestamp|date:'d.n.Y, G:i' }}</option>
-            {% else %}
-            <option value="{{ v.pk }}">{{ v.timestamp|date:'d.n.Y, G:i' }}</option>
-            {% endifequal %}
-            {% endfor %}
-        </select>
-    </form>
-    {% endtimezone %}
+        {% version_selector_form 'versionSelector' 'item_id' versions selectedVersion %}
 
     <table class="table table-striped">
         <thead>

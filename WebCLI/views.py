@@ -1,4 +1,4 @@
-from WebMark.settings import ALGORITHMS_PER_PAGE
+from WebMark.settings import ALGORITHMS_PER_PAGE, ROOT_DIR
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
@@ -60,6 +60,11 @@ class AlgorithmListView(SingleTableMixin, FilterView):
     queryset = Algorithm.objects.filter(public=True).order_by("name")
     filterset_class = AlgorithmFilter
     table_class = AlgorithmTable
+
+    def get_context_data(self, **kwargs):
+        context = super(AlgorithmListView, self).get_context_data(**kwargs)
+        context['root_dir'] = ROOT_DIR
+        return context
 
 
 class MyAlgorithmListView(AlgorithmListView):
@@ -237,11 +242,19 @@ def compare_algorithms(request, a1_id, a2_id):
     if len(queryset) != 2:  # check that we have found two unique algorithms
         return redirect("home")
 
-    # simple barchart data
-    (av1, av2) = (
-        Algorithm_version.objects.filter(algorithm_id=queryset[0]).order_by('-timestamp')[0],
-        Algorithm_version.objects.filter(algorithm_id=queryset[1]).order_by('-timestamp')[0]
+    (versions1, versions2) = (
+        Algorithm_version.objects.filter(algorithm_id=queryset[0]).order_by('-timestamp'),
+        Algorithm_version.objects.filter(algorithm_id=queryset[1]).order_by('-timestamp')
     )
+
+    (av1, av2) = (versions1[0], versions2[0])
+    if request.method == "POST":
+        av1_id = request.POST.get('item1_id')
+        av2_id = request.POST.get('item2_id')
+        if av1_id:
+            av1 = Algorithm_version.objects.get(pk=av1_id)
+        if av2_id:
+            av2 = Algorithm_version.objects.get(pk=av2_id)
 
     # dummy data
     graph_data = [[0, 0, 0], [1, 2, 4], [2, 4, 8], [3, 6, 10], [4, 6, 10]]
@@ -259,4 +272,5 @@ def compare_algorithms(request, a1_id, a2_id):
 
     return render(request, 'WebCLI/compareAlgorithms.html',
                   {'a1': a1, 'av1': av1, 'a2': a2, 'av2': av2,
+                   'versions1': versions1, 'versions2': versions2,
                    'graph_data': graph_data, 'algo_data': algo_data})
