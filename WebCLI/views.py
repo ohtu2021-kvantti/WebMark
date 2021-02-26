@@ -206,8 +206,15 @@ def add_metrics(request):
                         return HttpResponseBadRequest('Input value must be positive')
                 except ValueError:
                     return HttpResponseBadRequest('Metrics input needs to be numeric')
-        metrics = MetricsForm(request.POST)
-        metrics.save()
+        m = Molecule.objects.get(pk=int(form['molecule']))
+        existing = Metrics.objects.filter(algorithm_version=av, molecule=m)
+        if len(existing) > 0:
+            print('loytyi jo')
+            metrics = MetricsForm(request.POST, instance=existing[0])
+            metrics.save()
+        else:
+            metrics = MetricsForm(request.POST)
+            metrics.save()
         return redirect(av.algorithm_id)
     form = MetricsForm(initial={'algorithm_version': av, 'verified': False})
     data = {'algorithm': av.algorithm_id, 'version': av, 'form': form}
