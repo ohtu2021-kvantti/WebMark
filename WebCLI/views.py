@@ -6,11 +6,11 @@ from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 from django.utils.html import format_html
 from django.views import generic
-from django.forms import ModelForm, Textarea, HiddenInput, IntegerField, FloatField, Form
+from django.forms import ModelForm, Textarea, HiddenInput, Form
 from django.forms import CharField
 from django_tables2.columns.base import Column
 from django_tables2.columns import TemplateColumn
-from .models import Algorithm, Molecule, Algorithm_type, Algorithm_version
+from .models import Algorithm, Molecule, Algorithm_type, Algorithm_version, Metrics
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django_filters import AllValuesFilter, FilterSet
@@ -20,10 +20,6 @@ from django.http import HttpResponseBadRequest
 
 
 class AlgorithmFilter(FilterSet):
-    molecule = AllValuesFilter(
-        field_name='molecule__name',
-        empty_label='All molecules'
-    )
     algorithm_type = AllValuesFilter(
         field_name='algorithm_type__type_name',
         empty_label="All algorithm types"
@@ -31,7 +27,7 @@ class AlgorithmFilter(FilterSet):
 
     class Meta:
         model = Algorithm
-        fields = ['molecule', 'algorithm_type']
+        fields = ['algorithm_type']
 
 
 class AlgorithmTable(Table):
@@ -40,7 +36,6 @@ class AlgorithmTable(Table):
     article_link = Column(verbose_name='Article')
     pk = TemplateColumn(verbose_name='Compare',
                         template_name="WebCLI/compare.html", orderable=False)
-#    timestamp = DateTimeColumn(format='d.m.Y', verbose_name='Date')
 
     class Meta:
         model = Algorithm
@@ -88,7 +83,7 @@ class SignUpView(generic.CreateView):
 class AlgorithmForm(ModelForm):
     class Meta:
         model = Algorithm
-        fields = ['user', 'name', 'algorithm_type', 'molecule', 'public',
+        fields = ['user', 'name', 'algorithm_type', 'public',
                   'article_link', 'github_link']
         widgets = {
             'name': Textarea(attrs={'rows': 1, 'cols': 50}),
@@ -100,11 +95,15 @@ class AlgorithmVersionForm(Form):
     algorithm = CharField(widget=Textarea)
 
 
-class MetricsForm(Form):
-    iterations = IntegerField(required=False, min_value=0)
-    measurements = IntegerField(required=False, min_value=0)
-    circuit_depth = IntegerField(required=False, min_value=0)
-    accuracy = FloatField(required=False, min_value=0.0)
+class MetricsForm(ModelForm):
+    class Meta:
+        model = Metrics
+        fields = ['algorithm_version', 'molecule', 'verified', 'iterations',
+                  'measurements', 'circuit_depth', 'accuracy']
+        widgets = {
+            'verified': HiddenInput(),
+            'algorithm_version': HiddenInput(),
+        }
 
 
 @login_required
@@ -133,9 +132,23 @@ def algorithm_details_view(request, algorithm_id):
 
     versions = Algorithm_version.objects.filter(algorithm_id=algorithm).order_by('-timestamp')
     selectedVersion = versions[0]
+    metrics = Metrics.objects.filter(algorithm_version=selectedVersion)
+    selectedMetrics = None
+    if len(metrics) > 0:
+        selectedMetrics = metrics[0]
     if request.method == "POST":
-        selectedVersion = Algorithm_version.objects.get(pk=request.POST.get('item_id'))
-    data = {'algorithm': algorithm, 'versions': versions, 'selectedVersion': selectedVersion}
+        if 'version_id' in request.POST:
+            selectedVersion = Algorithm_version.objects.get(pk=request.POST.get('version_id'))
+            metrics = Metrics.objects.filter(algorithm_version=selectedVersion)
+            selectedMetrics = None
+            if len(metrics) > 0:
+                selectedMetrics = metrics[0]
+        else:
+            selectedMetrics = Metrics.objects.get(pk=request.POST.get('metrics_id'))
+            selectedVersion = selectedMetrics.algorithm_version
+            metrics = Metrics.objects.filter(algorithm_version=selectedVersion)
+    data = {'algorithm': algorithm, 'versions': versions, 'selectedVersion': selectedVersion,
+            'metrics': metrics, 'selectedMetrics': selectedMetrics}
     return render(request, 'WebCLI/algorithm.html', data)
 
 
@@ -192,15 +205,12 @@ def add_metrics(request):
                     number = float(data)
                     if number < 0:
                         return HttpResponseBadRequest('Input value must be positive')
-                    setattr(av, f, data)
                 except ValueError:
                     return HttpResponseBadRequest('Metrics input needs to be numeric')
-            else:
-                setattr(av, f, None)
-        av.save()
+        metrics = MetricsForm(request.POST)
+        metrics.save()
         return redirect(av.algorithm_id)
-    form = MetricsForm(initial={'iterations': av.iterations, 'measurements': av.measurements,
-                                'circuit_depth': av.circuit_depth, 'accuracy': av.accuracy})
+    form = MetricsForm(initial={'algorithm_version': av, 'verified': False})
     data = {'algorithm': av.algorithm_id, 'version': av, 'form': form}
     return render(request, 'WebCLI/addMetrics.html', data)
 

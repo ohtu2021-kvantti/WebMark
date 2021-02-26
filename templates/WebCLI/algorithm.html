@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load version_selector_form %}
+{% load molecule_selector_form %}
 {% block title %}Algorithm view{% endblock %}
 
 {% block content %}
@@ -27,10 +28,6 @@
                     <th>public?</th>
                     <td>{{ algorithm.public }}</td>
                 </tr>
-                <tr>
-                    <th>molecule</th>
-                    <td>{{algorithm.molecule.name }}</td>
-                </tr>
                 {% if algorithm.article_link %}
                     <tr>
                         <th>paper</th>
@@ -46,37 +43,7 @@
             </tbody>
         </table>
 
-        {% version_selector_form 'versionSelector' 'item_id' versions selectedVersion %}
-
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Metrics
-                        {% ifequal request.user.pk algorithm.user.pk %}
-                            - <a href="{% url 'add_metrics'%}?index={{selectedVersion.pk}}">add manually</a>
-                        {% endifequal %}
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th>iterations</th>
-                    <td>{{ selectedVersion.iterations }}</td>
-                </tr>
-                <tr>
-                    <th>measurements</th>
-                    <td>{{ selectedVersion.measurements }}</td>
-                </tr>
-                <tr>
-                    <th>circuit depth</th>
-                    <td>{{ selectedVersion.circuit_depth }}</td>
-                </tr>
-                <tr>
-                    <th>accuracy</th>
-                    <td>{{ selectedVersion.accuracy }}</td>
-                </tr>
-            </tbody>
-        </table>
+        {% version_selector_form 'versionSelector' 'version_id' versions selectedVersion %}
 
         <table class="table table-striped">
             <thead>
@@ -93,6 +60,42 @@
                     <td colspan="2">
                         <code>{{ selectedVersion.algorithm|linebreaks }}</code>
                     </td>
+                </tr>
+            </tbody>
+        </table>
+
+        {% molecule_selector_form 'moleculeSelector' 'metrics_id' metrics selectedMetrics %}
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Metrics
+                        {% ifequal request.user.pk algorithm.user.pk %}
+                            - <a href="{% url 'add_metrics'%}?index={{selectedVersion.pk}}">Add metrics of a new molecule manually</a>
+                        {% endifequal %}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>molecule</th>
+                    <td>{{ selectedMetrics.molecule.name }}</td>
+                </tr>
+                <tr>
+                    <th>iterations</th>
+                    <td>{{ selectedMetrics.iterations }}</td>
+                </tr>
+                <tr>
+                    <th>measurements</th>
+                    <td>{{ selectedMetrics.measurements }}</td>
+                </tr>
+                <tr>
+                    <th>circuit depth</th>
+                    <td>{{ selectedMetrics.circuit_depth }}</td>
+                </tr>
+                <tr>
+                    <th>accuracy</th>
+                    <td>{{ selectedMetrics.accuracy }}</td>
                 </tr>
             </tbody>
         </table>
