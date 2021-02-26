@@ -9,4 +9,3 @@ htmlcov/
 coverage.xml
 *.cover
 node_modules/
-build/
