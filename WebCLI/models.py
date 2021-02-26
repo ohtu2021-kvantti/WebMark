@@ -45,11 +45,11 @@ class Algorithm_version(models.Model):
 class Metrics(models.Model):
     algorithm_version = models.ForeignKey(Algorithm_version, on_delete=models.CASCADE)
     molecule = models.ForeignKey(Molecule, on_delete=models.CASCADE)
-    verified = models.BooleanField()
-    iterations = models.IntegerField(null=True)
-    measurements = models.IntegerField(null=True)
-    circuit_depth = models.IntegerField(null=True)
-    accuracy = models.FloatField(null=True)
+    verified = models.BooleanField(default=False)
+    iterations = models.IntegerField(null=True, blank=True)
+    measurements = models.IntegerField(null=True, blank=True)
+    circuit_depth = models.IntegerField(null=True, blank=True)
+    accuracy = models.FloatField(null=True, blank=True)
 
     def __str__(self):
-        return self.timestamp
+        return self.molecule.name

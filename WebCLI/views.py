@@ -98,10 +98,9 @@ class AlgorithmVersionForm(Form):
 class MetricsForm(ModelForm):
     class Meta:
         model = Metrics
-        fields = ['algorithm_version', 'molecule', 'verified', 'iterations',
+        fields = ['algorithm_version', 'molecule', 'iterations',
                   'measurements', 'circuit_depth', 'accuracy']
         widgets = {
-            'verified': HiddenInput(),
             'algorithm_version': HiddenInput(),
         }
 
