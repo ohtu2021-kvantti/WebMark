@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load version_selector_form %}
-{% load molecule_selector_form %}
+{% load metrics_selector_form %}
 {% block title %}Algorithm view{% endblock %}
 
 {% block content %}
@@ -43,7 +43,7 @@
             </tbody>
         </table>
 
-        {% version_selector_form 'versionSelector' 'version_id' versions selectedVersion %}
+        {% version_selector_form 'versionSelector' 'version_id' versions selectedVersion '' %}
 
         <table class="table table-striped">
             <thead>
@@ -64,7 +64,7 @@
             </tbody>
         </table>
 
-        {% molecule_selector_form 'moleculeSelector' 'metrics_id' metrics selectedMetrics %}
+        {% metrics_selector_form 'metricsSelector' 'metrics_id' metrics selectedMetrics %}
 
         <table class="table table-striped">
             <thead>

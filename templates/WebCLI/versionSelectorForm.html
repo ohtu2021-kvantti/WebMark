@@ -2,6 +2,7 @@
 {% timezone "Europe/Helsinki" %}
 <form method="POST" name={{ form_name }} onchange="document.getElementsByName('{{ form_name }}')[0].submit();">
     {% csrf_token %}
+    <input type="hidden" name="otherVersion" value={{ otherVersion }}>
     <select name={{ select_name }}>
     {% for v in versions %}
         {% ifequal v selectedVersion %}
