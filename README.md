@@ -107,7 +107,6 @@ Update database after change in models
 ```
 python manage.py makemigrations
 python manage.py migrate
-
 ```
 
 You can push your local PostgreSQL database to Heroku with
@@ -115,4 +114,13 @@ You can push your local PostgreSQL database to Heroku with
 heroku pg:push postgres://quantuser@localhost/quantdb  postgresql-flexible-07270 --app=quantmark
 ```
 
-
+### Webpack
+If you are working on Javascript code then you can run Webpack in watch mode with
+```
+npm run start
+```
+so new bundles are generated automatically when you make changes to Javascript. Remember to add any new Javascript files to the entry list in [webpack.config.js](webpack.config.js). When you ready to commit you Javascript changes to the repository, use
+```
+npm run build
+```
+to generate minified production bundles. The production bundles are stored in the repository so other developers do not need to worry about building them. This reduces the cognitive overhead as most contributors are not going to be actively working on Javascript code.

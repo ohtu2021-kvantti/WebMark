@@ -3,6 +3,7 @@ const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const {WebpackManifestPlugin} = require('webpack-manifest-plugin');
 
 module.exports = {
+  // add all new Javascript files to the entry list!
   entry: {
     index: './static/js/index.js',
     compareAlgorithms: './static/js/compareAlgorithms.js',
