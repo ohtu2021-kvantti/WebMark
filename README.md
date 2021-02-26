@@ -93,6 +93,7 @@ flake8
 
 Run tests
 ```
+python manage.py collectstatic
 python manage.py test
 ```
 
