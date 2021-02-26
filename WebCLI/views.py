@@ -292,7 +292,7 @@ def compare_algorithms(request, a1_id, a2_id):
         raise PermissionDenied
     return render(request, 'WebCLI/compareAlgorithms.html',
                   {'a1': a1, 'av1': av1, 'a2': a2, 'av2': av2,
-                   'metrics1': metrics1, 'metrics2': metrics2, 
-                   'common_molecules': common_molecules, 'molecule': selected_molecule, 
+                   'metrics1': metrics1, 'metrics2': metrics2,
+                   'common_molecules': common_molecules, 'molecule': selected_molecule,
                    'versions1': versions1, 'versions2': versions2,
                    'graph_data': graph_data, 'algo_data': algo_data})
