@@ -214,7 +214,6 @@ def add_metrics(request):
         m = Molecule.objects.get(pk=int(form['molecule']))
         existing = Metrics.objects.filter(algorithm_version=av, molecule=m)
         if len(existing) > 0:
-            print('loytyi jo')
             metrics = MetricsForm(request.POST, instance=existing[0])
             metrics.save()
         else:
