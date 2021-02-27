@@ -5,3 +5,8 @@ a {
 .btn-primary {
   background-color: #0033cc;
 }
+
+.btn-primary.disabled {
+  background-color: #1d46c0;
+  border-color: #1d46c0;
+}
