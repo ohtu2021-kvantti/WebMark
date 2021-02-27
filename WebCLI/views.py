@@ -269,7 +269,9 @@ def compare_algorithms(request, a1_id, a2_id):
     molecules1 = Metrics.objects.filter(algorithm_version=av1).values('molecule')
     molecules2 = Metrics.objects.filter(algorithm_version=av2).values('molecule')
     common_molecules = Molecule.objects.filter(pk__in=molecules1.intersection(molecules2))
-    selected_molecule = common_molecules[0]
+    selected_molecule = None
+    if len(common_molecules) > 0:
+        selected_molecule = common_molecules[0]
 
     if request.method == "POST" and request.POST.get('item3_id'):
         selected_molecule = Molecule.objects.get(pk=request.POST.get('item3_id'))
@@ -279,17 +281,22 @@ def compare_algorithms(request, a1_id, a2_id):
         molecules2 = Metrics.objects.filter(algorithm_version=av2).values('molecule')
         common_molecules = Molecule.objects.filter(pk__in=molecules1.intersection(molecules2))
 
-    metrics1 = Metrics.objects.get(algorithm_version=av1, molecule=selected_molecule)
-    metrics2 = Metrics.objects.get(algorithm_version=av2, molecule=selected_molecule)
-
-    # dummy data
-    graph_data = [[0, 0, 0], [1, 2, 4], [2, 4, 8], [3, 6, 10], [4, 6, 10]]
+    metrics1 = None
+    metrics2 = None
+    graph_data = None
+    algo_data = None
     (a1, a2) = queryset
-    algo_data = [["Algorithm comparison", a1.name, a2.name],
-                 ["Iterations", metrics1.iterations, metrics2.iterations],
-                 ["Measurements", metrics1.measurements, metrics2.measurements],
-                 ["Circuit depth", metrics1.circuit_depth, metrics2.circuit_depth],
-                 ["Accuracy", metrics1.accuracy, metrics2.accuracy]]
+    if selected_molecule is not None:
+        metrics1 = Metrics.objects.get(algorithm_version=av1, molecule=selected_molecule)
+        metrics2 = Metrics.objects.get(algorithm_version=av2, molecule=selected_molecule)
+
+        # dummy data
+        graph_data = [[0, 0, 0], [1, 2, 4], [2, 4, 8], [3, 6, 10], [4, 6, 10]]
+        algo_data = [["Algorithm comparison", a1.name, a2.name],
+                    ["Iterations", metrics1.iterations, metrics2.iterations],
+                    ["Measurements", metrics1.measurements, metrics2.measurements],
+                    ["Circuit depth", metrics1.circuit_depth, metrics2.circuit_depth],
+                    ["Accuracy", metrics1.accuracy, metrics2.accuracy]]
 
     if not a1.public and request.user.pk != a1.user.pk:
         raise PermissionDenied
