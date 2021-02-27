@@ -18,7 +18,11 @@
             <thead>
                 <tr>
                     <th>Select molecule:</th>
-                    <td>{% molecule_selector_form 'selector3' 'item3_id' common_molecules molecule av1.pk av2.pk %}</td>
+                    {% if molecule %}
+                        <td>{% molecule_selector_form 'selector3' 'item3_id' common_molecules molecule av1.pk av2.pk %}</td>
+                    {% else %}
+                        <td>No common molecules</td>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
