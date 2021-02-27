@@ -11,6 +11,8 @@ updateCheckboxStates();
 
 function initializeCheckboxes() {
     for (const checkbox of checkboxes) {
+        // making sure that checkboxes are not checked on reload in any browser
+        checkbox.checked = false;
 
         // check checkboxes again after a reload
         if (checked.indexOf(checkbox.getAttribute("algorithm")) !== -1) {
