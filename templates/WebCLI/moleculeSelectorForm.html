@@ -1,0 +1,14 @@
+<form method="POST" name={{ form_name }} onchange="document.getElementsByName('{{ form_name }}')[0].submit();">
+    {% csrf_token %}
+    <input type="hidden" name="version1" value={{ version1 }}>
+    <input type="hidden" name="version2" value={{ version2 }}>
+    <select name={{ select_name }}>
+    {% for m in molecules %}
+        {% ifequal m selectedMolecule %}
+            <option value="{{ m.pk }}" selected="selected">{{ m.name }}</option>
+        {% else %}
+            <option value="{{ m.pk }}">{{ m.name }}</option>
+        {% endifequal %}
+    {% endfor %}
+    </select>
+</form>
