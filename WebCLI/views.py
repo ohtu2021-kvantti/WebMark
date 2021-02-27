@@ -293,10 +293,10 @@ def compare_algorithms(request, a1_id, a2_id):
         # dummy data
         graph_data = [[0, 0, 0], [1, 2, 4], [2, 4, 8], [3, 6, 10], [4, 6, 10]]
         algo_data = [["Algorithm comparison", a1.name, a2.name],
-                    ["Iterations", metrics1.iterations, metrics2.iterations],
-                    ["Measurements", metrics1.measurements, metrics2.measurements],
-                    ["Circuit depth", metrics1.circuit_depth, metrics2.circuit_depth],
-                    ["Accuracy", metrics1.accuracy, metrics2.accuracy]]
+                     ["Iterations", metrics1.iterations, metrics2.iterations],
+                     ["Measurements", metrics1.measurements, metrics2.measurements],
+                     ["Circuit depth", metrics1.circuit_depth, metrics2.circuit_depth],
+                     ["Accuracy", metrics1.accuracy, metrics2.accuracy]]
 
     if not a1.public and request.user.pk != a1.user.pk:
         raise PermissionDenied
