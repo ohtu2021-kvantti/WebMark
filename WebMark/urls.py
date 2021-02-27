@@ -16,9 +16,17 @@ Including another URLconf
 from WebMark.settings import ROOT_DIR
 from django.contrib import admin
 from django.urls import path, include  # new
+from WebMark import settings
+from django.contrib.staticfiles import views
+from django.urls import re_path
 
 urlpatterns = [
     path(ROOT_DIR + 'admin/', admin.site.urls),
     path(ROOT_DIR + 'accounts/', include('django.contrib.auth.urls')),
     path(ROOT_DIR + '', include('WebCLI.urls')),  # new
 ]
+
+if settings.DEBUG:
+    urlpatterns += [
+        re_path(r'^static/(?P<path>.*)$', views.serve),
+    ]
