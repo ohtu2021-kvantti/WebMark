@@ -149,14 +149,34 @@ class AlgorithmComparisonTest(TestCase):
         cls.other_user_private_algorithm.save()
         cls.other_user_public_algorithm.save()
 
-        Algorithm_version(algorithm_id=cls.my_algorithm, timestamp=timezone.now(),
-                          algorithm="execute()").save()
-        Algorithm_version(algorithm_id=cls.my_private_algorithm, timestamp=timezone.now(),
-                          algorithm="execute()").save()
-        Algorithm_version(algorithm_id=cls.other_user_private_algorithm, timestamp=timezone.now(),
-                          algorithm="execute()").save()
-        Algorithm_version(algorithm_id=cls.other_user_public_algorithm, timestamp=timezone.now(),
-                          algorithm="execute()").save()
+        av1 = Algorithm_version(algorithm_id=cls.my_algorithm, timestamp=timezone.now(),
+                                algorithm="execute()")
+        av1.save()
+
+        av2 = Algorithm_version(algorithm_id=cls.my_private_algorithm, timestamp=timezone.now(),
+                                algorithm="execute()")
+        av2.save()
+
+        av3 = Algorithm_version(algorithm_id=cls.other_user_private_algorithm,
+                                timestamp=timezone.now(), algorithm="execute()")
+        av3.save()
+
+        av4 = Algorithm_version(algorithm_id=cls.other_user_public_algorithm,
+                                timestamp=timezone.now(), algorithm="execute()")
+        av4.save()
+
+        m1 = Metrics(algorithm_version=av1, molecule=molecule, iterations=1, measurements=2,
+                     circuit_depth=4, accuracy=5.2)
+        m1.save()
+        m2 = Metrics(algorithm_version=av2, molecule=molecule, iterations=11, measurements=12,
+                     circuit_depth=14, accuracy=15.2)
+        m2.save()
+        m3 = Metrics(algorithm_version=av3, molecule=molecule, iterations=21, measurements=22,
+                     circuit_depth=24, accuracy=25.2)
+        m3.save()
+        m4 = Metrics(algorithm_version=av4, molecule=molecule, iterations=31, measurements=32,
+                     circuit_depth=34, accuracy=35.2)
+        m4.save()
 
     def setUp(self):
         self.client.login(username="testuser", password="secret")
