@@ -298,10 +298,10 @@ def compare_algorithms(request, a1_id, a2_id):
                      ["Circuit depth", metrics1.circuit_depth, metrics2.circuit_depth],
                      ["Accuracy", metrics1.accuracy, metrics2.accuracy]]
 
-    if not a1.public and request.user.pk != a1.user.pk:
+    if ((not a1.public and request.user.pk != a1.user.pk) or
+       (not a2.public and request.user.pk != a2.user.pk)):
         raise PermissionDenied
-    if not a2.public and request.user.pk != a2.user.pk:
-        raise PermissionDenied
+
     return render(request, 'WebCLI/compareAlgorithms.html',
                   {'a1': a1, 'av1': av1, 'a2': a2, 'av2': av2,
                    'metrics1': metrics1, 'metrics2': metrics2,
