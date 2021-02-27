@@ -14,6 +14,9 @@
 {% bootstrap_css %}
 
 <body>
+    <div class="bg-light text-center justify-content">
+        <a class="sr-only sr-only-focusable" href="#content">Skip navigation</a>
+    </div>
     <nav class="navbar navbar-expand-md navbar-light bg-light">
         <a class="navbar-brand" href="{% url 'home' %}">Quantmark</a>
         {% if user.is_authenticated %}
