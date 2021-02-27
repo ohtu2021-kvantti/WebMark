@@ -8,6 +8,7 @@ from django.utils.html import format_html
 from django.views import generic
 from django.forms import ModelForm, Textarea, HiddenInput, Form
 from django.forms import CharField
+from django.forms.widgets import NumberInput
 from django_tables2.columns.base import Column
 from django_tables2.columns import TemplateColumn
 from .models import Algorithm, Molecule, Algorithm_type, Algorithm_version, Metrics
@@ -102,6 +103,10 @@ class MetricsForm(ModelForm):
                   'measurements', 'circuit_depth', 'accuracy']
         widgets = {
             'algorithm_version': HiddenInput(),
+            'iterations': NumberInput(attrs={'min': 0, 'max': 1000000}),
+            'measurements': NumberInput(attrs={'min': 0, 'max': 1000000}),
+            'circuit_depth': NumberInput(attrs={'min': 0, 'max': 1000000}),
+            'accuracy': NumberInput(attrs={'min': 0, 'max': 1000000}),
         }
 
 
