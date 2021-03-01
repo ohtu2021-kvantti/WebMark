@@ -6,11 +6,12 @@ from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 from django.utils.html import format_html
 from django.views import generic
-from django.forms import ModelForm, Textarea, HiddenInput, IntegerField, FloatField, Form
+from django.forms import ModelForm, Textarea, HiddenInput, Form
 from django.forms import CharField
+from django.forms.widgets import NumberInput
 from django_tables2.columns.base import Column
 from django_tables2.columns import TemplateColumn
-from .models import Algorithm, Molecule, Algorithm_type, Algorithm_version
+from .models import Algorithm, Molecule, Algorithm_type, Algorithm_version, Metrics
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django_filters import AllValuesFilter, FilterSet
@@ -20,10 +21,6 @@ from django.http import HttpResponseBadRequest
 
 
 class AlgorithmFilter(FilterSet):
-    molecule = AllValuesFilter(
-        field_name='molecule__name',
-        empty_label='All molecules'
-    )
     algorithm_type = AllValuesFilter(
         field_name='algorithm_type__type_name',
         empty_label="All algorithm types"
@@ -31,7 +28,7 @@ class AlgorithmFilter(FilterSet):
 
     class Meta:
         model = Algorithm
-        fields = ['molecule', 'algorithm_type']
+        fields = ['algorithm_type']
 
 
 class AlgorithmTable(Table):
@@ -40,7 +37,6 @@ class AlgorithmTable(Table):
     article_link = Column(verbose_name='Article')
     pk = TemplateColumn(verbose_name='Compare',
                         template_name="WebCLI/compare.html", orderable=False)
-#    timestamp = DateTimeColumn(format='d.m.Y', verbose_name='Date')
 
     class Meta:
         model = Algorithm
@@ -88,7 +84,7 @@ class SignUpView(generic.CreateView):
 class AlgorithmForm(ModelForm):
     class Meta:
         model = Algorithm
-        fields = ['user', 'name', 'algorithm_type', 'molecule', 'public',
+        fields = ['user', 'name', 'algorithm_type', 'public',
                   'article_link', 'github_link']
         widgets = {
             'name': Textarea(attrs={'rows': 1, 'cols': 50}),
@@ -100,11 +96,18 @@ class AlgorithmVersionForm(Form):
     algorithm = CharField(widget=Textarea)
 
 
-class MetricsForm(Form):
-    iterations = IntegerField(required=False, min_value=0)
-    measurements = IntegerField(required=False, min_value=0)
-    circuit_depth = IntegerField(required=False, min_value=0)
-    accuracy = FloatField(required=False, min_value=0.0)
+class MetricsForm(ModelForm):
+    class Meta:
+        model = Metrics
+        fields = ['algorithm_version', 'molecule', 'iterations',
+                  'measurements', 'circuit_depth', 'accuracy']
+        widgets = {
+            'algorithm_version': HiddenInput(),
+            'iterations': NumberInput(attrs={'min': 0, 'max': 1000000}),
+            'measurements': NumberInput(attrs={'min': 0, 'max': 1000000}),
+            'circuit_depth': NumberInput(attrs={'min': 0, 'max': 1000000}),
+            'accuracy': NumberInput(attrs={'min': 0, 'max': 1000000}),
+        }
 
 
 @login_required
@@ -132,9 +135,23 @@ def algorithm_details_view(request, algorithm_id):
 
     versions = Algorithm_version.objects.filter(algorithm_id=algorithm).order_by('-timestamp')
     selectedVersion = versions[0]
+    metrics = Metrics.objects.filter(algorithm_version=selectedVersion)
+    selectedMetrics = None
+    if len(metrics) > 0:
+        selectedMetrics = metrics[0]
     if request.method == "POST":
-        selectedVersion = Algorithm_version.objects.get(pk=request.POST.get('item_id'))
-    data = {'algorithm': algorithm, 'versions': versions, 'selectedVersion': selectedVersion}
+        if 'version_id' in request.POST:
+            selectedVersion = Algorithm_version.objects.get(pk=request.POST.get('version_id'))
+            metrics = Metrics.objects.filter(algorithm_version=selectedVersion)
+            selectedMetrics = None
+            if len(metrics) > 0:
+                selectedMetrics = metrics[0]
+        else:
+            selectedMetrics = Metrics.objects.get(pk=request.POST.get('metrics_id'))
+            selectedVersion = selectedMetrics.algorithm_version
+            metrics = Metrics.objects.filter(algorithm_version=selectedVersion)
+    data = {'algorithm': algorithm, 'versions': versions, 'selectedVersion': selectedVersion,
+            'metrics': metrics, 'selectedMetrics': selectedMetrics}
     return render(request, 'WebCLI/algorithm.html', data)
 
 
@@ -191,15 +208,18 @@ def add_metrics(request):
                     number = float(data)
                     if number < 0:
                         return HttpResponseBadRequest('Input value must be positive')
-                    setattr(av, f, data)
                 except ValueError:
                     return HttpResponseBadRequest('Metrics input needs to be numeric')
-            else:
-                setattr(av, f, None)
-        av.save()
+        m = Molecule.objects.get(pk=int(form['molecule']))
+        existing = Metrics.objects.filter(algorithm_version=av, molecule=m)
+        if len(existing) > 0:
+            metrics = MetricsForm(request.POST, instance=existing[0])
+            metrics.save()
+        else:
+            metrics = MetricsForm(request.POST)
+            metrics.save()
         return redirect(av.algorithm_id)
-    form = MetricsForm(initial={'iterations': av.iterations, 'measurements': av.measurements,
-                                'circuit_depth': av.circuit_depth, 'accuracy': av.accuracy})
+    form = MetricsForm(initial={'algorithm_version': av, 'verified': False})
     data = {'algorithm': av.algorithm_id, 'version': av, 'form': form}
     return render(request, 'WebCLI/addMetrics.html', data)
 
@@ -251,24 +271,50 @@ def compare_algorithms(request, a1_id, a2_id):
         av2_id = request.POST.get('item2_id')
         if av1_id:
             av1 = Algorithm_version.objects.get(pk=av1_id)
+            av2 = Algorithm_version.objects.get(pk=request.POST.get('otherVersion'))
         if av2_id:
             av2 = Algorithm_version.objects.get(pk=av2_id)
+            av1 = Algorithm_version.objects.get(pk=request.POST.get('otherVersion'))
 
-    # dummy data
-    graph_data = [[0, 0, 0], [1, 2, 4], [2, 4, 8], [3, 6, 10], [4, 6, 10]]
+    molecules1 = Metrics.objects.filter(algorithm_version=av1).values('molecule')
+    molecules2 = Metrics.objects.filter(algorithm_version=av2).values('molecule')
+    common_molecules = Molecule.objects.filter(pk__in=molecules1.intersection(molecules2))
+    selected_molecule = None
+    if len(common_molecules) > 0:
+        selected_molecule = common_molecules[0]
+
+    if request.method == "POST" and request.POST.get('item3_id'):
+        selected_molecule = Molecule.objects.get(pk=request.POST.get('item3_id'))
+        av1 = Algorithm_version.objects.get(pk=request.POST.get('version1'))
+        av2 = Algorithm_version.objects.get(pk=request.POST.get('version2'))
+        molecules1 = Metrics.objects.filter(algorithm_version=av1).values('molecule')
+        molecules2 = Metrics.objects.filter(algorithm_version=av2).values('molecule')
+        common_molecules = Molecule.objects.filter(pk__in=molecules1.intersection(molecules2))
+
+    metrics1 = None
+    metrics2 = None
+    graph_data = None
+    algo_data = None
     (a1, a2) = queryset
-    algo_data = [["Algorithm comparison", a1.name, a2.name],
-                 ["Iterations", av1.iterations, av2.iterations],
-                 ["Measurements", av1.measurements, av2.measurements],
-                 ["Circuit depth", av1.circuit_depth, av2.circuit_depth],
-                 ["Accuracy", av1.accuracy, av2.accuracy]]
+    if selected_molecule is not None:
+        metrics1 = Metrics.objects.get(algorithm_version=av1, molecule=selected_molecule)
+        metrics2 = Metrics.objects.get(algorithm_version=av2, molecule=selected_molecule)
 
-    if not a1.public and request.user.pk != a1.user.pk:
-        raise PermissionDenied
-    if not a2.public and request.user.pk != a2.user.pk:
+        # dummy data
+        graph_data = [[0, 0, 0], [1, 2, 4], [2, 4, 8], [3, 6, 10], [4, 6, 10]]
+        algo_data = [["Algorithm comparison", a1.name, a2.name],
+                     ["Iterations", metrics1.iterations, metrics2.iterations],
+                     ["Measurements", metrics1.measurements, metrics2.measurements],
+                     ["Circuit depth", metrics1.circuit_depth, metrics2.circuit_depth],
+                     ["Accuracy", metrics1.accuracy, metrics2.accuracy]]
+
+    if ((not a1.public and request.user.pk != a1.user.pk) or
+       (not a2.public and request.user.pk != a2.user.pk)):
         raise PermissionDenied
 
     return render(request, 'WebCLI/compareAlgorithms.html',
                   {'a1': a1, 'av1': av1, 'a2': a2, 'av2': av2,
+                   'metrics1': metrics1, 'metrics2': metrics2,
+                   'common_molecules': common_molecules, 'molecule': selected_molecule,
                    'versions1': versions1, 'versions2': versions2,
                    'graph_data': graph_data, 'algo_data': algo_data})

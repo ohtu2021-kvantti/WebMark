@@ -1,104 +1,111 @@
 {% extends 'base.html' %}
 {% load version_selector_form %}
+{% load metrics_selector_form %}
 {% block title %}Algorithm view{% endblock %}
 
 {% block content %}
-<div class="p-12">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Algorithm details 
-                    {% ifequal request.user.pk algorithm.user.pk %}
-                    - <a href="{% url 'updateAlgorithm'%}?index={{algorithm.pk}}">update details</a>
-                    {% endifequal %}
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th>name</th>
-                <td>{{ algorithm.name }}</td>
-            </tr>
-            <tr>
-                <th>type</th>
-                <td>{{ algorithm.algorithm_type.type_name }}</td>
-            </tr>
-            <tr>
-                <th>molecule</th>
-                <td>{{algorithm.molecule.name }}</td>
-            </tr>
-            <tr>
-                <th>author</th>
-                <td>{{ algorithm.user.username }}</td>
-            </tr>
-            <tr>
-                <th>public?</th>
-                <td>{{ algorithm.public }}</td>
-            </tr>
-            {% if algorithm.article_link %}
-            <tr>
-                <th>paper</th>
-                <td><a href="{{ algorithm.article_link }}" target="_blank">{{ algorithm.article_link }}</a></td>
-            </tr>
-            {% endif %}
-            {% if algorithm.github_link %}
-            <tr>
-                <th>Github</th>
-                <td><a href="{{ algorithm.github_link }}" target="_blank">{{ algorithm.github_link }}</a></td>
-            </tr>
-            {% endif %}
-        </tbody>
-    </table>
+    <div class="p-12">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Algorithm details 
+                        {% ifequal request.user.pk algorithm.user.pk %}
+                        - <a href="{% url 'updateAlgorithm'%}?index={{algorithm.pk}}">update details</a>
+                        {% endifequal %}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>name</th>
+                    <td>{{ algorithm.name }}</td>
+                </tr>
+                <tr>
+                    <th>type</th>
+                    <td>{{ algorithm.algorithm_type.type_name }}</td>
+                </tr>
+                <tr>
+                    <th>author</th>
+                    <td>{{ algorithm.user.username }}</td>
+                </tr>
+                <tr>
+                    <th>public?</th>
+                    <td>{{ algorithm.public }}</td>
+                </tr>
+                {% if algorithm.article_link %}
+                    <tr>
+                        <th>paper</th>
+                        <td><a href="{{ algorithm.article_link }}" target="_blank">{{ algorithm.article_link }}</a></td>
+                    </tr>
+                {% endif %}
+                {% if algorithm.github_link %}
+                    <tr>
+                        <th>Github</th>
+                        <td><a href="{{ algorithm.github_link }}" target="_blank">{{ algorithm.github_link }}</a></td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
 
-        {% version_selector_form 'versionSelector' 'item_id' versions selectedVersion %}
+        {% version_selector_form 'versionSelector' 'version_id' versions selectedVersion '' %}
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Metrics
-                    {% ifequal request.user.pk algorithm.user.pk %}
-                    - <a href="{% url 'add_metrics'%}?index={{selectedVersion.pk}}">add manually</a>
-                    {% endifequal %}
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th>iterations</th>
-                <td>{{ selectedVersion.iterations }}</td>
-            </tr>
-            <tr>
-                <th>measurements</th>
-                <td>{{ selectedVersion.measurements }}</td>
-            </tr>
-            <tr>
-                <th>circuit depth</th>
-                <td>{{ selectedVersion.circuit_depth }}</td>
-            </tr>
-            <tr>
-                <th>accuracy</th>
-                <td>{{ selectedVersion.accuracy }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th colspan="2">Algorithm
+                        {% ifequal request.user.pk algorithm.user.pk %}
+                        - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
+                        {% endifequal %}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        <code>{{ selectedVersion.algorithm|linebreaks }}</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th colspan="2">Algorithm
-                    {% ifequal request.user.pk algorithm.user.pk %}
-                    - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
-                    {% endifequal %}
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td colspan="2">
-                    <code>{{ selectedVersion.algorithm|linebreaks }}</code>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+        {% metrics_selector_form 'metricsSelector' 'metrics_id' metrics selectedMetrics %}
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Metrics
+                        {% ifequal request.user.pk algorithm.user.pk %}
+                            - <a href="{% url 'add_metrics'%}?index={{selectedVersion.pk}}">Add metrics of a new molecule manually</a>
+                        {% endifequal %}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>molecule</th>
+                    <td>{{ selectedMetrics.molecule.name }}</td>
+                </tr>
+                <tr>
+                    <th>verified</th>
+                    <td>{{ selectedMetrics.verified }}</td>
+                </tr>
+                <tr>
+                    <th>iterations</th>
+                    <td>{{ selectedMetrics.iterations }}</td>
+                </tr>
+                <tr>
+                    <th>measurements</th>
+                    <td>{{ selectedMetrics.measurements }}</td>
+                </tr>
+                <tr>
+                    <th>circuit depth</th>
+                    <td>{{ selectedMetrics.circuit_depth }}</td>
+                </tr>
+                <tr>
+                    <th>accuracy</th>
+                    <td>{{ selectedMetrics.accuracy }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

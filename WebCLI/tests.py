@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
-from .models import Molecule, Algorithm_type, Algorithm, Algorithm_version
+from .models import Molecule, Algorithm_type, Algorithm, Algorithm_version, Metrics
 from django.urls import reverse
 from django.utils import timezone
 import datetime
@@ -85,7 +85,6 @@ class WebFunctionTestAddDataAsUser(TestCase):
                     {'user': user_id,
                      'name': 'test_algorithm',
                      'algorithm_type': Algorithm_type.objects.get(type_name='VQE').pk,
-                     'molecule': Molecule.objects.get(name='Hydrogen').pk,
                      'public': 'on',
                      'algorithm': 'exec()',
                      'article_link': 'https://kela.fi',
@@ -98,7 +97,6 @@ class WebFunctionTestAddDataAsUser(TestCase):
         self.assertEqual(a.public, True)
         self.assertEqual(a.algorithm_type.type_name, 'VQE')
         self.assertEqual(a.user.username, 'testuser3')
-        self.assertEqual(a.molecule.name, 'Hydrogen')
         self.assertEqual(len(v), 2)
         self.assertEqual(v[1].algorithm, 'print(1)\nexec()')
 
@@ -131,19 +129,19 @@ class AlgorithmComparisonTest(TestCase):
 
         cls.my_algorithm = Algorithm.objects.create(
             user=user, name="my public algorithm",
-            algorithm_type=algorithm_type, molecule=molecule, public=True
+            algorithm_type=algorithm_type, public=True
         )
         cls.my_private_algorithm = Algorithm.objects.create(
             user=user, name="my private algorithm",
-            algorithm_type=algorithm_type, molecule=molecule, public=False
+            algorithm_type=algorithm_type, public=False
         )
         cls.other_user_public_algorithm = Algorithm.objects.create(
             user=other_user, name="other user public algorithm",
-            algorithm_type=algorithm_type, molecule=molecule, public=True
+            algorithm_type=algorithm_type, public=True
         )
         cls.other_user_private_algorithm = Algorithm.objects.create(
             user=other_user, name="other user private algorithm",
-            algorithm_type=algorithm_type, molecule=molecule, public=False
+            algorithm_type=algorithm_type, public=False
         )
 
         cls.my_algorithm.save()
@@ -151,14 +149,34 @@ class AlgorithmComparisonTest(TestCase):
         cls.other_user_private_algorithm.save()
         cls.other_user_public_algorithm.save()
 
-        Algorithm_version(algorithm_id=cls.my_algorithm, timestamp=timezone.now(),
-                          algorithm="execute()").save()
-        Algorithm_version(algorithm_id=cls.my_private_algorithm, timestamp=timezone.now(),
-                          algorithm="execute()").save()
-        Algorithm_version(algorithm_id=cls.other_user_private_algorithm, timestamp=timezone.now(),
-                          algorithm="execute()").save()
-        Algorithm_version(algorithm_id=cls.other_user_public_algorithm, timestamp=timezone.now(),
-                          algorithm="execute()").save()
+        av1 = Algorithm_version(algorithm_id=cls.my_algorithm, timestamp=timezone.now(),
+                                algorithm="execute()")
+        av1.save()
+
+        av2 = Algorithm_version(algorithm_id=cls.my_private_algorithm, timestamp=timezone.now(),
+                                algorithm="execute()")
+        av2.save()
+
+        av3 = Algorithm_version(algorithm_id=cls.other_user_private_algorithm,
+                                timestamp=timezone.now(), algorithm="execute()")
+        av3.save()
+
+        av4 = Algorithm_version(algorithm_id=cls.other_user_public_algorithm,
+                                timestamp=timezone.now(), algorithm="execute()")
+        av4.save()
+
+        m1 = Metrics(algorithm_version=av1, molecule=molecule, iterations=1, measurements=2,
+                     circuit_depth=4, accuracy=5.2)
+        m1.save()
+        m2 = Metrics(algorithm_version=av2, molecule=molecule, iterations=11, measurements=12,
+                     circuit_depth=14, accuracy=15.2)
+        m2.save()
+        m3 = Metrics(algorithm_version=av3, molecule=molecule, iterations=21, measurements=22,
+                     circuit_depth=24, accuracy=25.2)
+        m3.save()
+        m4 = Metrics(algorithm_version=av4, molecule=molecule, iterations=31, measurements=32,
+                     circuit_depth=34, accuracy=35.2)
+        m4.save()
 
     def setUp(self):
         self.client.login(username="testuser", password="secret")
@@ -216,22 +234,22 @@ class WebFunctionTestViewData(TestCase):
         at2.save()
         at3 = Algorithm_type(type_name='type3')
         at3.save()
-        a1 = Algorithm(name='Algo1', public=True, molecule=m1, algorithm_type=at1, user=u1,
+        a1 = Algorithm(name='Algo1', public=True, algorithm_type=at1, user=u1,
                        article_link='https://alink1.com', github_link='https://gtlink1.com')
         a1.save()
-        a2 = Algorithm(name='Algo2', public=False, molecule=m1, algorithm_type=at2, user=u1,
+        a2 = Algorithm(name='Algo2', public=False, algorithm_type=at2, user=u1,
                        article_link='https://alink2.com', github_link='https://gtlink2.com')
         a2.save()
-        a3 = Algorithm(name='Algo3', public=True, molecule=m2, algorithm_type=at1, user=u1,
+        a3 = Algorithm(name='Algo3', public=True, algorithm_type=at1, user=u1,
                        article_link='https://alink3.com', github_link='https://gtlink3.com')
         a3.save()
-        a4 = Algorithm(name='Algo4', public=True, molecule=m3, algorithm_type=at2, user=u2,
+        a4 = Algorithm(name='Algo4', public=True, algorithm_type=at2, user=u2,
                        article_link='https://alink4.com', github_link='https://gtlink4.com')
         a4.save()
-        a5 = Algorithm(name='Algo5', public=False, molecule=m2, algorithm_type=at3, user=u2,
+        a5 = Algorithm(name='Algo5', public=False, algorithm_type=at3, user=u2,
                        article_link='https://alink5.com', github_link='https://gtlink5.com')
         a5.save()
-        a6 = Algorithm(name='Algo6', public=False, molecule=m1, algorithm_type=at2, user=u2,
+        a6 = Algorithm(name='Algo6', public=False, algorithm_type=at2, user=u2,
                        article_link='https://alink6.com', github_link='https://gtlink6.com')
         a6.save()
         av = Algorithm_version(algorithm_id=a1,
@@ -297,7 +315,6 @@ class WebFunctionTestViewData(TestCase):
 
     def test_my_algorithms_view_other_information(self):
         response = str(self.client.get("/myAlgorithms/").content)
-        self.assertFalse(response.find('molecule1') < 0)
         self.assertFalse(response.find('https://alink1.com') < 0)
         self.assertFalse(response.find('https://gtlink1.com') < 0)
 
@@ -311,97 +328,121 @@ class WebFunctionTestViewData(TestCase):
     def test_add_metrics(self):
         a = Algorithm.objects.get(name='Algo1')
         v = Algorithm_version.objects.filter(algorithm_id=a)[0]
+        m = Molecule.objects.get(name='molecule1')
         self.client.post('/addMetrics/?index=' + str(v.pk),
-                         {'iterations': '1',
+                         {'molecule': m.pk,
+                          'algorithm_version': v.pk,
+                          'iterations': '1',
                           'measurements': '2',
                           'circuit_depth': '4',
                           'accuracy': '5.2'})
-        v2 = Algorithm_version.objects.get(pk=v.pk)
-        self.assertEqual(v2.iterations, 1)
-        self.assertEqual(v2.measurements, 2)
-        self.assertEqual(v2.circuit_depth, 4)
-        self.assertEqual(v2.accuracy, 5.2)
+        metrics = Metrics.objects.get(algorithm_version=v, molecule=m)
+        self.assertEqual(metrics.iterations, 1)
+        self.assertEqual(metrics.measurements, 2)
+        self.assertEqual(metrics.circuit_depth, 4)
+        self.assertEqual(metrics.accuracy, 5.2)
 
     def test_add_private_metrics(self):
         a = Algorithm.objects.get(name='Algo2')
         v = Algorithm_version.objects.filter(algorithm_id=a)[0]
+        m = Molecule.objects.get(name='molecule1')
         self.client.post('/addMetrics/?index=' + str(v.pk),
-                         {'iterations': '1',
+                         {'molecule': m.pk,
+                          'algorithm_version': v.pk,
+                          'iterations': '1',
                           'measurements': '2',
                           'circuit_depth': '4',
                           'accuracy': '5.2'})
-        v2 = Algorithm_version.objects.get(pk=v.pk)
-        self.assertEqual(v2.iterations, 1)
-        self.assertEqual(v2.measurements, 2)
-        self.assertEqual(v2.circuit_depth, 4)
-        self.assertEqual(v2.accuracy, 5.2)
+        metrics = Metrics.objects.get(algorithm_version=v, molecule=m)
+        self.assertEqual(metrics.iterations, 1)
+        self.assertEqual(metrics.measurements, 2)
+        self.assertEqual(metrics.circuit_depth, 4)
+        self.assertEqual(metrics.accuracy, 5.2)
 
     def test_add_other_users_public_metrics(self):
         a = Algorithm.objects.get(name='Algo4')
+        m = Molecule.objects.get(name='molecule1')
         v = Algorithm_version.objects.filter(algorithm_id=a)[0]
         self.client.post('/addMetrics/?index=' + str(v.pk),
-                         {'iterations': '1',
+                         {'molecule': m.pk,
+                          'algorithm_version': v.pk,
+                          'iterations': '1',
                           'measurements': '2',
                           'circuit_depth': '4',
                           'accuracy': '5.2'})
-        v2 = Algorithm_version.objects.get(pk=v.pk)
-        self.assertEqual(v2.iterations, None)
+        metrics = Metrics.objects.filter(algorithm_version=v, molecule=m)
+        self.assertEqual(len(metrics), 0)
 
     def test_add_other_users_private_metrics(self):
         a = Algorithm.objects.get(name='Algo5')
+        m = Molecule.objects.get(name='molecule1')
         v = Algorithm_version.objects.filter(algorithm_id=a)[0]
         self.client.post('/addMetrics/?index=' + str(v.pk),
-                         {'iterations': '1',
+                         {'molecule': m.pk,
+                          'algorithm_version': v.pk,
+                          'iterations': '1',
                           'measurements': '2',
                           'circuit_depth': '4',
                           'accuracy': '5.2'})
-        v2 = Algorithm_version.objects.get(pk=v.pk)
-        self.assertEqual(v2.iterations, None)
+        metrics = Metrics.objects.filter(algorithm_version=v, molecule=m)
+        self.assertEqual(len(metrics), 0)
 
     def test_add_one_metric(self):
         a = Algorithm.objects.get(name='Algo3')
+        m = Molecule.objects.get(name='molecule1')
         v = Algorithm_version.objects.filter(algorithm_id=a)[0]
         self.client.post('/addMetrics/?index=' + str(v.pk),
-                         {'iterations': '1',
+                         {'molecule': m.pk,
+                          'algorithm_version': v.pk,
+                          'iterations': '1',
                           'measurements': '',
                           'circuit_depth': '',
                           'accuracy': ''})
-        v2 = Algorithm_version.objects.get(pk=v.pk)
-        self.assertEqual(v2.iterations, 1)
-        self.assertEqual(v2.measurements, None)
-        self.assertEqual(v2.circuit_depth, None)
-        self.assertEqual(v2.accuracy, None)
+        metrics = Metrics.objects.get(algorithm_version=v, molecule=m)
+        self.assertEqual(metrics.iterations, 1)
+        self.assertEqual(metrics.measurements, None)
+        self.assertEqual(metrics.circuit_depth, None)
+        self.assertEqual(metrics.accuracy, None)
 
     def test_add_no_metrics(self):
         a = Algorithm.objects.get(name='Algo3')
+        m = Molecule.objects.get(name='molecule2')
         v = Algorithm_version.objects.filter(algorithm_id=a)[0]
         self.client.post('/addMetrics/?index=' + str(v.pk),
-                         {'iterations': '',
+                         {'molecule': m.pk,
+                          'algorithm_version': v.pk,
+                          'iterations': '',
                           'measurements': '',
                           'circuit_depth': '',
                           'accuracy': ''})
-        v2 = Algorithm_version.objects.get(pk=v.pk)
-        self.assertEqual(v2.iterations, None)
-        self.assertEqual(v2.measurements, None)
-        self.assertEqual(v2.circuit_depth, None)
-        self.assertEqual(v2.accuracy, None)
+        metrics = Metrics.objects.get(algorithm_version=v, molecule=m)
+        self.assertEqual(metrics.iterations, None)
+        self.assertEqual(metrics.measurements, None)
+        self.assertEqual(metrics.circuit_depth, None)
+        self.assertEqual(metrics.accuracy, None)
 
     def test_add_negative_iteration_metrics(self):
         a = Algorithm.objects.get(name='Algo3')
+        m = Molecule.objects.get(name='molecule3')
         v = Algorithm_version.objects.filter(algorithm_id=a)[0]
         response = self.client.post('/addMetrics/?index=' + str(v.pk),
-                                    {'iterations': '-1',
+                                    {'molecule': m.pk,
+                                     'algorithm_version': v.pk,
+                                     'iterations': '-1',
                                      'measurements': '1',
                                      'circuit_depth': '2',
                                      'accuracy': '3.1'})
         self.assertEqual(response.status_code, 400)
         self.assertFalse(str(response.content).find('Input value must be positive') < 0)
 
-    def test_add_nonumeric_iteration_metrics(self):
+    def test_add_nonnumeric_iteration_metrics(self):
         a = Algorithm.objects.get(name='Algo3')
+        m = Molecule.objects.get(name='molecule3')
         v = Algorithm_version.objects.filter(algorithm_id=a)[0]
         response = self.client.post('/addMetrics/?index=' + str(v.pk),
-                                    {'iterations': 'aa',
+                                    {'molecule': m.pk,
+                                     'algorithm_version': v.pk,
+                                     'iterations': 'aa',
                                      'measurements': '1',
                                      'circuit_depth': '2',
                                      'accuracy': '3.1'})
@@ -410,20 +451,26 @@ class WebFunctionTestViewData(TestCase):
 
     def test_add_negative_accuracy_metrics(self):
         a = Algorithm.objects.get(name='Algo3')
+        m = Molecule.objects.get(name='molecule3')
         v = Algorithm_version.objects.filter(algorithm_id=a)[0]
         response = self.client.post('/addMetrics/?index=' + str(v.pk),
-                                    {'iterations': '7',
+                                    {'molecule': m.pk,
+                                     'algorithm_version': v.pk,
+                                     'iterations': '7',
                                      'measurements': '1',
                                      'circuit_depth': '2',
                                      'accuracy': '-3.1'})
         self.assertEqual(response.status_code, 400)
         self.assertFalse(str(response.content).find('Input value must be positive') < 0)
 
-    def test_add_nonumeric_accuracy_metrics(self):
+    def test_add_nonnumeric_accuracy_metrics(self):
         a = Algorithm.objects.get(name='Algo3')
+        m = Molecule.objects.get(name='molecule3')
         v = Algorithm_version.objects.filter(algorithm_id=a)[0]
         response = self.client.post('/addMetrics/?index=' + str(v.pk),
-                                    {'iterations': '7',
+                                    {'molecule': m.pk,
+                                     'algorithm_version': v.pk,
+                                     'iterations': '7',
                                      'measurements': '1',
                                      'circuit_depth': '2',
                                      'accuracy': 'aa'})

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load version_selector_form %}
+{% load molecule_selector_form %}
 {% block title %}Algorithm comparison{% endblock %}
 
 {% block content %}
@@ -10,15 +11,25 @@
             <thead>
                 <tr>
                     <th>Select version:</th>
-                    <td>{% version_selector_form 'selector1' 'item1_id' versions1 av1 %}</td>
-                    <td>{% version_selector_form 'selector2' 'item2_id' versions2 av2 %}</td>
+                    <td>{% version_selector_form 'selector1' 'item1_id' versions1 av1 av2.pk %}</td>
+                    <td>{% version_selector_form 'selector2' 'item2_id' versions2 av2 av1.pk %}</td>
+                </tr>
+            </thead>
+            <thead>
+                <tr>
+                    <th>Select molecule:</th>
+                    {% if molecule %}
+                        <td>{% molecule_selector_form 'selector3' 'item3_id' common_molecules molecule av1.pk av2.pk %}</td>
+                    {% else %}
+                        <td>No common molecules</td>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <th>name</th>
-                    <td>{{ a1.name }}</td>
-                    <td>{{ a2.name }}</td>
+                    <td><a href="{{ a1.get_absolute_url }}">{{ a1.name }}</a></td>
+                    <td><a href="{{ a2.get_absolute_url }}">{{ a2.name }}</a></td>
                 </tr>
                 <tr>
                     <th>type</th>
@@ -32,28 +43,28 @@
                 </tr>
                 <tr>
                     <th>molecule</th>
-                    <td>{{ a1.molecule.name }}</td>
-                    <td>{{ a2.molecule.name }}</td>
+                    <td>{{ metrics1.molecule.name }}</td>
+                    <td>{{ metrics2.molecule.name }}</td>
                 </tr>
                 <tr>
                     <th>iterations</th>
-                    <td>{{ av1.iterations }}</td>
-                    <td>{{ av2.iterations }}</td>
+                    <td>{{ metrics1.iterations }}</td>
+                    <td>{{ metrics2.iterations }}</td>
                 </tr>
                 <tr>
                     <th>measurements</th>
-                    <td>{{ av1.measurements }}</td>
-                    <td>{{ av2.measurements }}</td>
+                    <td>{{ metrics1.measurements }}</td>
+                    <td>{{ metrics2.measurements }}</td>
                 </tr>
                 <tr>
                     <th>circuit depth</th>
-                    <td>{{ av1.circuit_depth }}</td>
-                    <td>{{ av2.circuit_depth }}</td>
+                    <td>{{ metrics1.circuit_depth }}</td>
+                    <td>{{ metrics2.circuit_depth }}</td>
                 </tr>
                 <tr>
                     <th>accuracy</th>
-                    <td>{{ av1.accuracy }}</td>
-                    <td>{{ av2.accuracy }}</td>
+                    <td>{{ metrics1.accuracy }}</td>
+                    <td>{{ metrics2.accuracy }}</td>
                 </tr>
             </tbody>
         </table>
