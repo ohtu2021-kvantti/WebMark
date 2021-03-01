@@ -130,7 +130,6 @@ def new_algorithm(request):
 
 def algorithm_details_view(request, algorithm_id):
     algorithm = Algorithm.objects.get(pk=algorithm_id)
-
     if not algorithm.public and request.user.pk != algorithm.user.pk:
         raise PermissionDenied
 
@@ -239,6 +238,18 @@ def add_version(request):
     form = AlgorithmVersionForm(initial={'algorithm': last_version.algorithm})
     data = {'algorithm': a, 'form': form}
     return render(request, 'WebCLI/addVersion.html', data)
+
+
+def update_algorithm(request):
+    a = Algorithm.objects.get(pk=request.GET.get("index"))
+    if request.user.pk != a.user.pk:
+        raise PermissionDenied
+
+    if request.method == "POST":
+        form = AlgorithmForm(request.POST, instance=a)
+        form.save()
+        return redirect(a)
+    return render(request, 'WebCLI/updateDetails.html', {'form': AlgorithmForm(instance=a)})
 
 
 def compare_algorithms(request, a1_id, a2_id):
