@@ -132,12 +132,13 @@ def algorithm_details_view(request, algorithm_id):
     algorithm = Algorithm.objects.get(pk=algorithm_id)
     if not algorithm.public and request.user.pk != algorithm.user.pk:
         raise PermissionDenied
-
+    molecule = ""
     versions = Algorithm_version.objects.filter(algorithm_id=algorithm).order_by('-timestamp')
     selectedVersion = versions[0]
     metrics = Metrics.objects.filter(algorithm_version=selectedVersion)
     selectedMetrics = None
     if len(metrics) > 0:
+        molecule = metrics[0].molecule
         selectedMetrics = metrics[0]
     if request.method == "POST":
         if 'version_id' in request.POST:
@@ -151,7 +152,7 @@ def algorithm_details_view(request, algorithm_id):
             selectedVersion = selectedMetrics.algorithm_version
             metrics = Metrics.objects.filter(algorithm_version=selectedVersion)
     data = {'algorithm': algorithm, 'versions': versions, 'selectedVersion': selectedVersion,
-            'metrics': metrics, 'selectedMetrics': selectedMetrics}
+            'metrics': next(iter(metrics), None), 'selectedMetrics': selectedMetrics, 'molecule': molecule}
     return render(request, 'WebCLI/algorithm.html', data)
 
 

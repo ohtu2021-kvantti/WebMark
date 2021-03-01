@@ -26,7 +26,7 @@
             </tr>
             <tr>
                 <th>molecule</th>
-                <td>{{algorithm.molecule.name }}</td>
+                <td>{{molecule.name }}</td>
             </tr>
             <tr>
                 <th>author</th>
@@ -66,19 +66,20 @@
         <tbody>
             <tr>
                 <th>iterations</th>
-                <td>{{ selectedVersion.iterations }}</td>
+                <td>{{ metrics.iterations }}</td>
             </tr>
             <tr>
                 <th>measurements</th>
-                <td>{{ selectedVersion.measurements }}</td>
+                <td>{{ metrics.measurements }}</td>
+                <script>console.log("{{ metrics }}")</script>
             </tr>
             <tr>
                 <th>circuit depth</th>
-                <td>{{ selectedVersion.circuit_depth }}</td>
+                <td>{{ metrics.circuit_depth }}</td>
             </tr>
             <tr>
                 <th>accuracy</th>
-                <td>{{ selectedVersion.accuracy }}</td>
+                <td>{{ metrics.accuracy }}</td>
             </tr>
         </tbody>
     </table>
