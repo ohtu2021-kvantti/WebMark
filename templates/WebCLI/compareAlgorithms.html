@@ -28,8 +28,8 @@
             <tbody>
                 <tr>
                     <th>name</th>
-                    <td>{{ a1.name }}</td>
-                    <td>{{ a2.name }}</td>
+                    <td><a href="{{ a1.get_absolute_url }}">{{ a1.name }}</a></td>
+                    <td><a href="{{ a2.get_absolute_url }}">{{ a2.name }}</a></td>
                 </tr>
                 <tr>
                     <th>type</th>
