@@ -59,6 +59,7 @@ jobs:
       run: flake8 . --show-source --statistics
     - name: Test with Django
       run: |
+        python manage.py collectstatic
         coverage erase
         coverage run manage.py test
     - name: "Upload coverage to Codecov"
