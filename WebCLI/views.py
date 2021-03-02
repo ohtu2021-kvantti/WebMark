@@ -152,7 +152,7 @@ def algorithm_details_view(request, algorithm_id):
             selectedVersion = selectedMetrics.algorithm_version
             metrics = Metrics.objects.filter(algorithm_version=selectedVersion)
     data = {'algorithm': algorithm, 'versions': versions, 'selectedVersion': selectedVersion,
-            'metrics': next(iter(metrics), None), 'selectedMetrics': selectedMetrics, 'molecule': molecule}
+            'metrics': metrics, None), 'selectedMetrics': selectedMetrics, 'molecule': molecule}
     return render(request, 'WebCLI/algorithm.html', data)
 
 
