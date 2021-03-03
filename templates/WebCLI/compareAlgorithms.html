@@ -69,8 +69,14 @@
             </tbody>
         </table>
     </div>
-    <div id="chart_div" class="m-auto"></div>
-    <div id="columnchart_material" style="width: 800px; height: 500px;"></div>
+    <div class="d-flex flex-column align-items-center m-auto">
+        <div id="chart-div"></div>
+        <div id="chart-link-div"></div>
+    </div>
+    <div class="d-flex flex-column align-items-center m-auto">
+        <div id="chart2-div"></div>
+        <div id="chart2-link-div"></div>
+    </div>
 </div>
 
 
@@ -80,28 +86,33 @@
 {{ graph_data|json_script:"graph-data"}}
 {{ algo_data|json_script:"algo-data"}}
 
-
-<!-- TODO: move to its own file -->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
     google.charts.load('current', { packages: ['bar', 'corechart', 'line'] });
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
-        var data = new google.visualization.DataTable();
-        var a1Name = JSON.parse(document.getElementById('a1-name').textContent);
-        var a2Name = JSON.parse(document.getElementById('a2-name').textContent);
-        var graphData = JSON.parse(document.getElementById('graph-data').textContent);
-        var algoData = JSON.parse(document.getElementById('algo-data').textContent);
-        var columnData = google.visualization.arrayToDataTable(algoData);
+        const data = new google.visualization.DataTable();
+        const a1Name = JSON.parse(document.getElementById('a1-name').textContent);
+        const a2Name = JSON.parse(document.getElementById('a2-name').textContent);
+        const graphData = JSON.parse(document.getElementById('graph-data').textContent);
         data.addColumn('number', 'X');
         data.addColumn('number', a1Name);
         data.addColumn('number', a2Name);
         data.addRows(graphData);
 
-        var options = {
+        const algoData = JSON.parse(document.getElementById('algo-data').textContent);
+        // convert null values to zeros
+        const algoDataCleaned = algoData.map(a => a.map(value => value === null ? 0 : value));
+        const columnChartData = google.visualization.arrayToDataTable(algoDataCleaned);
+
+        const baseOptions = {
             width: 600,
             height: 480,
+        };
+
+        const lineChartOptions = {
+            ...baseOptions,
             title: "NOTE: Graphs are a work-in-progress and currently show dummy data",
             hAxis: {
                 title: 'Iterations'
@@ -111,16 +122,20 @@
             }
         };
 
-        var optionsColumn = {
-            chart: {
-                title: a1Name + " vs. " + a2Name,
-            }
-        };
+        const chart = new google.visualization.LineChart(document.getElementById('chart-div'));
+        const linkDiv = document.getElementById("chart-link-div");
+        google.visualization.events.addListener(chart, 'ready', () => {
+            linkDiv.innerHTML = `<a href=${chart.getImageURI()} download=chart>Download as PNG</a>`;
+        });
 
-        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-        var chart2 = new google.charts.Bar(document.getElementById('columnchart_material'));
-        chart.draw(data, options);
-        chart2.draw(columnData, google.charts.Bar.convertOptions(options));
+        const chart2 = new google.visualization.ColumnChart(document.getElementById('chart2-div'));
+        const link2Div = document.getElementById("chart2-link-div");
+        google.visualization.events.addListener(chart2, 'ready', () => {
+            link2Div.innerHTML = `<a href=${chart2.getImageURI()} download=chart>Download as PNG</a>`;
+        });
+
+        chart.draw(data, lineChartOptions);
+        chart2.draw(columnChartData, baseOptions);
     }
 </script>
 {% endblock %}
