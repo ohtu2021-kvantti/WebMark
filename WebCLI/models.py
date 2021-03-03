@@ -39,7 +39,7 @@ class Algorithm_version(models.Model):
     algorithm = models.TextField()
 
     def __str__(self):
-        return self.timestamp
+        return str(self.timestamp)
 
 
 class Metrics(models.Model):
