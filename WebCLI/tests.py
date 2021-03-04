@@ -16,7 +16,6 @@ class WebFunctionTestLogin(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         response = c.login(username='testuser1', password='sekred010')
-        self.assertEqual(false, true)
         self.assertEqual(response, True)
 
     def test_login(self):
