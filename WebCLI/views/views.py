@@ -108,37 +108,28 @@ def new_algorithm_type(request):
     data = {'types': Algorithm_type.objects.all(), 'form': form}
     return render(request, 'WebCLI/newAlgorithmType.html', data)
 
+
 @login_required
 def check_auth(request, user):
     if request.user.pk != user.pk:
         raise PermissionDenied
 
-<<<<<<< Updated upstream
-def check_defcon(request, av):
-    if request.user.pk != av.algorithm_id.user.pk:
-        raise PermissionDenied
 
-
-@login_required
-def add_metrics(request):
-    av = Algorithm_version.objects.get(pk=request.GET.get("index"))
-    check_auth(request)
-=======
 @login_required
 def add_metrics(request):
     av = Algorithm_version.objects.get(pk=request.GET.get("index"))
     check_auth(request, av.algorithm_id.user)
->>>>>>> Stashed changes
     if request.method == "POST":
         form = MetricsForm(request.POST).data
         for f in ['iterations', 'measurements', 'circuit_depth', 'accuracy']:
-            data = form[f]
-            try:
-                number = float(data)
-                if number < 0:
-                    return HttpResponseBadRequest('Input value must be positive')
-            except ValueError:
-                return HttpResponseBadRequest('Metrics input needs to be numeric')
+            if form[f]:
+                data = form[f]
+                try:
+                    number = float(data)
+                    if number < 0:
+                        return HttpResponseBadRequest('Input value must be positive')
+                except ValueError:
+                    return HttpResponseBadRequest('Metrics input needs to be numeric')
         m = Molecule.objects.get(pk=int(form['molecule']))
         existing = Metrics.objects.filter(algorithm_version=av, molecule=m)
         metrics = MetricsForm(request.POST)
