@@ -97,7 +97,7 @@ Run tests
 python manage.py test
 ```
 
-If missign staticfiles error appears:
+If missing staticfiles error appears:
 ```
 python manage.py collectstatic
 ```
