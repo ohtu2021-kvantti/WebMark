@@ -519,3 +519,27 @@ class WebFunctionTestViewData(TestCase):
         self.assertFalse(response.find('Algo4') < 0)
         self.assertFalse(response.find('https://alink4.com') < 0)
         self.assertFalse(response.find('https://gtlink4.com') < 0)
+
+    def test_update_details(self):
+        a = Algorithm.objects.get(name='Algo1')
+        response = self.client.post('/updateAlgorithm/?index='+str(a.pk),
+                                    {'name': 'Algo1',
+                                    'algorithm_type': Algorithm_type.objects.get(type_name='type1').pk,
+                                    'public': 'on',
+                                    'article_link': 'https://aalink1.com',
+                                    'github_link': 'https://gtlink1.com',
+                                    'user': User.objects.get(username='Bob').pk})
+        a = Algorithm.objects.get(name='Algo1')
+        self.assertEqual(a.article_link, 'https://aalink1.com')
+        
+
+    def test_update_other_user_details(self):
+        a = Algorithm.objects.get(name='Algo4')
+        response = self.client.post('/updateAlgorithm/?index='+str(a.pk),
+                                    {'name': 'Algo4',
+                                    'algorithm_type': Algorithm_type.objects.get(type_name='type2').pk,
+                                    'public': 'on',
+                                    'article_link': 'https://aalink4.com',
+                                    'github_link': 'https://gtlink4.com',
+                                    'user': User.objects.get(username='Bob').pk})
+        self.assertEqual(response.status_code, 403)
