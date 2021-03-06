@@ -4,30 +4,20 @@ from ..models import Algorithm, Molecule, Algorithm_version, Metrics
 from django.db.models import F
 
 
+def to_int_or_none(value):
+    if value:
+        try:
+            return int(value)
+        except ValueError:
+            return None
+    else:
+        return None
+
+
 def get_algorithm_details_view_params(request):
-    if request.GET.get("version_id"):
-        try:
-            version_id = int(request.GET.get("version_id"))
-        except ValueError:
-            version_id = None
-    else:
-        version_id = None
-
-    if request.GET.get("metrics_id"):
-        try:
-            metrics_id = int(request.GET.get("metrics_id"))
-        except ValueError:
-            metrics_id = None
-    else:
-        metrics_id = None
-
-    if request.GET.get("molecule_id"):
-        try:
-            molecule_id = int(request.GET.get("molecule_id"))
-        except ValueError:
-            molecule_id = None
-    else:
-        molecule_id = None
+    version_id = to_int_or_none(request.GET.get("version_id"))
+    metrics_id = to_int_or_none(request.GET.get("metrics_id"))
+    molecule_id = to_int_or_none(request.GET.get("molecule_id"))
 
     return {
         "version_id": version_id,
@@ -44,16 +34,14 @@ def get_metrics(params, versions):
 
 
 def get_selected_metrics(params, metrics):
-    if params["metrics_id"]:
-        for metric in metrics:
-            if params["metrics_id"] == metric.pk:
-                return Metrics.objects.get(pk=params["metrics_id"])
+    metric_id = params["metrics_id"]
+    if metric_id and any(metric.pk == metric_id for metric in metrics):
+        return Metrics.objects.get(pk=metric_id)
 
     if len(metrics) > 0:
         params["metrics_id"] = metrics[0].pk
         return metrics[0]
-    else:
-        return None
+    return None
 
 
 def get_selected_version(params, versions):
