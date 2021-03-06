@@ -97,6 +97,11 @@ Run tests
 python manage.py test
 ```
 
+If missign staticfiles error appears:
+```
+python manage.py collectstatic
+```
+
 Run code coverage
 ```
 coverage erase
