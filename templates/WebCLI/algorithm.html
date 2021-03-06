@@ -146,24 +146,27 @@
             </tbody>
         </table>
     </div>
-    <div>
-        <select onchange="window.location.href=this.value">
-            {% for m in molecules_with_metrics %}
-                {% ifequal m.pk selected_molecule.pk %}
-                    <option
-                        value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
-                        selected="selected">
-                            {{ m.name }}
-                        </option>
-                {% else %}
+    <div class="d-flex flex-column align-items-center">
+        <div class="mt-3">
+            <b>Select molecule for graph:</b>
+            <select onchange="window.location.href=this.value">
+                {% for m in molecules_with_metrics %}
+                    {% ifequal m.pk selected_molecule.pk %}
                         <option
-                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ m.pk }}"
-                        >
-                            {{ m.name }}
-                        </option>
-                {% endifequal %}
-            {% endfor %}
-        </select>
+                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
+                            selected="selected">
+                                {{ m.name }}
+                            </option>
+                    {% else %}
+                            <option
+                                value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ m.pk }}"
+                            >
+                                {{ m.name }}
+                            </option>
+                    {% endifequal %}
+                {% endfor %}
+            </select>
+        </div>
         <div id="metrics-chart"></div>
     </div>
 </div>
