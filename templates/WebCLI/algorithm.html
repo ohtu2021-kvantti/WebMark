@@ -8,9 +8,9 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Algorithm details 
+                    <th>Algorithm details
                         {% ifequal request.user.pk algorithm.user.pk %}
-                        - <a href="{% url 'updateAlgorithm'%}?index={{algorithm.pk}}">update details</a>
+                            - <a href="{% url 'updateAlgorithm'%}?index={{algorithm.pk}}">update details</a>
                         {% endifequal %}
                     </th>
                 </tr>
@@ -54,7 +54,7 @@
                 <tr>
                     <th colspan="2">Algorithm
                         {% ifequal request.user.pk algorithm.user.pk %}
-                        - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
+                            - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
                         {% endifequal %}
                     </th>
                 </tr>

@@ -6,25 +6,24 @@
 
 {% block content %}
 
-  {% if next %}
-    {% if user.is_authenticated %}
-      {% bootstrap_alert "Your account doesn't have access to this page. To proceed,
-      please login with an account that has access." alert_type='danger' %}
-    {% else %}
-      {% bootstrap_alert "Please login to see this page." alert_type='danger' %}
+    {% if next %}
+        {% if user.is_authenticated %}
+            {% bootstrap_alert "Your account doesn't have access to this page. To proceed,
+            please login with an account that has access." alert_type='danger' %}
+        {% else %}
+            {% bootstrap_alert "Please login to see this page." alert_type='danger' %}
+        {% endif %}
     {% endif %}
-  {% endif %}
 
-  <h2 class="text-center">Log in</h2>
-  <form method="post" action="{% url 'login' %}">
-    {% csrf_token %}
-    {% bootstrap_form form %}
-    {% buttons %}
-    <div class="text-center">
-      <button class="btn btn-primary" type="submit">Log in</button>
-    </div> 
-    <input type="hidden" name="next" value="{{ next }}" />
-    {% endbuttons %}
-  </form>
-
+    <h2 class="text-center">Log in</h2>
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+        <div class="text-center">
+            <button class="btn btn-primary" type="submit">Log in</button>
+        </div>
+        <input type="hidden" name="next" value="{{ next }}" />
+        {% endbuttons %}
+    </form>
 {% endblock %}
