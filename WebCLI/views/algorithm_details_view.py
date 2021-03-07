@@ -5,13 +5,12 @@ from django.db.models import F
 
 
 def to_positive_int_or_none(value):
-    if value:
-        try:
-            int_value = int(value)
-            return int_value if int_value > 0 else None
-        except ValueError:
-            return None
-    else:
+    if not value:
+        return None
+    try:
+        int_value = int(value)
+        return int_value if int_value > 0 else None
+    except ValueError:
         return None
 
 
