@@ -226,8 +226,6 @@ def update_algorithm(request):
 
 
 def compare_algorithms(request, a1_id, a2_id):
-    if not a1_id.isnumeric() or not a2_id.isnumeric():  # ignore garbage values
-        return redirect("home")
 
     queryset = Algorithm.objects.filter(pk=a1_id) | Algorithm.objects.filter(pk=a2_id)
     if len(queryset) != 2:  # check that we have found two unique algorithms

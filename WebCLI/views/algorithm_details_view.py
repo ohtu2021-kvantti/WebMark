@@ -1,13 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.core.exceptions import PermissionDenied
 from ..models import Algorithm, Molecule, Algorithm_version, Metrics
 from django.db.models import F
 
 
-def to_int_or_none(value):
+def to_positive_int_or_none(value):
     if value:
         try:
-            return int(value)
+            int_value = int(value)
+            return int_value if int_value > 0 else None
         except ValueError:
             return None
     else:
@@ -15,9 +16,9 @@ def to_int_or_none(value):
 
 
 def get_algorithm_details_view_params(request):
-    version_id = to_int_or_none(request.GET.get("version_id"))
-    metrics_id = to_int_or_none(request.GET.get("metrics_id"))
-    molecule_id = to_int_or_none(request.GET.get("molecule_id"))
+    version_id = to_positive_int_or_none(request.GET.get("version_id"))
+    metrics_id = to_positive_int_or_none(request.GET.get("metrics_id"))
+    molecule_id = to_positive_int_or_none(request.GET.get("molecule_id"))
 
     return {
         "version_id": version_id,
@@ -46,7 +47,10 @@ def get_selected_metrics(params, metrics):
 
 def get_selected_version(params, versions):
     if params["version_id"]:
-        return Algorithm_version.objects.get(pk=params["version_id"])
+        try:
+            return Algorithm_version.objects.get(pk=params["version_id"])
+        except Algorithm_version.DoesNotExist:
+            return None
     else:
         params["version_id"] = versions[0].pk
         return versions[0]
@@ -54,7 +58,11 @@ def get_selected_version(params, versions):
 
 def get_selected_molecule(params, molecules_with_metrics):
     if params["molecule_id"]:
-        return Molecule.objects.get(pk=params["molecule_id"])
+        try:
+            return Molecule.objects.get(pk=params["molecule_id"])
+        except Molecule.DoesNotExist:
+            return None
+
     elif len(molecules_with_metrics) > 0:
         selected_molecule = Molecule.objects.get(pk=molecules_with_metrics[0]["pk"])
         params["molecule_id"] = selected_molecule.pk
@@ -83,7 +91,10 @@ def get_metrics_graph_data(selected_molecule, algorithm):
 
 
 def algorithm_details_view(request, algorithm_id):
-    algorithm = Algorithm.objects.get(pk=algorithm_id)
+    try:
+        algorithm = Algorithm.objects.get(pk=algorithm_id)
+    except Algorithm.DoesNotExist:
+        return redirect("home")
 
     if not algorithm.public and request.user.pk != algorithm.user.pk:
         raise PermissionDenied
