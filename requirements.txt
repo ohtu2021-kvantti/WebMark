@@ -1,5 +1,8 @@
 asgiref==3.3.1
+attrs==20.3.0
 beautifulsoup4==4.9.3
+click==7.1.2
+curlylint==0.12.2
 dj-database-url==0.5.0
 Django==3.1.5
 django-bootstrap4==2.3.1
@@ -11,11 +14,14 @@ flake8==3.8.4
 flake8-django==1.1.1
 gunicorn==20.0.4
 mccabe==0.6.1
+parsy==1.1.0
+pathspec==0.8.1
 psycopg2-binary==2.8.6
 pycodestyle==2.6.0
 pyflakes==2.2.0
 pytz==2020.5
 soupsieve==2.1
 sqlparse==0.4.1
+toml==0.10.2
 whitenoise==5.2.0
 coverage==5.4

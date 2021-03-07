@@ -5,24 +5,23 @@
 {% block title %}Update details{% endblock %}
 
 {% block content %}
-<div class="p-12">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Update algorithm details</th>
-            </tr>
-        </thead>
-    </table>
-</div>
+    <div class="p-12">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Update algorithm details</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
 
-<form method="post">
-    {% csrf_token %}
-    {% bootstrap_form form %}
-    {% buttons %}
+    <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
         <div class="text-center">
             <button class="btn btn-primary" type="submit">Submit</button>
         </div>
-    {% endbuttons %}
-</form>
-   
+        {% endbuttons %}
+    </form>
 {% endblock %}

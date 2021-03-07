@@ -5,17 +5,16 @@
 {% block title %}Sign Up{% endblock %}
 
 {% block content %}
-
-<div class="p-4">
-    <h2 class="text-center">Sign up</h2>
-    <form method="post" class="form">
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        {% buttons %}
-        <div class="text-center">
-            <button class="btn btn-primary" type="submit">Sign up</button>
-        </div> 
-        {% endbuttons %}   
-    </form>
-</div>
+    <div class="p-4">
+        <h2 class="text-center">Sign up</h2>
+        <form method="post" class="form">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+            <div class="text-center">
+                <button class="btn btn-primary" type="submit">Sign up</button>
+            </div>
+            {% endbuttons %}
+        </form>
+    </div>
 {% endblock %}
