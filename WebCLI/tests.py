@@ -183,7 +183,7 @@ class AlgorithmComparisonTest(TestCase):
 
     def test_random_parameters_are_handled_correctly(self):
         response = self.client.get("/compare/a/exec()")
-        self.assertRedirects(response, reverse("home"), status_code=302, target_status_code=200)
+        self.assertEqual(response.status_code, 404)
 
     def test_cannot_compare_nonexistent_algorithms(self):
         response = self.client.get("/compare/10/11")
