@@ -57,13 +57,13 @@
                         value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}"
                         selected="selected"
                     >
-                        {{ version.timestamp|date:'d.n.Y, G:i' }}
+                        Version {{ version.version_number }}: {{ version.timestamp|date:'d.n.Y, G:i' }}
                     </option>
                 {% else %}
                     <option
                         value="{{ algorithm.get_absolute_url }}?version_id={{ version.pk }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}"
                     >
-                        {{ version.timestamp|date:'d.n.Y, G:i' }}
+                        Version {{ version.version_number }}: {{ version.timestamp|date:'d.n.Y, G:i' }}
                     </option>
                 {% endifequal %}
             {% endfor %}

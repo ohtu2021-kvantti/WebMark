@@ -1,3 +1,4 @@
+from django.db.models.expressions import RawSQL
 from django.shortcuts import redirect, render
 from django.core.exceptions import PermissionDenied
 from ..models import Algorithm, Molecule, Algorithm_version, Metrics
@@ -24,6 +25,13 @@ def get_algorithm_details_view_params(request):
         "metrics_id": metrics_id,
         "molecule_id": molecule_id
     }
+
+
+def get_versions(algorithm):
+    query = Algorithm_version.objects.filter(algorithm_id=algorithm)
+    query = query.annotate(version_number=RawSQL("ROW_NUMBER() OVER(ORDER BY timestamp)", []))
+    query = query.order_by('-timestamp')
+    return query
 
 
 def get_metrics(params, versions):
@@ -98,7 +106,7 @@ def algorithm_details_view(request, algorithm_id):
     if not algorithm.public and request.user.pk != algorithm.user.pk:
         raise PermissionDenied
 
-    versions = Algorithm_version.objects.filter(algorithm_id=algorithm).order_by('-timestamp')
+    versions = get_versions(algorithm)
     params = get_algorithm_details_view_params(request)
     metrics = get_metrics(params, versions)
     selected_metrics = get_selected_metrics(params, metrics)
