@@ -59,16 +59,12 @@
             if (checkboxesDisabled && checked.length !== 2) {
                 checkboxesDisabled = false;
                 enableCheckboxes();
-
-        function updateCheckboxStates() {
-            if (checkboxesDisabled && checked.length !== 2) {
-                checkboxesDisabled = false;
-                enableCheckboxes();
             }
             if (!checkboxesDisabled && checked.length === 2) {
                 checkboxesDisabled = true;
                 disableCheckboxes();
             }
+        }
 
         // disables all checkboxes except the ones that are currently selected
         function disableCheckboxes() {
@@ -95,6 +91,7 @@
                 compareButton.classList.add('disabled');
             } else {
                 compareButton.href = "/{{ root_dir }}" + "compare/" + checked[0] + "/" + checked[1];
+                console.log(compareButton.href);
                 compareButton.classList.remove("disabled");
             }
             clearButton.disabled = checked.length === 0;
