@@ -16,7 +16,7 @@ Requirements: django, django-on-heroku, gunicorn, django-dotenv, flake8, flake8-
 
 ## Database schema
 
-<img src="db_schema.jpg">
+<img src="db_schema.png">
 
 ## Setting up the development environment
 
