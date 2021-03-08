@@ -14,6 +14,10 @@ WebCLI = Application
 
 Requirements: django, django-on-heroku, gunicorn, django-dotenv, flake8, flake8-django
 
+## Database schema
+
+<img src="db_schema.png">
+
 ## Setting up the development environment
 
 Install PostgreSQL:
