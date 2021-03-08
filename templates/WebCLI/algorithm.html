@@ -4,212 +4,213 @@
 {% block title %}Algorithm view{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-row flex-wrap justify-content-center">
-    <div>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Algorithm details
-                        {% ifequal request.user.pk algorithm.user.pk %}
-                            - <a href="{% url 'updateAlgorithm'%}?index={{algorithm.pk}}">update details</a>
-                        {% endifequal %}
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th>name</th>
-                    <td>{{ algorithm.name }}</td>
-                </tr>
-                <tr>
-                    <th>type</th>
-                    <td>{{ algorithm.algorithm_type.type_name }}</td>
-                </tr>
-                <tr>
-                    <th>author</th>
-                    <td>{{ algorithm.user.username }}</td>
-                </tr>
-                <tr>
-                    <th>public?</th>
-                    <td>{{ algorithm.public }}</td>
-                </tr>
-                {% if algorithm.article_link %}
+    <div class="d-flex flex-row flex-wrap justify-content-center">
+        <div>
+            <table class="table table-striped">
+                <thead>
                     <tr>
-                        <th>paper</th>
-                        <td><a href="{{ algorithm.article_link }}" target="_blank">{{ algorithm.article_link }}</a></td>
+                        <th>Algorithm details
+                            {% ifequal request.user.pk algorithm.user.pk %}
+                                - <a href="{% url 'updateAlgorithm'%}?index={{algorithm.pk}}">update details</a>
+                            {% endifequal %}
+                        </th>
                     </tr>
-                {% endif %}
-                {% if algorithm.github_link %}
+                </thead>
+                <tbody>
                     <tr>
-                        <th>Github</th>
-                        <td><a href="{{ algorithm.github_link }}" target="_blank">{{ algorithm.github_link }}</a></td>
+                        <th>name</th>
+                        <td>{{ algorithm.name }}</td>
                     </tr>
-                {% endif %}
-            </tbody>
-        </table>
+                    <tr>
+                        <th>type</th>
+                        <td>{{ algorithm.algorithm_type.type_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>author</th>
+                        <td>{{ algorithm.user.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>public?</th>
+                        <td>{{ algorithm.public }}</td>
+                    </tr>
+                    {% if algorithm.article_link %}
+                        <tr>
+                            <th>paper</th>
+                            <td><a href="{{ algorithm.article_link }}" target="_blank">{{ algorithm.article_link }}</a></td>
+                        </tr>
+                    {% endif %}
+                    {% if algorithm.github_link %}
+                        <tr>
+                            <th>Github</th>
+                            <td><a href="{{ algorithm.github_link }}" target="_blank">{{ algorithm.github_link }}</a></td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
 
-        {% load tz %}
-        {% timezone "Europe/Helsinki" %}
+            {% load tz %}
+            {% timezone "Europe/Helsinki" %}
             <select onchange="window.location.href=this.value">
-            {% for version in versions %}
-                {% ifequal version.pk params.version_id %}
-                    <option
-                        value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}"
-                        selected="selected"
-                    >
-                        Version {{ version.version_number }}: {{ version.timestamp|date:'d.n.Y, G:i' }}
-                    </option>
-                {% else %}
-                    <option
-                        value="{{ algorithm.get_absolute_url }}?version_id={{ version.pk }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}"
-                    >
-                        Version {{ version.version_number }}: {{ version.timestamp|date:'d.n.Y, G:i' }}
-                    </option>
-                {% endifequal %}
-            {% endfor %}
+                {% for version in versions %}
+                    {% ifequal version.pk params.version_id %}
+                        <option
+                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}"
+                            selected="selected"
+                        >
+                            Version {{ version.version_number }}: {{ version.timestamp|date:'d.n.Y, G:i' }}
+                        </option>
+                    {% else %}
+                        <option
+                            value="{{ algorithm.get_absolute_url }}?version_id={{ version.pk }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}"
+                        >
+                            Version {{ version.version_number }}: {{ version.timestamp|date:'d.n.Y, G:i' }}
+                        </option>
+                    {% endifequal %}
+                {% endfor %}
             </select>
-        {% endtimezone %}
+            {% endtimezone %}
 
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th colspan="2">Algorithm
-                        {% ifequal request.user.pk algorithm.user.pk %}
-                            - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
-                        {% endifequal %}
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td colspan="2">
-                        <code>{{ selected_version.algorithm|linebreaks }}</code>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th colspan="2">Algorithm
+                            {% ifequal request.user.pk algorithm.user.pk %}
+                                - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
+                            {% endifequal %}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <code>{{ selected_version.algorithm|linebreaks }}</code>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
-        <select onchange="window.location.href=this.value">
-            {% for m in metrics %}
-                {% ifequal m selected_metrics %}
-                    <option
-                        value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
-                        selected="selected"
-                    >
-                        {{ m.molecule.name }}
-                    </option>
-                {% else %}
-                    <option
-                        value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ m.pk }}&molecule_id={{ params.molecule_id }}"
-                    >
-                        {{ m.molecule.name }}
-                    </option>
-                {% endifequal %}
-            {% endfor %}
-        </select>
-
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Metrics
-                        {% ifequal request.user.pk algorithm.user.pk %}
-                            - <a href="{% url 'add_metrics'%}?index={{params.version_id}}">Add metrics of a new molecule manually</a>
-                        {% endifequal %}
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th>molecule</th>
-                    <td>{{ selected_metrics.molecule.name }}</td>
-                </tr>
-                <tr>
-                    <th>verified</th>
-                    <td>{{ selected_metrics.verified }}</td>
-                </tr>
-                <tr>
-                    <th>iterations</th>
-                    <td>{{ selected_metrics.iterations }}</td>
-                </tr>
-                <tr>
-                    <th>measurements</th>
-                    <td>{{ selected_metrics.measurements }}</td>
-                </tr>
-                <tr>
-                    <th>circuit depth</th>
-                    <td>{{ selected_metrics.circuit_depth }}</td>
-                </tr>
-                <tr>
-                    <th>accuracy</th>
-                    <td>{{ selected_metrics.accuracy }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="d-flex flex-column align-items-center">
-        <div class="mt-3">
-            <b>Select molecule to graph:</b>
             <select onchange="window.location.href=this.value">
-                {% for m in molecules_with_metrics %}
-                    {% ifequal m.pk selected_molecule.pk %}
+                {% for m in metrics %}
+                    {% ifequal m selected_metrics %}
                         <option
                             value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
-                            selected="selected">
+                            selected="selected"
+                        >
+                            {{ m.molecule.name }}
+                        </option>
+                    {% else %}
+                        <option
+                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ m.pk }}&molecule_id={{ params.molecule_id }}"
+                        >
+                            {{ m.molecule.name }}
+                        </option>
+                    {% endifequal %}
+                {% endfor %}
+            </select>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Metrics
+                            {% ifequal request.user.pk algorithm.user.pk %}
+                                - <a href="{% url 'add_metrics'%}?index={{params.version_id}}">Add metrics of a new molecule manually</a>
+                            {% endifequal %}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>molecule</th>
+                        <td>{{ selected_metrics.molecule.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>verified</th>
+                        <td>{{ selected_metrics.verified }}</td>
+                    </tr>
+                    <tr>
+                        <th>iterations</th>
+                        <td>{{ selected_metrics.iterations }}</td>
+                    </tr>
+                    <tr>
+                        <th>measurements</th>
+                        <td>{{ selected_metrics.measurements }}</td>
+                    </tr>
+                    <tr>
+                        <th>circuit depth</th>
+                        <td>{{ selected_metrics.circuit_depth }}</td>
+                    </tr>
+                    <tr>
+                        <th>accuracy</th>
+                        <td>{{ selected_metrics.accuracy }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex flex-column align-items-center">
+            <div class="mt-3">
+                <b>Select molecule to graph:</b>
+                <select onchange="window.location.href=this.value">
+                    {% for m in molecules_with_metrics %}
+                        {% ifequal m.pk selected_molecule.pk %}
+                            <option
+                                value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
+                                selected="selected"
+                            >
                                 {{ m.name }}
                             </option>
-                    {% else %}
+                        {% else %}
                             <option
                                 value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ m.pk }}"
                             >
                                 {{ m.name }}
                             </option>
-                    {% endifequal %}
-                {% endfor %}
-            </select>
+                        {% endifequal %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div id="metrics-chart"></div>
         </div>
-        <div id="metrics-chart"></div>
     </div>
-</div>
 
-{{ metrics_graph_data|json_script:"metrics-graph-data"}}
+    {{ metrics_graph_data|json_script:"metrics-graph-data"}}
 
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
 
-    google.charts.load('current', { packages: ['corechart', 'line'] });
-    google.charts.setOnLoadCallback(drawChart);
+        google.charts.load('current', { packages: ['corechart', 'line'] });
+        google.charts.setOnLoadCallback(drawChart);
 
-    function drawChart() {
-        const data = new google.visualization.DataTable();
-        const rows = JSON.parse(document.getElementById('metrics-graph-data').textContent);
-        const ticks = Array.from({ length: rows.length}, (_, i) => i + 1);
-        data.addColumn('number', "version");
-        data.addColumn('number', "iterations");
-        data.addColumn('number', "measurements");
-        data.addColumn('number', "circuit depth");
-        data.addColumn('number', "accuracy");
-        data.addRows(rows);
+        function drawChart() {
+            const data = new google.visualization.DataTable();
+            const rows = JSON.parse(document.getElementById('metrics-graph-data').textContent);
+            const ticks = Array.from({ length: rows.length}, (_, i) => i + 1);
+            data.addColumn('number', "version");
+            data.addColumn('number', "iterations");
+            data.addColumn('number', "measurements");
+            data.addColumn('number', "circuit depth");
+            data.addColumn('number', "accuracy");
+            data.addRows(rows);
 
-        const options = {
-            width: 600,
-            height: 480,
-            title: "Development of metrics between algorithm versions",
-            hAxis: {
-                viewWindow: {
-                min: 1,
-                max: rows.length
+            const options = {
+                width: 600,
+                height: 480,
+                title: "Development of metrics between algorithm versions",
+                hAxis: {
+                    viewWindow: {
+                    min: 1,
+                    max: rows.length
+                    },
+                    ticks,
+                    title: 'Version number'
                 },
-                ticks,
-                title: 'Version number'
-            },
-            vAxis: {
-                title: 'Value'
-            }
-        };
+                vAxis: {
+                    title: 'Value'
+                }
+            };
 
-        const chart = new google.visualization.LineChart(document.getElementById('metrics-chart'));
-        chart.draw(data, options);
-    }
-</script>
+            const chart = new google.visualization.LineChart(document.getElementById('metrics-chart'));
+            chart.draw(data, options);
+        }
+    </script>
 
 {% endblock %}}
