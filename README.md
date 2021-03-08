@@ -76,7 +76,7 @@ If any new dependancies are added f.ex. to the requirements.txt start docker wit
 ```
 sudo docker-compose up --build
 ```
-Furthermore all the next commands can be used from Docker by 
+Furthermore all the next commands can be used from Docker by
 ```
 sudo docker-compose run web <command_name_with_possible_parameters>
 ```
@@ -90,6 +90,11 @@ sudo docker-compose run web python manage.py makemigration
 Lint your code with
 ```
 flake8
+```
+
+Lint HTML templates with
+```
+curlylint templates/
 ```
 
 Run tests

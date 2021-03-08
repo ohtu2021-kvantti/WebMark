@@ -4,13 +4,13 @@
     {% csrf_token %}
     <input type="hidden" name="otherVersion" value={{ otherVersion }}>
     <select name={{ select_name }}>
-    {% for v in versions %}
-        {% ifequal v selectedVersion %}
-            <option value="{{ v.pk }}" selected="selected">{{ v.timestamp|date:'d.n.Y, G:i' }}</option>
-        {% else %}
-            <option value="{{ v.pk }}">{{ v.timestamp|date:'d.n.Y, G:i' }}</option>
-        {% endifequal %}
-    {% endfor %}
+        {% for v in versions %}
+            {% ifequal v selectedVersion %}
+                <option value="{{ v.pk }}" selected="selected">{{ v.timestamp|date:'d.n.Y, G:i' }}</option>
+            {% else %}
+                <option value="{{ v.pk }}">{{ v.timestamp|date:'d.n.Y, G:i' }}</option>
+            {% endifequal %}
+        {% endfor %}
     </select>
 </form>
 {% endtimezone %}

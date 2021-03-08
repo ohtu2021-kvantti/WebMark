@@ -1,12 +1,12 @@
 <form method="POST" name={{ form_name }} onchange="document.getElementsByName('{{ form_name }}')[0].submit();">
     {% csrf_token %}
     <select name={{ select_name }}>
-    {% for m in metrics %}
-        {% ifequal m selectedMetrics %}
-            <option value="{{ m.pk }}" selected="selected">{{ m.molecule.name }}</option>
-        {% else %}
-            <option value="{{ m.pk }}">{{ m.molecule.name }}</option>
-        {% endifequal %}
-    {% endfor %}
+        {% for m in metrics %}
+            {% ifequal m selectedMetrics %}
+                <option value="{{ m.pk }}" selected="selected">{{ m.molecule.name }}</option>
+            {% else %}
+                <option value="{{ m.pk }}">{{ m.molecule.name }}</option>
+            {% endifequal %}
+        {% endfor %}
     </select>
 </form>
