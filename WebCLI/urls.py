@@ -25,10 +25,10 @@ urlpatterns = [
     path('newAlgorithm/', new_algorithm, name='newAlgorithm'),
     path('newMolecule/', new_molecule, name='newMolecule'),
     path('newAlgorithmType/', new_algorithm_type, name='newAlgorithmType'),
-    path('algorithm/<algorithm_id>', algorithm_details_view, name='algorithm_details'),
+    path('algorithm/<int:algorithm_id>', algorithm_details_view, name='algorithm_details'),
     path('addMetrics/', add_metrics, name='add_metrics'),
     path('myAlgorithms/', MyAlgorithmListView.as_view(), name="myAlgorithms"),
-    path('compare/<a1_id>/<a2_id>', compare_algorithms, name="compare_algorithms"),
+    path('compare/<int:a1_id>/<int:a2_id>', compare_algorithms, name="compare_algorithms"),
     path('addVersion/', add_version, name='add_version'),
     path('updateAlgorithm/', update_algorithm, name='updateAlgorithm'),
 ]

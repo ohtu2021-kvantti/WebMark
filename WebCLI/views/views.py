@@ -11,7 +11,7 @@ from django.forms import CharField
 from django.forms.widgets import NumberInput
 from django_tables2.columns.base import Column
 from django_tables2.columns import TemplateColumn
-from .models import Algorithm, Molecule, Algorithm_type, Algorithm_version, Metrics
+from ..models import Algorithm, Molecule, Algorithm_type, Algorithm_version, Metrics
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django_filters import AllValuesFilter, FilterSet
@@ -128,33 +128,6 @@ def new_algorithm(request):
     return render(request, 'WebCLI/newAlgorithm.html', data)
 
 
-def algorithm_details_view(request, algorithm_id):
-    algorithm = Algorithm.objects.get(pk=algorithm_id)
-    if not algorithm.public and request.user.pk != algorithm.user.pk:
-        raise PermissionDenied
-
-    versions = Algorithm_version.objects.filter(algorithm_id=algorithm).order_by('-timestamp')
-    selectedVersion = versions[0]
-    metrics = Metrics.objects.filter(algorithm_version=selectedVersion)
-    selectedMetrics = None
-    if len(metrics) > 0:
-        selectedMetrics = metrics[0]
-    if request.method == "POST":
-        if 'version_id' in request.POST:
-            selectedVersion = Algorithm_version.objects.get(pk=request.POST.get('version_id'))
-            metrics = Metrics.objects.filter(algorithm_version=selectedVersion)
-            selectedMetrics = None
-            if len(metrics) > 0:
-                selectedMetrics = metrics[0]
-        else:
-            selectedMetrics = Metrics.objects.get(pk=request.POST.get('metrics_id'))
-            selectedVersion = selectedMetrics.algorithm_version
-            metrics = Metrics.objects.filter(algorithm_version=selectedVersion)
-    data = {'algorithm': algorithm, 'versions': versions, 'selectedVersion': selectedVersion,
-            'metrics': metrics, 'selectedMetrics': selectedMetrics}
-    return render(request, 'WebCLI/algorithm.html', data)
-
-
 class MoleculeForm(ModelForm):
     class Meta:
         model = Molecule
@@ -253,8 +226,6 @@ def update_algorithm(request):
 
 
 def compare_algorithms(request, a1_id, a2_id):
-    if not a1_id.isnumeric() or not a2_id.isnumeric():  # ignore garbage values
-        return redirect("home")
 
     queryset = Algorithm.objects.filter(pk=a1_id) | Algorithm.objects.filter(pk=a2_id)
     if len(queryset) != 2:  # check that we have found two unique algorithms
