@@ -1,117 +1,10 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
-from .models import Molecule, Algorithm_type, Algorithm, Algorithm_version, Metrics
+from ..models import Molecule, Algorithm_type, Algorithm, Algorithm_version, Metrics
 from django.urls import reverse
 from django.utils import timezone
 import datetime
 import pytz
-
-
-class WebFunctionTestLogin(TestCase):
-    def test_signup(self):
-        c = Client()
-        response = c.post(
-            '/signup/',
-            {'username': 'testuser1', 'password1': 'sekred010', 'password2': 'sekred010'}
-        )
-        self.assertEqual(response.status_code, 302)
-        response = c.login(username='testuser1', password='sekred010')
-        self.assertEqual(response, True)
-
-    def test_login(self):
-        c = Client()
-        c.post(
-            '/signup/',
-            {'username': 'testuser2', 'password1': 'sekred010', 'password2': 'sekred010'}
-        )
-        c.post(
-            '/accounts/login/',
-            {'username': 'testuser2', 'password': 'sekred010'})
-        response = str(c.get('/').content)
-        self.assertFalse(response.find('logged in - testuser2') < 0)
-
-    def test_logout(self):
-        c = Client()
-        c.post(
-            '/signup/',
-            {'username': 'testuser4', 'password1': 'sekred010', 'password2': 'sekred010'}
-        )
-        c.post(
-            '/accounts/login/',
-            {'username': 'testuser4', 'password': 'sekred010'})
-        c.get('/accounts/logout/')
-        response = str(c.get('/').content)
-        self.assertTrue(response.find('logged in - testuser4') < 0)
-
-
-class WebFunctionTestAddDataAsUser(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        c = Client()
-        c.post('/signup/',
-               {'username': 'testuser3', 'password1': 'sekred010', 'password2': 'sekred010'})
-
-    def setUp(self):
-        self.c = Client()
-        self.c.post('/accounts/login/',
-                    {'username': 'testuser3', 'password': 'sekred010'})
-
-    def tearDown(self):
-        self.c.get('/accounts/logout/')
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
-    def test_add_molecule(self):
-        self.c.post('/newMolecule/',
-                    {'name': 'Lithium hydride', 'structure': 'LiH'})
-        result = Molecule.objects.get(name='Lithium hydride')
-        self.assertIsNotNone(result)
-
-    def test_add_type(self):
-        self.c.post('/newAlgorithmType/',
-                    {'type_name': 'VQE (UCCSD)'})
-        result = Algorithm_type.objects.get(type_name='VQE (UCCSD)')
-        self.assertIsNotNone(result)
-
-    def test_add_algorithm_with_2_versions(self):
-        user_id = User.objects.get(username='testuser3').pk
-        self.c.post('/newAlgorithmType/',
-                    {'type_name': 'VQE'})
-        self.c.post('/newMolecule/',
-                    {'name': 'Hydrogen', 'structure': 'H2'})
-        self.c.post('/newAlgorithm/',
-                    {'user': user_id,
-                     'name': 'test_algorithm',
-                     'algorithm_type': Algorithm_type.objects.get(type_name='VQE').pk,
-                     'public': 'on',
-                     'algorithm': 'exec()',
-                     'article_link': 'https://kela.fi',
-                     'github_link': 'https://vn.fi'})
-        a = Algorithm.objects.get(name='test_algorithm')
-        self.c.post('/addVersion/?index='+str(a.pk),
-                    {'algorithm': 'print(1)\nexec()'})
-        v = Algorithm_version.objects.filter(algorithm_id=a)
-
-        self.assertEqual(a.public, True)
-        self.assertEqual(a.algorithm_type.type_name, 'VQE')
-        self.assertEqual(a.user.username, 'testuser3')
-        self.assertEqual(len(v), 2)
-        self.assertEqual(v[1].algorithm, 'print(1)\nexec()')
-
-
-class WebFunctionTestMyAlgorithmsView(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        User.objects.create_user("testuser", "test@example.com", "secret")
-
-    def setUp(self):
-        self.client.login(username="testuser", password="secret")
-
-    def test_my_algorithms_view(self):
-        response = self.client.get("/myAlgorithms/")
-        self.assertEqual(response.status_code, 200)
 
 
 class AlgorithmComparisonTest(TestCase):
@@ -217,89 +110,98 @@ class AlgorithmComparisonTest(TestCase):
 class WebFunctionTestViewData(TestCase):
 
     @classmethod
-    def setUpTestData(cls):
-        u1 = User.objects.create_user('Bob', 'bob@example.com', 'bobpassword')
-        u1.save()
-        u2 = User.objects.create_user('Alice', 'alice@example.com', 'alicepassword')
-        u2.save()
-        m1 = Molecule(name='molecule1', structure='structure1')
-        m1.save()
-        m2 = Molecule(name='molecule2', structure='structure2')
-        m2.save()
-        m3 = Molecule(name='molecule3', structure='structure3')
-        m3.save()
-        at1 = Algorithm_type(type_name='type1')
-        at1.save()
-        at2 = Algorithm_type(type_name='type2')
-        at2.save()
-        at3 = Algorithm_type(type_name='type3')
-        at3.save()
-        a1 = Algorithm(name='Algo1', public=True, algorithm_type=at1, user=u1,
+    def setUpTestAlgorithms(self):
+        self.a1 = Algorithm(name='Algo1', public=True, algorithm_type=self.at1, user=self.u1,
                        article_link='https://alink1.com', github_link='https://gtlink1.com')
-        a1.save()
-        a2 = Algorithm(name='Algo2', public=False, algorithm_type=at2, user=u1,
+        self.a1.save()
+        self.a2 = Algorithm(name='Algo2', public=False, algorithm_type=self.at2, user=self.u1,
                        article_link='https://alink2.com', github_link='https://gtlink2.com')
-        a2.save()
-        a3 = Algorithm(name='Algo3', public=True, algorithm_type=at1, user=u1,
+        self.a2.save()
+        self.a3 = Algorithm(name='Algo3', public=True, algorithm_type=self.at1, user=self.u1,
                        article_link='https://alink3.com', github_link='https://gtlink3.com')
-        a3.save()
-        a4 = Algorithm(name='Algo4', public=True, algorithm_type=at2, user=u2,
+        self.a3.save()
+        self.a4 = Algorithm(name='Algo4', public=True, algorithm_type=self.at2, user=self.u2,
                        article_link='https://alink4.com', github_link='https://gtlink4.com')
-        a4.save()
-        a5 = Algorithm(name='Algo5', public=False, algorithm_type=at3, user=u2,
+        self.a4.save()
+        self.a5 = Algorithm(name='Algo5', public=False, algorithm_type=self.at3, user=self.u2,
                        article_link='https://alink5.com', github_link='https://gtlink5.com')
-        a5.save()
-        a6 = Algorithm(name='Algo6', public=False, algorithm_type=at2, user=u2,
+        self.a5.save()
+        self.a6 = Algorithm(name='Algo6', public=False, algorithm_type=self.at2, user=self.u2,
                        article_link='https://alink6.com', github_link='https://gtlink6.com')
-        a6.save()
-        av = Algorithm_version(algorithm_id=a1,
+        self.a6.save()
+
+    def setUpTestAlgorithmVersions(self):
+        self.av = Algorithm_version(algorithm_id=self.a1,
                                timestamp=datetime.datetime(2021, 2, 10, 10, 0, 0, 0, pytz.UTC),
                                algorithm='algorithm1\nversion1\n')
-        av.save()
-        av = Algorithm_version(algorithm_id=a1,
+        self.av.save()
+        self.av = Algorithm_version(algorithm_id=self.a1,
                                timestamp=datetime.datetime(2021, 2, 10, 11, 0, 0, 0, pytz.UTC),
                                algorithm='algorithm1\nversion2\n')
-        av.save()
-        av = Algorithm_version(algorithm_id=a2,
+        self.av.save()
+        self.av = Algorithm_version(algorithm_id=self.a2,
                                timestamp=datetime.datetime(2021, 2, 11, 10, 0, 0, 0, pytz.UTC),
                                algorithm='algorithm2\nversion1\n')
-        av.save()
-        av = Algorithm_version(algorithm_id=a2,
+        self.av.save()
+        self.av = Algorithm_version(algorithm_id=self.a2,
                                timestamp=datetime.datetime(2021, 2, 11, 11, 0, 0, 0, pytz.UTC),
                                algorithm='algorithm2\nversion2\n')
-        av.save()
-        av = Algorithm_version(algorithm_id=a3,
+        self.av.save()
+        self.av = Algorithm_version(algorithm_id=self.a3,
                                timestamp=datetime.datetime(2021, 2, 12, 10, 0, 0, 0, pytz.UTC),
                                algorithm='algorithm3\nversion1\n')
-        av.save()
-        av = Algorithm_version(algorithm_id=a3,
+        self.av.save()
+        self.av = Algorithm_version(algorithm_id=self.a3,
                                timestamp=datetime.datetime(2021, 2, 15, 11, 0, 0, 0, pytz.UTC),
                                algorithm='algorithm3\nversion2\n')
-        av.save()
-        av = Algorithm_version(algorithm_id=a4,
+        self.av.save()
+        self.av = Algorithm_version(algorithm_id=self.a4,
                                timestamp=datetime.datetime(2021, 2, 17, 10, 0, 0, 0, pytz.UTC),
                                algorithm='algorithm4\nversion1\n')
-        av.save()
-        av = Algorithm_version(algorithm_id=a4,
+        self.av.save()
+        self.av = Algorithm_version(algorithm_id=self.a4,
                                timestamp=datetime.datetime(2021, 2, 18, 11, 0, 0, 0, pytz.UTC),
                                algorithm='algorithm4\nversion2\n')
-        av.save()
-        av = Algorithm_version(algorithm_id=a5,
+        self.av.save()
+        self.av = Algorithm_version(algorithm_id=self.a5,
                                timestamp=datetime.datetime(2021, 2, 17, 18, 0, 0, 0, pytz.UTC),
                                algorithm='algorithm5\nversion1\n')
-        av.save()
-        av = Algorithm_version(algorithm_id=a5,
+        self.av.save()
+        self.av = Algorithm_version(algorithm_id=self.a5,
                                timestamp=datetime.datetime(2021, 2, 18, 12, 0, 0, 0, pytz.UTC),
                                algorithm='algorithm5\nversion2\n')
-        av.save()
-        av = Algorithm_version(algorithm_id=a6,
+        self.av.save()
+        self.av = Algorithm_version(algorithm_id=self.a6,
                                timestamp=datetime.datetime(2021, 2, 17, 9, 0, 0, 0, pytz.UTC),
                                algorithm='algorithm6\nversion1\n')
-        av.save()
-        av = Algorithm_version(algorithm_id=a6,
+        self.av.save()
+        self.av = Algorithm_version(algorithm_id=self.a6,
                                timestamp=datetime.datetime(2021, 2, 18, 15, 0, 0, 0, pytz.UTC),
                                algorithm='algorithm6\nversion2\n')
-        av.save()
+        self.av.save()
+
+    @classmethod
+    def setUpTestData(self):
+        self.u1 = User.objects.create_user('Bob', 'bob@example.com', 'bobpassword')
+        self.u1.save()
+        self.u2 = User.objects.create_user('Alice', 'alice@example.com', 'alicepassword')
+        self.u2.save()
+        self.m1 = Molecule(name='molecule1', structure='structure1')
+        self.m1.save()
+        self.m2 = Molecule(name='molecule2', structure='structure2')
+        self.m2.save()
+        self.m3 = Molecule(name='molecule3', structure='structure3')
+        self.m3.save()
+        self.at1 = Algorithm_type(type_name='type1')
+        self.at1.save()
+        self.at2 = Algorithm_type(type_name='type2')
+        self.at2.save()
+        self.at3 = Algorithm_type(type_name='type3')
+        self.at3.save()
+        self.setUpTestAlgorithms()
+        
+        self.setUpTestAlgorithmVersions(self)
+        
 
     def setUp(self):
         self.client.login(username="Bob", password="bobpassword")
