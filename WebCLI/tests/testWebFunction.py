@@ -1,10 +1,6 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
-from ..models import Molecule, Algorithm_type, Algorithm, Algorithm_version, Metrics
-from django.urls import reverse
-from django.utils import timezone
-import datetime
-import pytz
+from ..models import Molecule, Algorithm_type, Algorithm, Algorithm_version
 
 
 class WebFunctionTestLogin(TestCase):

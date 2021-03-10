@@ -1,4 +1,4 @@
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.contrib.auth.models import User
 from ..models import Molecule, Algorithm_type, Algorithm, Algorithm_version, Metrics
 from django.urls import reverse
@@ -112,72 +112,72 @@ class WebFunctionTestViewData(TestCase):
     @classmethod
     def setUpTestAlgorithms(self):
         self.a1 = Algorithm(name='Algo1', public=True, algorithm_type=self.at1, user=self.u1,
-                       article_link='https://alink1.com', github_link='https://gtlink1.com')
+                            article_link='https://alink1.com', github_link='https://gtlink1.com')
         self.a1.save()
         self.a2 = Algorithm(name='Algo2', public=False, algorithm_type=self.at2, user=self.u1,
-                       article_link='https://alink2.com', github_link='https://gtlink2.com')
+                            article_link='https://alink2.com', github_link='https://gtlink2.com')
         self.a2.save()
         self.a3 = Algorithm(name='Algo3', public=True, algorithm_type=self.at1, user=self.u1,
-                       article_link='https://alink3.com', github_link='https://gtlink3.com')
+                            article_link='https://alink3.com', github_link='https://gtlink3.com')
         self.a3.save()
         self.a4 = Algorithm(name='Algo4', public=True, algorithm_type=self.at2, user=self.u2,
-                       article_link='https://alink4.com', github_link='https://gtlink4.com')
+                            article_link='https://alink4.com', github_link='https://gtlink4.com')
         self.a4.save()
         self.a5 = Algorithm(name='Algo5', public=False, algorithm_type=self.at3, user=self.u2,
-                       article_link='https://alink5.com', github_link='https://gtlink5.com')
+                            article_link='https://alink5.com', github_link='https://gtlink5.com')
         self.a5.save()
         self.a6 = Algorithm(name='Algo6', public=False, algorithm_type=self.at2, user=self.u2,
-                       article_link='https://alink6.com', github_link='https://gtlink6.com')
+                            article_link='https://alink6.com', github_link='https://gtlink6.com')
         self.a6.save()
 
     def setUpTestAlgorithmVersions(self):
         self.av = Algorithm_version(algorithm_id=self.a1,
-                               timestamp=datetime.datetime(2021, 2, 10, 10, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm1\nversion1\n')
+                                    timestamp=datetime.datetime(2021, 2, 10, 10, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm1\nversion1\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a1,
-                               timestamp=datetime.datetime(2021, 2, 10, 11, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm1\nversion2\n')
+                                    timestamp=datetime.datetime(2021, 2, 10, 11, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm1\nversion2\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a2,
-                               timestamp=datetime.datetime(2021, 2, 11, 10, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm2\nversion1\n')
+                                    timestamp=datetime.datetime(2021, 2, 11, 10, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm2\nversion1\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a2,
-                               timestamp=datetime.datetime(2021, 2, 11, 11, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm2\nversion2\n')
+                                    timestamp=datetime.datetime(2021, 2, 11, 11, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm2\nversion2\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a3,
-                               timestamp=datetime.datetime(2021, 2, 12, 10, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm3\nversion1\n')
+                                    timestamp=datetime.datetime(2021, 2, 12, 10, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm3\nversion1\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a3,
-                               timestamp=datetime.datetime(2021, 2, 15, 11, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm3\nversion2\n')
+                                    timestamp=datetime.datetime(2021, 2, 15, 11, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm3\nversion2\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a4,
-                               timestamp=datetime.datetime(2021, 2, 17, 10, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm4\nversion1\n')
+                                    timestamp=datetime.datetime(2021, 2, 17, 10, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm4\nversion1\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a4,
-                               timestamp=datetime.datetime(2021, 2, 18, 11, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm4\nversion2\n')
+                                    timestamp=datetime.datetime(2021, 2, 18, 11, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm4\nversion2\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a5,
-                               timestamp=datetime.datetime(2021, 2, 17, 18, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm5\nversion1\n')
+                                    timestamp=datetime.datetime(2021, 2, 17, 18, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm5\nversion1\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a5,
-                               timestamp=datetime.datetime(2021, 2, 18, 12, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm5\nversion2\n')
+                                    timestamp=datetime.datetime(2021, 2, 18, 12, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm5\nversion2\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a6,
-                               timestamp=datetime.datetime(2021, 2, 17, 9, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm6\nversion1\n')
+                                    timestamp=datetime.datetime(2021, 2, 17, 9, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm6\nversion1\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a6,
-                               timestamp=datetime.datetime(2021, 2, 18, 15, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm6\nversion2\n')
+                                    timestamp=datetime.datetime(2021, 2, 18, 15, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm6\nversion2\n')
         self.av.save()
 
     @classmethod
@@ -199,9 +199,7 @@ class WebFunctionTestViewData(TestCase):
         self.at3 = Algorithm_type(type_name='type3')
         self.at3.save()
         self.setUpTestAlgorithms()
-        
         self.setUpTestAlgorithmVersions(self)
-        
 
     def setUp(self):
         self.client.login(username="Bob", password="bobpassword")
@@ -299,72 +297,72 @@ class WebFunctionTestMetrics(TestCase):
     @classmethod
     def setUpTestAlgorithms(self):
         self.a1 = Algorithm(name='Algo1', public=True, algorithm_type=self.at1, user=self.u1,
-                       article_link='https://alink1.com', github_link='https://gtlink1.com')
+                            article_link='https://alink1.com', github_link='https://gtlink1.com')
         self.a1.save()
         self.a2 = Algorithm(name='Algo2', public=False, algorithm_type=self.at2, user=self.u1,
-                       article_link='https://alink2.com', github_link='https://gtlink2.com')
+                            article_link='https://alink2.com', github_link='https://gtlink2.com')
         self.a2.save()
         self.a3 = Algorithm(name='Algo3', public=True, algorithm_type=self.at1, user=self.u1,
-                       article_link='https://alink3.com', github_link='https://gtlink3.com')
+                            article_link='https://alink3.com', github_link='https://gtlink3.com')
         self.a3.save()
         self.a4 = Algorithm(name='Algo4', public=True, algorithm_type=self.at2, user=self.u2,
-                       article_link='https://alink4.com', github_link='https://gtlink4.com')
+                            article_link='https://alink4.com', github_link='https://gtlink4.com')
         self.a4.save()
         self.a5 = Algorithm(name='Algo5', public=False, algorithm_type=self.at3, user=self.u2,
-                       article_link='https://alink5.com', github_link='https://gtlink5.com')
+                            article_link='https://alink5.com', github_link='https://gtlink5.com')
         self.a5.save()
         self.a6 = Algorithm(name='Algo6', public=False, algorithm_type=self.at2, user=self.u2,
-                       article_link='https://alink6.com', github_link='https://gtlink6.com')
+                            article_link='https://alink6.com', github_link='https://gtlink6.com')
         self.a6.save()
 
     def setUpTestAlgorithmVersions(self):
         self.av = Algorithm_version(algorithm_id=self.a1,
-                               timestamp=datetime.datetime(2021, 2, 10, 10, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm1\nversion1\n')
+                                    timestamp=datetime.datetime(2021, 2, 10, 10, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm1\nversion1\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a1,
-                               timestamp=datetime.datetime(2021, 2, 10, 11, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm1\nversion2\n')
+                                    timestamp=datetime.datetime(2021, 2, 10, 11, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm1\nversion2\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a2,
-                               timestamp=datetime.datetime(2021, 2, 11, 10, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm2\nversion1\n')
+                                    timestamp=datetime.datetime(2021, 2, 11, 10, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm2\nversion1\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a2,
-                               timestamp=datetime.datetime(2021, 2, 11, 11, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm2\nversion2\n')
+                                    timestamp=datetime.datetime(2021, 2, 11, 11, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm2\nversion2\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a3,
-                               timestamp=datetime.datetime(2021, 2, 12, 10, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm3\nversion1\n')
+                                    timestamp=datetime.datetime(2021, 2, 12, 10, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm3\nversion1\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a3,
-                               timestamp=datetime.datetime(2021, 2, 15, 11, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm3\nversion2\n')
+                                    timestamp=datetime.datetime(2021, 2, 15, 11, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm3\nversion2\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a4,
-                               timestamp=datetime.datetime(2021, 2, 17, 10, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm4\nversion1\n')
+                                    timestamp=datetime.datetime(2021, 2, 17, 10, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm4\nversion1\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a4,
-                               timestamp=datetime.datetime(2021, 2, 18, 11, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm4\nversion2\n')
+                                    timestamp=datetime.datetime(2021, 2, 18, 11, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm4\nversion2\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a5,
-                               timestamp=datetime.datetime(2021, 2, 17, 18, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm5\nversion1\n')
+                                    timestamp=datetime.datetime(2021, 2, 17, 18, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm5\nversion1\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a5,
-                               timestamp=datetime.datetime(2021, 2, 18, 12, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm5\nversion2\n')
+                                    timestamp=datetime.datetime(2021, 2, 18, 12, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm5\nversion2\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a6,
-                               timestamp=datetime.datetime(2021, 2, 17, 9, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm6\nversion1\n')
+                                    timestamp=datetime.datetime(2021, 2, 17, 9, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm6\nversion1\n')
         self.av.save()
         self.av = Algorithm_version(algorithm_id=self.a6,
-                               timestamp=datetime.datetime(2021, 2, 18, 15, 0, 0, 0, pytz.UTC),
-                               algorithm='algorithm6\nversion2\n')
+                                    timestamp=datetime.datetime(2021, 2, 18, 15, 0, 0, 0, pytz.UTC),
+                                    algorithm='algorithm6\nversion2\n')
         self.av.save()
 
     @classmethod
@@ -386,9 +384,9 @@ class WebFunctionTestMetrics(TestCase):
         self.at3 = Algorithm_type(type_name='type3')
         self.at3.save()
         self.setUpTestAlgorithms()
-        
+
         self.setUpTestAlgorithmVersions(self)
-    
+
     def setUp(self):
         self.client.login(username="Bob", password="bobpassword")
 
