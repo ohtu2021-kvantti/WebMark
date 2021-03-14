@@ -11,6 +11,7 @@ from .views.algorithm_details_view import algorithm_details_view
 from .views.homepage import AlgorithmListView
 from .views.my_algorithms import MyAlgorithmListView
 from .forms import SignUpView
+from .views.worker_api import handle_result
 
 urlpatterns = [
     path('', AlgorithmListView.as_view(), name='home'),
@@ -24,4 +25,5 @@ urlpatterns = [
     path('compare/<int:a1_id>/<int:a2_id>', compare_algorithms, name="compare_algorithms"),
     path('addVersion/', add_version, name='add_version'),
     path('updateAlgorithm/', update_algorithm, name='updateAlgorithm'),
+    path('handleResult', handle_result)
 ]

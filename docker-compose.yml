@@ -9,6 +9,10 @@ services:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD-postgres}
     container_name: db
 
+  rabbitmq:
+    image: rabbitmq:3.8
+    container_name: rabbitmq
+
   web:
     build: .
     environment:
@@ -17,8 +21,9 @@ services:
       - DATABASE_PASSWORD=${DATABASE_PASSWORD-postgres}
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
+      - BROKER_URL=pyamqp://guest@rabbitmq//
     command: sh -c "
-      python manage.py makemigrations && 
+      python manage.py makemigrations WebCLI && 
       python manage.py migrate && 
       python manage.py runserver 0.0.0.0:8000"
     container_name: web
@@ -28,3 +33,13 @@ services:
       - "8000:8000"
     depends_on:
       - db
+
+  benchmark:
+    build: BenchMark/
+    command: conda run --no-capture-output -n benchmark celery -A benchmark worker -l info
+    container_name: benchmark
+    volumes:
+      - ./BenchMark:/code
+    environment:
+      - BROKER_URL=pyamqp://guest@rabbitmq//
+      - DJANGO_API_URL=http://web:8000/handleResult

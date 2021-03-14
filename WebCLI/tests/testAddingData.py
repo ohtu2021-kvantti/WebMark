@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from ..models import Molecule, Algorithm_type, Algorithm, Algorithm_version
+from unittest.mock import patch
 
 
 class TestLogin(TestCase):
@@ -86,7 +87,8 @@ class TestAddDataAsUser(TestCase):
         result = Algorithm_type.objects.get(type_name='VQE (UCCSD)')
         self.assertIsNotNone(result)
 
-    def test_add_algorithm_with_2_versions(self):
+    @patch("WebCLI.views.celery_app.send_task")
+    def test_add_algorithm_with_2_versions(self, send_task):
         user_id = User.objects.get(username='testuser3').pk
         self.c.post('/newAlgorithmType/',
                     {'type_name': 'VQE'})

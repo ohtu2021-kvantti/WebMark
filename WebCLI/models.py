@@ -12,9 +12,9 @@ class Algorithm_type(models.Model):
 class Molecule(models.Model):
     name = models.TextField()
     structure = models.TextField()
-    active_orbitals = models.TextField()
-    basis_set = models.TextField()
-    transformation = models.TextField()
+    active_orbitals = models.TextField(default="")
+    basis_set = models.TextField(default="")
+    transformation = models.TextField(default="")
 
     def __str__(self):
         return self.name
@@ -40,7 +40,7 @@ class Algorithm_version(models.Model):
     algorithm_id = models.ForeignKey(Algorithm, on_delete=models.CASCADE)
     timestamp = models.DateTimeField()
     algorithm = models.TextField()
-    circuit = models.TextField()
+    circuit = models.TextField(default="")
     optimizer_module = models.TextField(blank=True)
     optimizer_method = models.TextField(blank=True)
 
