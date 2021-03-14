@@ -12,7 +12,7 @@ WebMark = Project
 
 WebCLI = Application
 
-Requirements: django, django-on-heroku, gunicorn, django-dotenv, flake8, flake8-django
+Requirements: see [requirements.txt](requirements.txt)
 
 ## Database schema
 
@@ -106,11 +106,6 @@ Run tests
 python manage.py test
 ```
 
-If missing staticfiles error appears:
-```
-python manage.py collectstatic
-```
-
 Run code coverage
 ```
 coverage erase
@@ -124,10 +119,3 @@ python manage.py makemigrations
 python manage.py migrate
 
 ```
-
-You can push your local PostgreSQL database to Heroku with
-```
-heroku pg:push postgres://quantuser@localhost/quantdb  postgresql-flexible-07270 --app=quantmark
-```
-
-
