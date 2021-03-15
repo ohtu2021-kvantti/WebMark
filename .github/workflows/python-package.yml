@@ -39,8 +39,6 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: psycopb2 prequisites
-      run: sudo apt-get install python-dev libpq-dev
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -61,7 +59,6 @@ jobs:
       run: curlylint templates/
     - name: Test with Django
       run: |
-        python manage.py collectstatic
         coverage erase
         coverage run manage.py test
     - name: "Upload coverage to Codecov"
