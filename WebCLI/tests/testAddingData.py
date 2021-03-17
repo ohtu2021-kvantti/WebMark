@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from ..models import Molecule, Algorithm_type, Algorithm, Algorithm_version
 
 
-class WebFunctionTestLogin(TestCase):
+class TestLogin(TestCase):
     def test_signup(self):
         c = Client()
         response = c.post(
@@ -40,13 +40,28 @@ class WebFunctionTestLogin(TestCase):
         self.assertTrue(response.find('logged in - testuser4') < 0)
 
 
-class WebFunctionTestAddDataAsUser(TestCase):
+class TestAddDataAsUser(TestCase):
     @classmethod
     def setUpClass(cls):
         c = Client()
         c.post('/signup/',
                {'username': 'testuser3', 'password1': 'sekred010', 'password2': 'sekred010'})
-
+        user_id = User.objects.get(username='testuser3').pk
+        c.post('/accounts/login/',
+                    {'username': 'testuser3', 'password': 'sekred010'})
+        c.post('/newAlgorithmType/',
+                    {'type_name': 'type1'})
+        c.post('/newAlgorithm/',
+                    {'user': user_id,
+                     'name': 'test_algorithm',
+                     'algorithm_type': Algorithm_type.objects.get(type_name='type1').pk,
+                     'public': 'on',
+                     'algorithm': 'exec()',
+                     'article_link': 'https://kela.fi',
+                     'github_link': 'https://vn.fi'})
+        
+        c.get('/accounts/logout/')
+    
     def setUp(self):
         self.c = Client()
         self.c.post('/accounts/login/',
@@ -79,13 +94,13 @@ class WebFunctionTestAddDataAsUser(TestCase):
                     {'name': 'Hydrogen', 'structure': 'H2'})
         self.c.post('/newAlgorithm/',
                     {'user': user_id,
-                     'name': 'test_algorithm',
+                     'name': 'algo_2021',
                      'algorithm_type': Algorithm_type.objects.get(type_name='VQE').pk,
                      'public': 'on',
                      'algorithm': 'exec()',
                      'article_link': 'https://kela.fi',
                      'github_link': 'https://vn.fi'})
-        a = Algorithm.objects.get(name='test_algorithm')
+        a = Algorithm.objects.get(name='algo_2021')
         self.c.post('/addVersion/?index='+str(a.pk),
                     {'algorithm': 'print(1)\nexec()'})
         v = Algorithm_version.objects.filter(algorithm_id=a)
@@ -96,15 +111,15 @@ class WebFunctionTestAddDataAsUser(TestCase):
         self.assertEqual(len(v), 2)
         self.assertEqual(v[1].algorithm, 'print(1)\nexec()')
 
+    def test_update_details(self):
+        a = Algorithm.objects.get(name='test_algorithm')
+        response = self.c.post('/updateAlgorithm/?index='+str(a.pk),
+                         {'name': 'test_algorithm',
+                          'algorithm_type': Algorithm_type.objects.get(type_name='type1').pk,
+                          'public': 'on',
+                          'article_link': 'https://aalink1.com',
+                          'github_link': 'https://gtlink1.com',
+                          'user': User.objects.get(username='testuser3').pk})
+        a = Algorithm.objects.get(name='test_algorithm')
+        self.assertEqual(a.article_link, 'https://aalink1.com')
 
-class WebFunctionTestMyAlgorithmsView(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        User.objects.create_user("testuser", "test@example.com", "secret")
-
-    def setUp(self):
-        self.client.login(username="testuser", password="secret")
-
-    def test_my_algorithms_view(self):
-        response = self.client.get("/myAlgorithms/")
-        self.assertEqual(response.status_code, 200)

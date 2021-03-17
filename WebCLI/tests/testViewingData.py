@@ -107,7 +107,7 @@ class AlgorithmComparisonTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class WebFunctionTestViewData(TestCase):
+class TestViewData(TestCase):
 
     @classmethod
     def setUpTestAlgorithms(self):
@@ -204,7 +204,7 @@ class WebFunctionTestViewData(TestCase):
     def setUp(self):
         self.client.login(username="Bob", password="bobpassword")
 
-    def test_my_algorithms_view_name(self):
+    def test_my_algorithms_view(self):
         response = str(self.client.get("/myAlgorithms/").content)
         self.assertFalse(response.find('Algo1') < 0)
         self.assertFalse(response.find('Algo2') < 0)
@@ -212,12 +212,9 @@ class WebFunctionTestViewData(TestCase):
         self.assertTrue(response.find('Algo4') < 0)
         self.assertTrue(response.find('Algo5') < 0)
         self.assertTrue(response.find('Algo6') < 0)
-
-    def test_my_algorithms_view_other_information(self):
-        response = str(self.client.get("/myAlgorithms/").content)
         self.assertFalse(response.find('https://alink1.com') < 0)
         self.assertFalse(response.find('https://gtlink1.com') < 0)
-
+ 
     def test_index_view(self):
         response = str(self.client.get("/").content)
         self.assertFalse(response.find('Algo1') < 0)
@@ -256,39 +253,19 @@ class WebFunctionTestViewData(TestCase):
         self.assertFalse(response.find('https://alink3.com') < 0)
         self.assertFalse(response.find('https://gtlink3.com') < 0)
 
-    def test_algorithm_details_other_user_private_view(self):
-        a = Algorithm.objects.get(name='Algo5')
-        response = self.client.get('/algorithm/'+str(a.pk))
-        self.assertEqual(response.status_code, 403)
-
-    def test_algorithm_details_other_user_public_view(self):
+    def test_algorithm_details_other_user_view(self):
         a = Algorithm.objects.get(name='Algo4')
         response = str(self.client.get('/algorithm/'+str(a.pk)).content)
         self.assertFalse(response.find('Algo4') < 0)
         self.assertFalse(response.find('https://alink4.com') < 0)
         self.assertFalse(response.find('https://gtlink4.com') < 0)
-
-    def test_update_details(self):
-        a = Algorithm.objects.get(name='Algo1')
-        self.client.post('/updateAlgorithm/?index='+str(a.pk),
-                         {'name': 'Algo1',
-                          'algorithm_type': Algorithm_type.objects.get(type_name='type1').pk,
-                          'public': 'on',
-                          'article_link': 'https://aalink1.com',
-                          'github_link': 'https://gtlink1.com',
-                          'user': User.objects.get(username='Bob').pk})
-        a = Algorithm.objects.get(name='Algo1')
-        self.assertEqual(a.article_link, 'https://aalink1.com')
-
+        a = Algorithm.objects.get(name='Algo5')
+        response = self.client.get('/algorithm/'+str(a.pk))
+        self.assertEqual(response.status_code, 403)
+    
     def test_update_other_user_details(self):
         a = Algorithm.objects.get(name='Algo4')
-        response = self.client.post('/updateAlgorithm/?index='+str(a.pk),
-                                    {'name': 'Algo4',
-                                     'algorithm_type': a.algorithm_type.pk,
-                                     'public': 'on',
-                                     'article_link': 'https://aalink4.com',
-                                     'github_link': 'https://gtlink4.com',
-                                     'user': User.objects.get(username='Bob').pk})
+        response = self.client.get('/updateAlgorithm/?index='+str(a.pk))
         self.assertEqual(response.status_code, 403)
 
 
