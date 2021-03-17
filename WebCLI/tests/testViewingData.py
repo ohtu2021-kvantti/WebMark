@@ -214,7 +214,7 @@ class TestViewData(TestCase):
         self.assertTrue(response.find('Algo6') < 0)
         self.assertFalse(response.find('https://alink1.com') < 0)
         self.assertFalse(response.find('https://gtlink1.com') < 0)
- 
+
     def test_index_view(self):
         response = str(self.client.get("/").content)
         self.assertFalse(response.find('Algo1') < 0)
@@ -262,7 +262,7 @@ class TestViewData(TestCase):
         a = Algorithm.objects.get(name='Algo5')
         response = self.client.get('/algorithm/'+str(a.pk))
         self.assertEqual(response.status_code, 403)
-    
+
     def test_update_other_user_details(self):
         a = Algorithm.objects.get(name='Algo4')
         response = self.client.get('/updateAlgorithm/?index='+str(a.pk))
