@@ -39,9 +39,10 @@ class Algorithm(models.Model):
 class Algorithm_version(models.Model):
     algorithm_id = models.ForeignKey(Algorithm, on_delete=models.CASCADE)
     timestamp = models.DateTimeField()
+    algorithm = models.TextField()
     circuit = models.TextField()
-    optimizer_module = models.TextField(null=True, blank=True)
-    optimizer_method = models.TextField(null=True, blank=True)
+    optimizer_module = models.TextField(blank=True)
+    optimizer_method = models.TextField(blank=True)
 
     def __str__(self):
         return str(self.timestamp)
@@ -70,14 +71,23 @@ class Analyzed_results(models.Model):
     average_iterations = models.FloatField(null=True, blank=True)
     success_rate = models.FloatField(null=True, blank=True)
 
+    def __str__(self):
+        return 'string not supported'
+
 
 class Average_history(models.Model):
     analyzed_results = models.ForeignKey(Analyzed_results, on_delete=models.CASCADE)
     data = models.FloatField(null=True, blank=True)
     iteration_number = models.IntegerField(null=True, blank=True)
 
+    def __str__(self):
+        return f'{self.iteration_number}:{self.data}'
+
 
 class Accuracy_history(models.Model):
     analyzed_results = models.ForeignKey(Analyzed_results, on_delete=models.CASCADE)
     data = models.FloatField(null=True, blank=True)
     iteration_number = models.IntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.iteration_number}:{self.data}'
