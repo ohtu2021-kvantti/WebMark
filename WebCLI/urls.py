@@ -16,8 +16,9 @@ Including another URLconf
 # pages/urls.py
 from django.urls import path
 from .views import new_algorithm, algorithm_details_view, new_algorithm_type
-from .views import new_molecule, SignUpView, AlgorithmListView, add_metrics
+from .views import new_molecule, AlgorithmListView, add_metrics
 from .views import MyAlgorithmListView, add_version, compare_algorithms, update_algorithm
+from .views.forms import SignUpView
 
 urlpatterns = [
     path('', AlgorithmListView.as_view(), name='home'),
