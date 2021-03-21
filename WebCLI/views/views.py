@@ -147,11 +147,14 @@ def add_version(request):
 
     if request.method == "POST":
         algorithm = AlgorithmVersionForm(request.POST).data['algorithm']
-        version = Algorithm_version(algorithm_id=a, timestamp=timezone.now(), algorithm=algorithm)
+        circuit = AlgorithmVersionForm(request.POST).data['circuit']
+        optimizer_method = AlgorithmVersionForm(request.POST).data['optimizer_method']
+        optimizer_module = AlgorithmVersionForm(request.POST).data['optimizer_module']
+        version = Algorithm_version(algorithm_id=a, timestamp=timezone.now(), algorithm=algorithm, circuit=circuit, optimizer_module=optimizer_module, optimizer_method=optimizer_method)
         version.save()
         return redirect(a)
     last_version = Algorithm_version.objects.filter(algorithm_id=a).order_by('-timestamp')[0]
-    form = AlgorithmVersionForm(initial={'algorithm': last_version.algorithm})
+    form = AlgorithmVersionForm(initial={'algorithm': last_version.algorithm, 'circuit': last_version.circuit, 'optimizer_module': last_version.optimizer_module, 'optimizer_method': last_version.optimizer_method})
     data = {'algorithm': a, 'form': form}
     return render(request, 'WebCLI/addVersion.html', data)
 

@@ -29,6 +29,9 @@ class AlgorithmTypeForm(ModelForm):
 
 class AlgorithmVersionForm(Form):
     algorithm = CharField(widget=Textarea)
+    circuit = CharField(widget=Textarea)
+    optimizer_module = CharField(widget=Textarea)
+    optimizer_method = CharField(widget=Textarea)
 
 
 class MetricsForm(ModelForm):
@@ -48,7 +51,7 @@ class MetricsForm(ModelForm):
 class MoleculeForm(ModelForm):
     class Meta:
         model = Molecule
-        fields = ['name', 'structure']
+        fields = ['name', 'structure', 'active_orbitals', 'basis_set', 'transformation']
         widgets = {
             'name': Textarea(attrs={'rows': 1, 'cols': 50}),
         }

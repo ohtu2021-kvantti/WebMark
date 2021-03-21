@@ -83,7 +83,32 @@
                 <tbody>
                     <tr>
                         <td colspan="2">
+                            <p>Description:</p>
                             <code>{{ selected_version.algorithm|linebreaks }}</code>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <p>Circuit:</p>
+                            <code>{{ selected_version.circuit|linebreaks }}</code>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <p>Optimizer module:</p>
+                            <code>{{ selected_version.optimizer_module|linebreaks }}</code>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <p>Optimizer method:</p>
+                            <code>{{ selected_version.optimizer_method|linebreaks }}</code>
                         </td>
                     </tr>
                 </tbody>
