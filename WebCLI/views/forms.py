@@ -48,7 +48,17 @@ class MetricsForm(ModelForm):
         }
 
 
+import quantmark as qm
+
 class MoleculeForm(ModelForm):
+    
+    def clean_structure(self):
+        cleaned_data = self.clean()
+        structure = cleaned_data.get('structure')
+        if not qm.molecule.validate_geometry_syntax(structure):
+            self.add_error('structure', 'Ye this is not gonna work')
+        return structure
+
     class Meta:
         model = Molecule
         fields = ['name', 'structure', 'active_orbitals', 'basis_set', 'transformation']
