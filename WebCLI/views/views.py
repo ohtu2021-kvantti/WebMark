@@ -7,7 +7,7 @@ from django_tables2.columns.base import Column
 from django_tables2.columns import TemplateColumn
 from ..models import Algorithm, Molecule, Algorithm_type, Algorithm_version, Metrics
 from .forms import AlgorithmForm, AlgorithmTypeForm
-from .forms import MoleculeForm, AlgorithmVersionForm, MetricsForm
+from .forms import MoleculeForm, AlgorithmVersionForm, MetricsForm, TestCircuitForm
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django_filters import AllValuesFilter, FilterSet
@@ -232,3 +232,15 @@ def compare_algorithms(request, a1_id, a2_id):
                    'common_molecules': common_molecules, 'molecule': selected_molecule,
                    'versions1': versions1, 'versions2': versions2,
                    'graph_data': graph_data, 'algo_data': algo_data})
+
+def test_circuit(request):
+        res = "No change made"
+        if request.method == "POST":
+            res = print(TestCircuitForm(request.POST).data['circuit'])
+        gates = {1:'CNOT', 2:'CRx', 3:'CRy', 4:'CRz', 5:'CX', 6:'CY', 7:'CZ',
+                 8: 'ExpPauli', 9:'GeneralizedRotation', 10:'H', 11:'Phase',
+                 12: 'PowerGate', 13:'QGate', 14:'RotationGate', 15:'Rp', 16:'Rx',
+                 17: 'Ry', 18:'Rz', 19:'S', 20:'SWAP', 21:'T', 22:'Toffoli', 
+                 23: 'Trotterized', 24: 'X', 25: 'Y', 26: 'Z', 27: 'wrap_gate'}
+        print(len(gates))
+        return render(request, 'WebCLI/circuit.html', {'form': TestCircuitForm(), 'gates':gates})
