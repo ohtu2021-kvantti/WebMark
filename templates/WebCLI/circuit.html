@@ -5,14 +5,77 @@
 {% block title %}Circuit input testing{% endblock %}
 
 {% block content %}
-
+<h2>{{ circuit_input }}</h2>
 <form method="post">
     {% csrf_token %}
     {% bootstrap_form form %}
     {% buttons %}
     <div class="text-center">
         <button class="btn btn-primary" type="submit">Submit</button>
+        <button class="btn btn-secondary" type="reset" onClick=reset();>Reset</button>
     </div>
     {% endbuttons %}
+    <script>
+        var gate = "";
+        var param = "";
+        var oldParam;
+        var value = "";
+
+        function changeContent(str1, which) {
+            var x = document.getElementById('id_circuit');
+            if (which == "g") {
+                gate = str1 + "(";
+            } if (which == "p1") {
+                param = str1 + "=";
+            } if (which == "p2") {
+                oldParam = param + value;
+                param = oldParam + ", " + str1 + "=";
+            } if (which == "val1") {
+                value = str1;
+            } if (which == "val2") {
+                value = "[" + value + "," + str1 + "]";
+            } if (which == "pstr") {
+                x.value = x.value.replace(')', '') + ", paulistring=" + '"' + str1 + '"' + ")";
+            } else {
+                x.value = gate + param + value + ")";
+            }
+        }
+        function reset() {
+            var x = document.getElementById('id_circuit');
+            x.value = "";
+            gate = "";
+            param = "";
+            oldParam = "";
+            value = "";
+        }
+    </script>
+    <div>
+        <select onchange=changeContent(this.value,"g");>
+            <option value="" selected disabled>Choose a gate</option>
+            {% for g in gates %}
+            <option value="{{g}}">{{ g }}</option>
+            {% endfor %}
+        </select>
+        <select onchange=changeContent(this.value,"p1");>
+            <option value="" selected disabled>1st parameter</option>
+            {% for p in params %}
+            <option value="{{p}}">{{ p }}</option>
+            {% endfor %}
+        </select>
+        <select onchange=changeContent(this.value,"p2");>
+            <option value="" selected>add parameter</option>
+            {% for p in params %}
+            <option value="{{p}}">{{ p }}</option>
+            {% endfor %}
+        </select>
+
+        <input type="number" placeholder="single int" min=0 max=1000 step="0.1" value=""
+            onchange=changeContent(this.value,"val1");>
+        <input type="number" placeholder="2nd int" min=0 max=1000 step="0.1" value=""
+            onchange=changeContent(this.value,"val2");>
+    </div>
+    <div>
+        <input type="text" placeholder="Paulistring" onchange=changeContent(this.value,"pstr");>
+    </div>
 </form>
 {% endblock %}

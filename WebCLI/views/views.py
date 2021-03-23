@@ -234,13 +234,17 @@ def compare_algorithms(request, a1_id, a2_id):
                    'graph_data': graph_data, 'algo_data': algo_data})
 
 def test_circuit(request):
-        res = "No change made"
+        circuit_input = ""
         if request.method == "POST":
-            res = print(TestCircuitForm(request.POST).data['circuit'])
+            print("we are here")
+            circuit_input = TestCircuitForm(request.POST).data['circuit']
         gates = {1:'CNOT', 2:'CRx', 3:'CRy', 4:'CRz', 5:'CX', 6:'CY', 7:'CZ',
                  8: 'ExpPauli', 9:'GeneralizedRotation', 10:'H', 11:'Phase',
                  12: 'PowerGate', 13:'QGate', 14:'RotationGate', 15:'Rp', 16:'Rx',
                  17: 'Ry', 18:'Rz', 19:'S', 20:'SWAP', 21:'T', 22:'Toffoli', 
                  23: 'Trotterized', 24: 'X', 25: 'Y', 26: 'Z', 27: 'wrap_gate'}
-        print(len(gates))
-        return render(request, 'WebCLI/circuit.html', {'form': TestCircuitForm(), 'gates':gates})
+        params = {'angle', 'power', 'target', 'control'}
+        return render(request, 'WebCLI/circuit.html', {'form': TestCircuitForm(),
+                                                       'gates':gates.values(), 
+                                                       'params': params,
+                                                       'circuit_input': circuit_input})

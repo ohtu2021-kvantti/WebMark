@@ -60,4 +60,4 @@ class SignUpView(generic.CreateView):
     template_name = 'registration/signup.html'
 
 class TestCircuitForm(Form):
-    circuit = CharField(widget=Textarea)
+    circuit = CharField(widget=Textarea(attrs={'rows': 2, 'cols': 40}))
