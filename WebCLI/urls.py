@@ -1,24 +1,15 @@
-"""WebMark URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 # pages/urls.py
 from django.urls import path
-from .views import new_algorithm, algorithm_details_view, new_algorithm_type
-from .views import new_molecule, AlgorithmListView, add_metrics
-from .views import MyAlgorithmListView, add_version, compare_algorithms, update_algorithm
-from .views.forms import SignUpView
+from .views.new_algorithm import new_algorithm
+from .views.new_molecule import new_molecule
+from .views.new_algorithm_type import new_algorithm_type
+from .views.add_metrics import add_metrics
+from .views.new_version import add_version
+from .views.update_algorithm import update_algorithm
+from .views.compare_algorithms import compare_algorithms
+from .views import AlgorithmListView, algorithm_details_view
+from .views import MyAlgorithmListView
+from .forms import SignUpView
 
 urlpatterns = [
     path('', AlgorithmListView.as_view(), name='home'),
