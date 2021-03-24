@@ -94,7 +94,10 @@ def new_molecule(request):
     form = MoleculeForm()
     if request.method == "POST":
         m = MoleculeForm(request.POST)
-        m.save()
+        if m.is_valid():
+            m.save()
+        else:
+            form = m
     data = {'molecules': Molecule.objects.all(), 'form': form}
     return render(request, 'WebCLI/newMolecule.html', data)
 
@@ -235,3 +238,10 @@ def compare_algorithms(request, a1_id, a2_id):
                    'common_molecules': common_molecules, 'molecule': selected_molecule,
                    'versions1': versions1, 'versions2': versions2,
                    'graph_data': graph_data, 'algo_data': algo_data})
+
+
+@login_required
+def view_molecule(request):
+    m = Molecule.objects.get(pk=request.GET.get("index"))
+    data = {'molecule': m}
+    return render(request, 'WebCLI/molecule.html', data)

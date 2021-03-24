@@ -3,8 +3,9 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.forms import ModelForm, Textarea, HiddenInput, Form
 from django.forms import CharField
-from django.forms.widgets import NumberInput
+from django.forms.widgets import NumberInput, TextInput
 from ..models import Algorithm, Molecule, Algorithm_type, Metrics
+import quantmark as qm
 
 
 class AlgorithmForm(ModelForm):
@@ -28,10 +29,10 @@ class AlgorithmTypeForm(ModelForm):
 
 
 class AlgorithmVersionForm(Form):
-    algorithm = CharField(widget=Textarea)
+    algorithm = CharField(widget=Textarea, label='Description')
     circuit = CharField(widget=Textarea)
-    optimizer_module = CharField(widget=Textarea)
-    optimizer_method = CharField(widget=Textarea)
+    optimizer_module = CharField(widget=TextInput)
+    optimizer_method = CharField(widget=TextInput)
 
 
 class MetricsForm(ModelForm):
@@ -48,22 +49,34 @@ class MetricsForm(ModelForm):
         }
 
 
-import quantmark as qm
-
 class MoleculeForm(ModelForm):
     
     def clean_structure(self):
-        cleaned_data = self.clean()
-        structure = cleaned_data.get('structure')
+        structure = self.clean().get('structure')
         if not qm.molecule.validate_geometry_syntax(structure):
-            self.add_error('structure', 'Ye this is not gonna work')
+            self.add_error('structure', 'Atom syntax (one atom per line): Li 0.0 0.0 1.6')
         return structure
+
+    def clean_active_orbitals(self):
+        active_orbitals = self.clean().get('active_orbitals')
+        print(active_orbitals)
+        if not qm.molecule.validate_orbitals_syntax(active_orbitals):
+            self.add_error('active_orbitals', 'Orbital syntax (one orbital per line): A1 1 2 4 5 7')
+        return active_orbitals
 
     class Meta:
         model = Molecule
         fields = ['name', 'structure', 'active_orbitals', 'basis_set', 'transformation']
+        labels = {
+            'structure': 'Geometry'
+        }
         widgets = {
-            'name': Textarea(attrs={'rows': 1, 'cols': 50}),
+            'name': TextInput(),
+            'basis_set': TextInput(),
+            'transformation': TextInput(),
+            'structure': Textarea(attrs={'rows': 6, 'cols': 50}),
+            'active_orbitals': Textarea(attrs={'rows': 6, 'cols': 50}),
+#            'structure': TextInput(attrs={'pattern': qm.molecule.geometry_pattern().pattern})
         }
 
 
