@@ -6,6 +6,18 @@ from ..models import Molecule, Algorithm_version, Metrics
 from ..forms import MetricsForm
 
 
+def check_input(form):
+    for f in ['iterations', 'measurements', 'circuit_depth', 'accuracy']:
+        if form[f]:
+            data = form[f]
+            try:
+                number = float(data)
+                if number < 0:
+                    return 'non-positive'
+            except ValueError:
+                return 'non-numeric'
+
+
 @login_required
 def add_metrics(request):
     av = Algorithm_version.objects.get(pk=request.GET.get("index"))
@@ -14,15 +26,12 @@ def add_metrics(request):
 
     if request.method == "POST":
         form = MetricsForm(request.POST).data
-        for f in ['iterations', 'measurements', 'circuit_depth', 'accuracy']:
-            if form[f]:
-                data = form[f]
-                try:
-                    number = float(data)
-                    if number < 0:
-                        return HttpResponseBadRequest('Input value must be positive')
-                except ValueError:
-                    return HttpResponseBadRequest('Metrics input needs to be numeric')
+        statuscode = check_input(form)
+        if statuscode == 'non-positive':
+            return HttpResponseBadRequest('Input value must be positive')
+        elif statuscode == 'non-numeric':
+            return HttpResponseBadRequest('Metrics input needs to be numeric')
+
         m = Molecule.objects.get(pk=int(form['molecule']))
         existing = Metrics.objects.filter(algorithm_version=av, molecule=m)
         if len(existing) > 0:
