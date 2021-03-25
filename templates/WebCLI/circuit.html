@@ -6,12 +6,16 @@
 
 {% block content %}
 <h2>{{ circuit_input }}</h2>
+<div class="form-group basic-textarea rounded-corners">
+    <textarea disabled value="" class="form-control rounded-0" id="id_textarea"></textarea>
+</div>
 <form method="post">
     {% csrf_token %}
     {% bootstrap_form form %}
     {% buttons %}
     <div class="text-center">
-        <button class="btn btn-primary" type="submit">Submit</button>
+        <button class="btn btn-success" type="submit" onClick=getCircuit();>Submit</button>
+        <button class="btn btn-primary" type="button" onClick=add();>Add</button>
         <button class="btn btn-secondary" type="reset" onClick=reset();>Reset</button>
     </div>
     {% endbuttons %}
@@ -40,6 +44,33 @@
                 x.value = gate + param + value + ")";
             }
         }
+
+
+        function getCircuit() {
+            var x = document.getElementById('id_circuit');
+            if (x.value == "") {
+                return;
+            }
+            var y = document.getElementById('id_textarea');
+            x.value = y.value + " + " + x.value;
+        }
+
+
+        function add() {
+            var x = document.getElementById('id_circuit');
+            var y = document.getElementById('id_textarea');
+            if (y.value == "") {
+                y.value = x.value
+            } else {
+                y.value = y.value + " + " + x.value;
+            }
+            x.value = "";
+            gate = "";
+            param = "";
+            oldParam = "";
+            value = "";
+        }
+
         function reset() {
             var x = document.getElementById('id_circuit');
             x.value = "";
