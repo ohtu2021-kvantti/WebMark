@@ -6,16 +6,29 @@ from ..models import Molecule, Algorithm_version, Metrics
 from ..forms import MetricsForm
 
 
+def check_nonpositive_or_nonnumeric(f, form):
+    data = form[f]
+    try:
+        number = float(data)
+        if number < 0:
+            return 'non-positive'
+    except ValueError:
+        return 'non-numeric'
+
+
 def check_input(form):
     for f in ['iterations', 'measurements', 'circuit_depth', 'accuracy']:
         if form[f]:
-            data = form[f]
-            try:
-                number = float(data)
-                if number < 0:
-                    return 'non-positive'
-            except ValueError:
-                return 'non-numeric'
+            check_nonpositive_or_nonnumeric(f, form)
+
+
+def save_metrics(existing, request):
+    if len(existing) > 0:
+        metrics = MetricsForm(request.POST, instance=existing[0])
+        metrics.save()
+    else:
+        metrics = MetricsForm(request.POST)
+        metrics.save()
 
 
 @login_required
@@ -34,12 +47,7 @@ def add_metrics(request):
 
         m = Molecule.objects.get(pk=int(form['molecule']))
         existing = Metrics.objects.filter(algorithm_version=av, molecule=m)
-        if len(existing) > 0:
-            metrics = MetricsForm(request.POST, instance=existing[0])
-            metrics.save()
-        else:
-            metrics = MetricsForm(request.POST)
-            metrics.save()
+        save_metrics(existing, request)
         return redirect(av.algorithm_id)
     form = MetricsForm(initial={'algorithm_version': av, 'verified': False})
     data = {'algorithm': av.algorithm_id, 'version': av, 'form': form}
