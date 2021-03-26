@@ -16,8 +16,12 @@ def new_algorithm(request):
         new_algorithm.user = request.user
         new_algorithm.save()
         algorithm = AlgorithmVersionForm(request.POST).data['algorithm']
+        circuit = AlgorithmVersionForm(request.POST).data['circuit']
+        optimizer_module = AlgorithmVersionForm(request.POST).data['optimizer_module']
+        optimizer_method = AlgorithmVersionForm(request.POST).data['optimizer_method']
         v = Algorithm_version(timestamp=timezone.now(), algorithm_id=new_algorithm,
-                              algorithm=algorithm)
+                              algorithm=algorithm, circuit=circuit,
+                              optimizer_method=optimizer_method, optimizer_module=optimizer_module)
         v.save()
     data = {'algorithms': Algorithm.objects.filter(user=request.user), 'aform': aform,
             'vform': vform}

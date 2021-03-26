@@ -8,7 +8,6 @@ from .models import Algorithm, Molecule, Algorithm_type, Metrics
 import quantmark as qm
 
 
-
 class AlgorithmForm(ModelForm):
     class Meta:
         model = Algorithm
@@ -51,7 +50,7 @@ class MetricsForm(ModelForm):
 
 
 class MoleculeForm(ModelForm):
-    
+
     def clean_structure(self):
         structure = self.clean().get('structure')
         if not qm.molecule.validate_geometry_syntax(structure):
@@ -77,7 +76,6 @@ class MoleculeForm(ModelForm):
             'transformation': TextInput(),
             'structure': Textarea(attrs={'rows': 6, 'cols': 50}),
             'active_orbitals': Textarea(attrs={'rows': 6, 'cols': 50}),
-#            'structure': TextInput(attrs={'pattern': qm.molecule.geometry_pattern().pattern})
         }
 
 
