@@ -4,8 +4,9 @@ from django.views import generic
 from django.forms import ModelForm, Textarea, HiddenInput, Form
 from django.forms import CharField
 from django.forms.widgets import NumberInput, TextInput
-from ..models import Algorithm, Molecule, Algorithm_type, Metrics
+from .models import Algorithm, Molecule, Algorithm_type, Metrics
 import quantmark as qm
+
 
 
 class AlgorithmForm(ModelForm):
