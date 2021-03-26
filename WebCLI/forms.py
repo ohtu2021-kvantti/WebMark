@@ -4,7 +4,7 @@ from django.views import generic
 from django.forms import ModelForm, Textarea, HiddenInput, Form
 from django.forms import CharField
 from django.forms.widgets import NumberInput
-from ..models import Algorithm, Molecule, Algorithm_type, Metrics
+from .models import Algorithm, Molecule, Algorithm_type, Metrics
 
 
 class AlgorithmForm(ModelForm):
