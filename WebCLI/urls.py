@@ -7,8 +7,9 @@ from .views.add_metrics import add_metrics
 from .views.new_version import add_version
 from .views.update_algorithm import update_algorithm
 from .views.compare_algorithms import compare_algorithms
-from .views import AlgorithmListView, algorithm_details_view
-from .views import MyAlgorithmListView
+from .views.algorithm_details_view import algorithm_details_view
+from .views.homepage import AlgorithmListView
+from .views.my_algorithms import MyAlgorithmListView
 from .forms import SignUpView
 
 urlpatterns = [
