@@ -84,5 +84,5 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        file: {context}/BenchMark/Dockerfile
+        context: BenchMark/
         tags: tapanih/quantmark_benchmark:latest
