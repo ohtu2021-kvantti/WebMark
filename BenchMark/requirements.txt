@@ -58,7 +58,7 @@ scipy==1.6.1
 six==1.15.0
 sortedcontainers==2.3.0
 sympy==1.7.1
-tequila-basic==1.0.1
+tequila-basic==1.0.0
 toml==0.10.2
 tqdm==4.59.0
 traitlets==5.0.5
