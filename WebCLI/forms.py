@@ -4,7 +4,7 @@ from django.views import generic
 from django.forms import ModelForm, Textarea, HiddenInput, Form
 from django.forms import CharField
 from django.forms.widgets import NumberInput, TextInput
-from .models import Algorithm, Molecule, Algorithm_type, Metrics
+from .models import Algorithm, Molecule, Algorithm_type, Algorithm_version, Metrics
 import quantmark as qm
 
 
@@ -28,11 +28,22 @@ class AlgorithmTypeForm(ModelForm):
         }
 
 
-class AlgorithmVersionForm(Form):
-    algorithm = CharField(widget=Textarea, label='Description')
-    circuit = CharField(widget=Textarea)
-    optimizer_module = CharField(widget=TextInput)
-    optimizer_method = CharField(widget=TextInput)
+class AlgorithmVersionForm(ModelForm):
+    def clean_circuit(self):
+        circuit = self.clean().get('circuit')
+        print(circuit)
+        if not qm.circuit.validate_circuit_syntax(circuit):
+            self.add_error('circuit', 'use string printed by tequila.circuit')
+        return circuit
+
+    class Meta:
+        model = Algorithm_version
+        fields = ['algorithm', 'circuit', 'optimizer_module',
+                  'optimizer_method', 'timestamp', 'algorithm_id']
+        widgets = {
+            'timestamp': HiddenInput(),
+            'algorithm_id': HiddenInput(),
+        }
 
 
 class MetricsForm(ModelForm):
