@@ -15,7 +15,6 @@ def add_version(request):
         algorithm = AlgorithmVersionForm(request.POST).data['algorithm']
         # TODO: replace args with proper parameters!
         celery_app.send_task("benchmark.benchmark_task", args=["i am a parameter"])
-        print("here")
         version = Algorithm_version(algorithm_id=a, timestamp=timezone.now(), algorithm=algorithm)
         version.save()
         return redirect(a)
