@@ -18,8 +18,27 @@ Requirements: see [requirements.txt](requirements.txt)
 
 <img src="db_schema.png">
 
-## Setting up the development environment
 
+## Setting up the development environment using Docker (recommended)
+
+Install [Docker](https://docs.docker.com/engine/install/) according to the instructions.
+
+Navigate to the project root and run the development environment with command:
+```
+sudo docker-compose up
+```
+In case new dependencies have been added to any of the environments (that is requirements.txt or environment.yml have been changed), start the development environment with
+```
+sudo docker-compose up --build
+```
+If the database needs to be flushed, the easiest way to do that is with command
+```
+sudo docker-compose down
+```
+
+## Setting up the development environment manually (not recommended)
+
+### Set up the database
 Install PostgreSQL:
 
 ```
@@ -36,14 +55,8 @@ postgres=# alter user quantuser createdb; --allow user to create a test database
 postgres=# \q
 ```
 
-Create a .env file in the project root with the following contents:
-```
-DATABASE_NAME=quantdb
-DATABASE_USER=quantuser
-DATABASE_PASSWORD=secret
-DATABASE_HOST=127.0.0.1
-DATABASE_PORT=5432
-```
+### Setting up WebMark
+Make a copy of [.env.example](.env.example) and rename it to `.env`.
 
 Create and activate a virtual environment:
 ```
@@ -68,29 +81,50 @@ python manage.py migrate
 ```
 And then run the development server again.
 
-### Setting up the development environment using Docker (alternative)
+### Setting up RabbitMQ
 
-Install [Docker](https://docs.docker.com/engine/install/) according to the instructions.
+Install RabbitMQ with
+```
+sudo apt install -y rabbitmq-server
+```
+and start the server with
+```
+sudo rabbitmq-server
+```
 
-Navigate to the project root and run the development server with command:
+### Setting up BenchMark
+
+Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) according to the instructions.
+
+Create and activate a Conda environment
 ```
-sudo docker-compose up
+cd BenchMark/
+conda env create -f environment.yml
+conda activate benchmark
 ```
-If any new dependancies are added f.ex. to the requirements.txt start docker with
+
+Install additional dependencies with pip
 ```
-sudo docker-compose up --build
+pip install -r requirements.txt
+pip install git+https://github.com/ohtu2021-kvantti/LibMark.git
 ```
-Furthermore all the next commands can be used from Docker by
+Start workers with
 ```
-sudo docker-compose run web <command_name_with_possible_parameters>
-```
-for example:
-```
-sudo docker-compose run web python manage.py makemigration
+celery -A benchmark worker -l info
 ```
 
 ## Other commands
 
+---
+**NOTE**: all the next commands can be used from Docker with
+```
+sudo docker-compose run web <command_name_with_possible_parameters>
+```
+For example:
+```
+sudo docker-compose run web python manage.py makemigration
+```
+---
 Lint your code with
 ```
 flake8
@@ -112,8 +146,6 @@ coverage erase
 coverage run manage.py test
 coverage report
 ```
-
-
 
 Update database after change in models
 ```
