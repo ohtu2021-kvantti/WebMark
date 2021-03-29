@@ -22,13 +22,14 @@ def new_algorithm(request):
             vform = v
         else:
             new_algorithm.save()
-            new_version = Algorithm_version(timestamp=timezone.now(),
-                                            algorithm_id=new_algorithm,
-                                            algorithm=AlgorithmVersionForm(request.POST).data['algorithm'],
-                                            circuit=AlgorithmVersionForm(request.POST).data['circuit'],
-                                            optimizer_module=AlgorithmVersionForm(request.POST).data['optimizer_module'],
-                                            optimizer_method=AlgorithmVersionForm(request.POST).data['optimizer_method'])
-            new_version.save()
+            avf = AlgorithmVersionForm(request.POST)
+            nv = Algorithm_version(timestamp=timezone.now(),
+                                   algorithm_id=new_algorithm,
+                                   algorithm=avf.data['algorithm'],
+                                   circuit=avf.data['circuit'],
+                                   optimizer_module=avf.data['optimizer_module'],
+                                   optimizer_method=avf.data['optimizer_method'])
+            nv.save()
     data = {'algorithms': Algorithm.objects.filter(user=request.user), 'aform': aform,
             'vform': vform}
     return render(request, 'WebCLI/newAlgorithm.html', data)

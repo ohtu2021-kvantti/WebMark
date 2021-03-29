@@ -1,8 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
-from django.forms import ModelForm, Textarea, HiddenInput, Form
-from django.forms import CharField
+from django.forms import ModelForm, Textarea, HiddenInput
 from django.forms.widgets import NumberInput, TextInput
 from .models import Algorithm, Molecule, Algorithm_type, Algorithm_version, Metrics
 import quantmark as qm
@@ -14,7 +13,7 @@ class AlgorithmForm(ModelForm):
         fields = ['user', 'name', 'algorithm_type', 'public',
                   'article_link', 'github_link']
         widgets = {
-            'name': Textarea(attrs={'rows': 1, 'cols': 50}),
+            'name': TextInput(),
             'user': HiddenInput(),
         }
 
@@ -24,14 +23,13 @@ class AlgorithmTypeForm(ModelForm):
         model = Algorithm_type
         fields = ['type_name']
         widgets = {
-            'type_name': Textarea(attrs={'rows': 1, 'cols': 50}),
+            'type_name': TextInput(),
         }
 
 
 class AlgorithmVersionForm(ModelForm):
     def clean_circuit(self):
         circuit = self.clean().get('circuit')
-        print(circuit)
         if not qm.circuit.validate_circuit_syntax(circuit):
             self.add_error('circuit', 'use string printed by tequila.circuit')
         return circuit
@@ -43,6 +41,13 @@ class AlgorithmVersionForm(ModelForm):
         widgets = {
             'timestamp': HiddenInput(),
             'algorithm_id': HiddenInput(),
+            'algorithm': Textarea(attrs={'rows': 6}),
+            'circuit': Textarea(attrs={'rows': 10}),
+            'optimizer_method': TextInput(),
+            'optimizer_module': TextInput(),
+        }
+        labels = {
+            'algorithm': 'Description',
         }
 
 
@@ -70,7 +75,6 @@ class MoleculeForm(ModelForm):
 
     def clean_active_orbitals(self):
         active_orbitals = self.clean().get('active_orbitals')
-        print(active_orbitals)
         if not qm.molecule.validate_orbitals_syntax(active_orbitals):
             self.add_error('active_orbitals', 'Orbital syntax (one orbital per line): A1 1 2 4 5 7')
         return active_orbitals
