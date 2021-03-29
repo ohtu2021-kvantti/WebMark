@@ -83,8 +83,28 @@ class TestAddDataAsUser(TestCase):
                      'active_orbitals': 'A1 1 2 4 5 7',
                      'basis_set': 'sto-3g',
                      'transformation': 'Bravyi-Kitaev'})
-        result = Molecule.objects.get(name='Lithium hydride')
-        self.assertIsNotNone(result)
+        result = len(Molecule.objects.filter(name='Lithium hydride'))
+        self.assertEqual(result, 1)
+
+    def test_add_molecule_with_incorrect_structure(self):
+        self.c.post('/newMolecule/',
+                    {'name': 'Lithium hydride2',
+                     'structure': 'H 0.0 0.0 0.0Li 0.0 0.0 1.6',
+                     'active_orbitals': 'A1 1 2 4 5 7',
+                     'basis_set': 'sto-3g',
+                     'transformation': 'Bravyi-Kitaev'})
+        result = len(Molecule.objects.filter(name='Lithium hydride2'))
+        self.assertEqual(result, 0)
+
+    def test_add_molecule_with_incorrect_orbitals(self):
+        self.c.post('/newMolecule/',
+                    {'name': 'Lithium hydride3',
+                     'structure': 'H 0.0 0.0 0.0\nLi 0.0 0.0 1.6',
+                     'active_orbitals': '1 2 4 5 7',
+                     'basis_set': 'sto-3g',
+                     'transformation': 'Bravyi-Kitaev'})
+        result = len(Molecule.objects.filter(name='Lithium hydride3'))
+        self.assertEqual(result, 0)
 
     def test_add_type(self):
         self.c.post('/newAlgorithmType/',
@@ -106,7 +126,7 @@ class TestAddDataAsUser(TestCase):
                      'article_link': 'https://kela.fi',
                      'github_link': 'https://vn.fi',
                      'algorithm': 'Other nice algorithm',
-                     'circuit': 'circuit:\nRy(target=(0,), parameter=a)\nX(target=(2,))\nX(target=(3,))',
+                     'circuit': 'circuit:\nRy(target=(0,), parameter=a)\nX(target=(2,))',
                      'optimizer_module': 'scipy',
                      'optimizer_method': 'BFGS'})
         a = Algorithm.objects.get(name='algo_2021')
@@ -124,6 +144,26 @@ class TestAddDataAsUser(TestCase):
         self.assertEqual(a.user.username, 'testuser3')
         self.assertEqual(len(v), 2)
         self.assertEqual(v[1].circuit, 'circuit:\nRy(target=(0,), parameter=a)\nX(target=(3,))')
+
+    def test_add_algorithm_with_incorrect_circuit(self):
+        user_id = User.objects.get(username='testuser3').pk
+        self.c.post('/newAlgorithmType/',
+                    {'type_name': 'VQE'})
+        self.c.post('/newMolecule/',
+                    {'name': 'Hydrogen', 'structure': 'H2'})
+        self.c.post('/newAlgorithm/',
+                    {'user': user_id,
+                     'name': 'algo_2022',
+                     'algorithm_type': Algorithm_type.objects.get(type_name='VQE').pk,
+                     'public': 'on',
+                     'article_link': 'https://kela.fi',
+                     'github_link': 'https://vn.fi',
+                     'algorithm': 'Other nice algorithm',
+                     'circuit': 'Ry(target=(0,), parameter=a)\nX(target=(2,))',
+                     'optimizer_module': 'scipy',
+                     'optimizer_method': 'BFGS'})
+        a = Algorithm.objects.filter(name='algo_2022')
+        self.assertEqual(len(a), 0)
 
     def test_update_details(self):
         a = Algorithm.objects.get(name='test_algorithm')
