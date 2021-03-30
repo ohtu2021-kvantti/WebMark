@@ -127,19 +127,22 @@ class TestViewData(TestCase):
 
     @classmethod
     def setUpTestAlgorithms(self):
-        self.algos=[]
+        self.algos = []
         for i in range(3):
-            a = Algorithm(name='Algo'+str(i+1), public=(i%2==0), algorithm_type=self.types[i], user=self.u1,
-                            article_link='https://alink'+str(i+1)+'.com', github_link='https://gtlink'+str(i+1)+'.com')
+            a = Algorithm(name='Algo'+str(i+1), public=(i % 2 == 0),
+                          algorithm_type=self.types[i], user=self.u1,
+                          article_link='https://alink'+str(i+1)+'.com',
+                          github_link='https://gtlink'+str(i+1)+'.com')
             a.save()
             self.algos.append(a)
 
         for i in range(3):
-            a = Algorithm(name='Algo'+str(i+4), public=(i%2==0), algorithm_type=self.types[i], user=self.u2,
-                            article_link='https://alink'+str(i+4)+'.com', github_link='https://gtlink'+str(i+4)+'.com')
+            a = Algorithm(name='Algo'+str(i+4), public=(i % 2 == 0),
+                          algorithm_type=self.types[i], user=self.u2,
+                          article_link='https://alink'+str(i+4)+'.com',
+                          github_link='https://gtlink'+str(i+4)+'.com')
             a.save()
             self.algos.append(a)
-
 
     def setUpTestAlgorithmVersions(self):
         for i in range(6):
@@ -244,16 +247,20 @@ class WebFunctionTestMetrics(TestCase):
 
     @classmethod
     def setUpTestAlgorithms(self):
-        self.algos=[]
+        self.algos = []
         for i in range(3):
-            a = Algorithm(name='Algo'+str(i+1), public=(i%2==0), algorithm_type=self.types[i], user=self.u1,
-                            article_link='https://alink'+str(i+1)+'.com', github_link='https://gtlink'+str(i+1)+'.com')
+            a = Algorithm(name='Algo'+str(i+1), public=(i % 2 == 0),
+                          algorithm_type=self.types[i], user=self.u1,
+                          article_link='https://alink'+str(i+1)+'.com',
+                          github_link='https://gtlink'+str(i+1)+'.com')
             a.save()
             self.algos.append(a)
 
         for i in range(3):
-            a = Algorithm(name='Algo'+str(i+4), public=(i%2==0), algorithm_type=self.types[i], user=self.u2,
-                            article_link='https://alink'+str(i+4)+'.com', github_link='https://gtlink'+str(i+4)+'.com')
+            a = Algorithm(name='Algo'+str(i+4), public=(i % 2 == 0),
+                          algorithm_type=self.types[i], user=self.u2,
+                          article_link='https://alink'+str(i+4)+'.com',
+                          github_link='https://gtlink'+str(i+4)+'.com')
             a.save()
             self.algos.append(a)
 
