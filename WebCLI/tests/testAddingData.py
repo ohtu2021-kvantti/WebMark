@@ -116,8 +116,6 @@ class TestAddDataAsUser(TestCase):
         user_id = User.objects.get(username='testuser3').pk
         self.c.post('/newAlgorithmType/',
                     {'type_name': 'VQE'})
-        self.c.post('/newMolecule/',
-                    {'name': 'Hydrogen', 'structure': 'H2'})
         self.c.post('/newAlgorithm/',
                     {'user': user_id,
                      'name': 'algo_2021',
