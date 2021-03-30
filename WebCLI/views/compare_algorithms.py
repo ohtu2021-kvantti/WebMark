@@ -18,12 +18,12 @@ def compare_algorithms(request, a1_id, a2_id):
     if request.method == "POST":
         av1_id = request.POST.get('item1_id')
         av2_id = request.POST.get('item2_id')
+        av1 = Algorithm_version.objects.get(pk=request.POST.get('otherVersion'))
+        av2 = Algorithm_version.objects.get(pk=request.POST.get('otherVersion'))
         if av1_id:
             av1 = Algorithm_version.objects.get(pk=av1_id)
-            av2 = Algorithm_version.objects.get(pk=request.POST.get('otherVersion'))
         if av2_id:
             av2 = Algorithm_version.objects.get(pk=av2_id)
-            av1 = Algorithm_version.objects.get(pk=request.POST.get('otherVersion'))
 
     molecules1 = Metrics.objects.filter(algorithm_version=av1).values('molecule')
     molecules2 = Metrics.objects.filter(algorithm_version=av2).values('molecule')
