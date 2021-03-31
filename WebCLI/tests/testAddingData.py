@@ -87,7 +87,7 @@ class TestAddDataAsUser(TestCase):
         result = Algorithm_type.objects.get(type_name='VQE (UCCSD)')
         self.assertIsNotNone(result)
 
-    @patch("WebCLI.views.celery_app.send_task")
+    @patch("WebCLI.views.new_version.send_benchmark_task")
     def test_add_algorithm_with_2_versions(self, send_task):
         user_id = User.objects.get(username='testuser3').pk
         self.c.post('/newAlgorithmType/',

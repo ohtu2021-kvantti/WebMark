@@ -3,7 +3,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 from ..models import Algorithm, Algorithm_version
 from ..forms import AlgorithmVersionForm
-from WebCLI.celery import celery_app
+from WebCLI.celery import send_benchmark_task
 
 
 def add_version(request):
@@ -14,7 +14,7 @@ def add_version(request):
     if request.method == "POST":
         algorithm = AlgorithmVersionForm(request.POST).data['algorithm']
         # TODO: replace args with proper parameters!
-        celery_app.send_task("benchmark.benchmark_task", args=["i am a parameter"])
+        send_benchmark_task("i am a parameter")
         version = Algorithm_version(algorithm_id=a, timestamp=timezone.now(), algorithm=algorithm)
         version.save()
         return redirect(a)
