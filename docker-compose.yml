@@ -17,7 +17,7 @@ services:
     build:
       context: .
       args:
-        - LIBMARK_VERSION=21f0ffa0a29c5ae76ca90fdee326e9b4710cfe54
+        - LIBMARK_VERSION=e3cc4bbe82a44d94edac2d9eba7455c2d12cfe01
     environment:
       - DATABASE_NAME=${DATABASE_NAME-postgres}
       - DATABASE_USER=${DATABASE_USER-postgres}

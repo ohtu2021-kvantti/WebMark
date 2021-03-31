@@ -1,6 +1,5 @@
 from celery import Celery
 from glob import glob
-import quantmark as qm
 import os
 import requests
 
@@ -11,6 +10,11 @@ app = Celery('benchmark', broker=os.getenv("BROKER_URL", 'pyamqp://guest@localho
 def benchmark_task(molecule, circuit, optimizer_module, optimizer_method):
     if not molecule["transformation"]:
         molecule["transformation"] = None
+
+    # workaround for a Libmark bug
+    molecule["structure"] = molecule["structure"].replace("\r", "")
+    molecule["active_orbitals"] = molecule["active_orbitals"].replace("\r", "")
+
     result = run_benchmark(molecule, circuit, optimizer_module, optimizer_method)
     requests.post(
         os.getenv("DJANGO_API_URL", "http://localhost:8000/handleResult"),
@@ -37,6 +41,9 @@ def run_benchmark(molecule, circuit, optimizer_module, optimizer_method):
     """
     Generate metrics
     """
+
+    # having this import at the top level makes everything explode
+    import quantmark as qm
 
     optimizer = qm.QMOptimizer(module=optimizer_module, method=optimizer_method)
     backend = qm.QMBackend(backend='qulacs')
