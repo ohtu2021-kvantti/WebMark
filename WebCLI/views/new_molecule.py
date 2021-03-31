@@ -9,6 +9,7 @@ def new_molecule(request):
     form = MoleculeForm()
     if request.method == "POST":
         m = MoleculeForm(request.POST)
+        print(m)
         if m.is_valid():
             m.save()
         else:

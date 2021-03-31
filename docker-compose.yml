@@ -14,7 +14,10 @@ services:
     container_name: rabbitmq
 
   web:
-    build: .
+    build:
+      context: .
+      args:
+        - LIBMARK_VERSION=21f0ffa0a29c5ae76ca90fdee326e9b4710cfe54
     environment:
       - DATABASE_NAME=${DATABASE_NAME-postgres}
       - DATABASE_USER=${DATABASE_USER-postgres}
@@ -35,7 +38,10 @@ services:
       - db
 
   benchmark:
-    build: BenchMark/
+    build:
+      context: BenchMark/
+      args:
+        - LIBMARK_VERSION=21f0ffa0a29c5ae76ca90fdee326e9b4710cfe54
     command: conda run --no-capture-output -n benchmark celery -A benchmark worker -l info
     container_name: benchmark
     volumes:
@@ -43,3 +49,4 @@ services:
     environment:
       - BROKER_URL=pyamqp://guest@rabbitmq//
       - DJANGO_API_URL=http://web:8000/handleResult
+
