@@ -153,7 +153,50 @@
                 </option>
                 {% endfor %}
             </select>
-        </div>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th colspan="2">Algorithm
+                            {% ifequal request.user.pk algorithm.user.pk %}
+                                - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
+                            {% endifequal %}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <p>Description:</p>
+                            <code>{{ selected_version.algorithm|linebreaks }}</code>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <p>Circuit:</p>
+                            <code>{{ selected_version.circuit|linebreaks }}</code>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <p>Optimizer module:</p>
+                            <code>{{ selected_version.optimizer_module|linebreaks }}</code>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <p>Optimizer method:</p>
+                            <code>{{ selected_version.optimizer_method|linebreaks }}</code>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
     </div>
     <div class="d-flex flex-column align-items-center">

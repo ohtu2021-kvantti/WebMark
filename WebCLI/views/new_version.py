@@ -12,12 +12,21 @@ def add_version(request):
         raise PermissionDenied
 
     if request.method == "POST":
-        algorithm = AlgorithmVersionForm(request.POST).data['algorithm']
-        version = Algorithm_version(algorithm_id=a, timestamp=timezone.now(), algorithm=algorithm)
-        version.save()
-        celery_app.send_task("benchmark.benchmark_task", args=["i am a parameter"])
-        return redirect(a)
+        version = AlgorithmVersionForm(request.POST)
+        if version.is_valid():
+            version.save()
+            return redirect(a)
+        else:
+            form = version
+            data = {'algorithm': a, 'form': form}
+            return render(request, 'WebCLI/addVersion.html', data)
     last_version = Algorithm_version.objects.filter(algorithm_id=a).order_by('-timestamp')[0]
-    form = AlgorithmVersionForm(initial={'algorithm': last_version.algorithm})
+    initial = {'algorithm': last_version.algorithm,
+               'circuit': last_version.circuit,
+               'optimizer_module': last_version.optimizer_module,
+               'optimizer_method': last_version.optimizer_method,
+               'timestamp': timezone.now(),
+               'algorithm_id': a}
+    form = AlgorithmVersionForm(initial=initial)
     data = {'algorithm': a, 'form': form}
     return render(request, 'WebCLI/addVersion.html', data)
