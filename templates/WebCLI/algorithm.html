@@ -68,25 +68,6 @@
         </select>
         {% endtimezone %}
 
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th colspan="2">Algorithm
-                        {% ifequal request.user.pk algorithm.user.pk %}
-                        - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
-                        {% endifequal %}
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td colspan="2">
-                        <code>{{ selected_version.algorithm|linebreaks }}</code>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
         <select onchange="window.location.href=this.value">
             {% for m in metrics %}
             {% ifequal m selected_metrics %}
