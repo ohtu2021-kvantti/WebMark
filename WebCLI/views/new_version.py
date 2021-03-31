@@ -3,7 +3,6 @@ from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 from ..models import Algorithm, Algorithm_version
 from ..forms import AlgorithmVersionForm
-from WebCLI.celery import celery_app
 
 
 def add_version(request):
