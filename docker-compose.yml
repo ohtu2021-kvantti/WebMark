@@ -42,7 +42,9 @@ services:
       context: BenchMark/
       args:
         - LIBMARK_VERSION=21f0ffa0a29c5ae76ca90fdee326e9b4710cfe54
-    command: conda run --no-capture-output -n benchmark celery -A benchmark worker -l info
+    command: conda run --no-capture-output -n benchmark
+             watchmedo auto-restart --directory=./ --pattern=*.py --recursive
+             -- celery -A benchmark worker -l info
     container_name: benchmark
     volumes:
       - ./BenchMark:/code

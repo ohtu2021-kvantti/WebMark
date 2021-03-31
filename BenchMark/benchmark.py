@@ -2,12 +2,13 @@ from celery import Celery
 from glob import glob
 import os
 import requests
+import json
 
 app = Celery('benchmark', broker=os.getenv("BROKER_URL", 'pyamqp://guest@localhost//'))
 
 
 @app.task(ignore_result=True)
-def benchmark_task(molecule, circuit, optimizer_module, optimizer_method):
+def benchmark_task(metrics_id, molecule, circuit, optimizer_module, optimizer_method):
     if not molecule["transformation"]:
         molecule["transformation"] = None
 
@@ -16,9 +17,22 @@ def benchmark_task(molecule, circuit, optimizer_module, optimizer_method):
     molecule["active_orbitals"] = molecule["active_orbitals"].replace("\r", "")
 
     result = run_benchmark(molecule, circuit, optimizer_module, optimizer_method)
+    print(result)
+    data = {
+        "data": json.dumps({
+            "metrics_id": metrics_id,
+            "average_history": result.average_history,
+            "accuracy_history": result.accuracy_history,
+            "qubit_count": result.qubit_count,
+            "gate_depth": result.gate_depth,
+            "average_iterations": result.average_iterations,
+            "success_rate": result.success_rate})
+    }
+
+    print(data)
     requests.post(
         os.getenv("DJANGO_API_URL", "http://localhost:8000/handleResult"),
-        data={'result': result}
+        data=data
     )
     remove_output_files()
 

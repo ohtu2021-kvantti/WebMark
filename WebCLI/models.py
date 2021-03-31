@@ -14,7 +14,7 @@ class Molecule(models.Model):
     structure = models.TextField()
     active_orbitals = models.TextField(default="")
     basis_set = models.TextField(default="")
-    transformation = models.TextField(null=True, blank=True)
+    transformation = models.TextField(blank=True)
 
     def __str__(self):
         return self.name

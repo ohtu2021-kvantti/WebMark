@@ -1,5 +1,6 @@
 absl-py==0.12.0
 amqp==5.0.5
+argh==0.26.2
 attrs==20.3.0
 billiard==3.6.3.0
 cachetools==4.2.1
@@ -51,6 +52,7 @@ pyrsistent==0.17.3
 pytest==6.2.2
 python-dateutil==2.8.1
 pytz==2021.1
+PyYAML==5.4.1
 Qulacs==0.2.0
 requests==2.25.1
 rsa==4.7.2
@@ -65,4 +67,5 @@ traitlets==5.0.5
 typing-extensions==3.7.4.3
 urllib3==1.26.3
 vine==5.0.0
+watchdog==2.0.2
 wcwidth==0.2.5
