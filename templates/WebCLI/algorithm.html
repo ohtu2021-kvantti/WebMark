@@ -68,6 +68,63 @@
         </select>
         {% endtimezone %}
 
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th colspan="2">Algorithm
+                        {% ifequal request.user.pk algorithm.user.pk %}
+                        - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
+                        {% endifequal %}
+                    </th>
+                </tr>
+                <tr>
+                    <td>
+                        Select molecule to measure metrics of algorithm
+                        <select onchange="window.location.href=this.value">
+                            <option value="" disabled selected>Select molecule</option>
+                            {% for m in molecules %}
+                            <option value="{% url 'test_algorithm'%}?molecule={{ m.pk }}&version={{ selected_version.pk }}">
+                                {{ m.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        <p>Description:</p>
+                        <code>{{ selected_version.algorithm|linebreaks }}</code>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        <p>Circuit:</p>
+                        <code>{{ selected_version.circuit|linebreaks }}</code>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        <p>Optimizer module:</p>
+                        <code>{{ selected_version.optimizer_module|linebreaks }}</code>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        <p>Optimizer method:</p>
+                        <code>{{ selected_version.optimizer_method|linebreaks }}</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
         <select onchange="window.location.href=this.value">
             {% for m in metrics %}
             {% ifequal m selected_metrics %}
@@ -123,62 +180,6 @@
                 </tr>
             </tbody>
         </table>
-    </div>
-    <div>
-        <div>
-            <b>Select molecule to run with algorithm</b>
-            <select onchange="window.location.href=this.value">
-                {% for m in molecules %}
-                <option value="{% url 'test_algorithm'%}?molecule={{ m.pk }}&version={{ selected_version.pk }}">
-                    {{ m.name }}
-                </option>
-                {% endfor %}
-            </select>
-
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th colspan="2">Algorithm
-                            {% ifequal request.user.pk algorithm.user.pk %}
-                                - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
-                            {% endifequal %}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="2">
-                            <p>Description:</p>
-                            <code>{{ selected_version.algorithm|linebreaks }}</code>
-                        </td>
-                    </tr>
-                </tbody>
-                <tbody>
-                    <tr>
-                        <td colspan="2">
-                            <p>Circuit:</p>
-                            <code>{{ selected_version.circuit|linebreaks }}</code>
-                        </td>
-                    </tr>
-                </tbody>
-                <tbody>
-                    <tr>
-                        <td colspan="2">
-                            <p>Optimizer module:</p>
-                            <code>{{ selected_version.optimizer_module|linebreaks }}</code>
-                        </td>
-                    </tr>
-                </tbody>
-                <tbody>
-                    <tr>
-                        <td colspan="2">
-                            <p>Optimizer method:</p>
-                            <code>{{ selected_version.optimizer_method|linebreaks }}</code>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
     </div>
     <div class="d-flex flex-column align-items-center">
         <div class="mt-3">
