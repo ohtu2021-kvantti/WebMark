@@ -1,14 +1,12 @@
-FROM python:3.7-alpine3.12
+FROM python:3.7-slim-buster
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
-RUN apk add --no-cache gcc musl-dev postgresql-dev git
-
-RUN git clone https://github.com/ohtu2021-kvantti/LibMark
-WORKDIR /LibMark
-RUN pip install -e .
+RUN apt-get update && apt-get -y install git
 WORKDIR /code
+
 COPY requirements.txt .
 RUN pip install -r requirements.txt
+RUN pip install git+https://github.com/ohtu2021-kvantti/LibMark
 COPY . .
