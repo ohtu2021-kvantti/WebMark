@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+
+{% block title %}View molecule{% endblock %}
+
+{% block content %}
+    <div class="d-flex flex-row flex-wrap justify-content-center">
+        <div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Molecule details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Name</th>
+                        <td>{{ molecule.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Geometry</th>
+                        <td>{{ molecule.structure }}</td>
+                    </tr>
+                    <tr>
+                        <th>Active orbitals</th>
+                        <td>{{ molecule.active_orbitals }}</td>
+                    </tr>
+                    <tr>
+                        <th>Basis set</th>
+                        <td>{{ molecule.basis_set }}</td>
+                    </tr>
+                    <tr>
+                        <th>Transformation</th>
+                        <td>{{ molecule.transformation }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

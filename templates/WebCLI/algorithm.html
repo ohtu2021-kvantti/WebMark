@@ -55,14 +55,12 @@
                     {% ifequal version.pk params.version_id %}
                         <option
                             value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}"
-                            selected="selected"
-                        >
+                            selected="selected">
                             Version {{ version.version_number }}: {{ version.timestamp|date:'d.n.Y, G:i' }}
                         </option>
                     {% else %}
                         <option
-                            value="{{ algorithm.get_absolute_url }}?version_id={{ version.pk }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}"
-                        >
+                            value="{{ algorithm.get_absolute_url }}?version_id={{ version.pk }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}">
                             Version {{ version.version_number }}: {{ version.timestamp|date:'d.n.Y, G:i' }}
                         </option>
                     {% endifequal %}
@@ -79,11 +77,49 @@
                             {% endifequal %}
                         </th>
                     </tr>
+                    <tr>
+                        <td>
+                            Select molecule to measure metrics of algorithm
+                            <select onchange="window.location.href=this.value">
+                                <option value="" disabled selected>Select molecule</option>
+                                {% for m in molecules %}
+                                    <option value="{% url 'test_algorithm'%}?molecule={{ m.pk }}&version={{ selected_version.pk }}">
+                                        {{ m.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td colspan="2">
+                            <p>Description:</p>
                             <code>{{ selected_version.algorithm|linebreaks }}</code>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <p>Circuit:</p>
+                            <code>{{ selected_version.circuit|linebreaks }}</code>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <p>Optimizer module:</p>
+                            <code>{{ selected_version.optimizer_module|linebreaks }}</code>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <p>Optimizer method:</p>
+                            <code>{{ selected_version.optimizer_method|linebreaks }}</code>
                         </td>
                     </tr>
                 </tbody>
@@ -94,14 +130,12 @@
                     {% ifequal m selected_metrics %}
                         <option
                             value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
-                            selected="selected"
-                        >
+                            selected="selected">
                             {{ m.molecule.name }}
                         </option>
                     {% else %}
                         <option
-                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ m.pk }}&molecule_id={{ params.molecule_id }}"
-                        >
+                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ m.pk }}&molecule_id={{ params.molecule_id }}">
                             {{ m.molecule.name }}
                         </option>
                     {% endifequal %}
@@ -154,14 +188,12 @@
                         {% ifequal m.pk selected_molecule.pk %}
                             <option
                                 value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
-                                selected="selected"
-                            >
+                                selected="selected">
                                 {{ m.name }}
                             </option>
                         {% else %}
                             <option
-                                value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ m.pk }}"
-                            >
+                                value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ m.pk }}">
                                 {{ m.name }}
                             </option>
                         {% endifequal %}
@@ -183,7 +215,7 @@
         function drawChart() {
             const data = new google.visualization.DataTable();
             const rows = JSON.parse(document.getElementById('metrics-graph-data').textContent);
-            const ticks = Array.from({ length: rows.length}, (_, i) => i + 1);
+            const ticks = Array.from({ length: rows.length }, (_, i) => i + 1);
             data.addColumn('number', "version");
             data.addColumn('number', "iterations");
             data.addColumn('number', "measurements");
@@ -197,8 +229,8 @@
                 title: "Development of metrics between algorithm versions",
                 hAxis: {
                     viewWindow: {
-                    min: 1,
-                    max: rows.length
+                        min: 1,
+                        max: rows.length
                     },
                     ticks,
                     title: 'Version number'

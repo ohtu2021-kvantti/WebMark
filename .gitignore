@@ -9,3 +9,10 @@ htmlcov/
 coverage.xml
 *.cover
 staticfiles
+.pytest_cache
+*.egg-info
+build
+timer.dat
+*.out
+*.hdf5
+*.clean
