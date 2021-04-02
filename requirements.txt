@@ -35,3 +35,4 @@ vine==5.0.0
 wcwidth==0.2.5
 whitenoise==5.2.0
 coverage==5.4
+git+https://github.com/ohtu2021-kvantti/LibMark
