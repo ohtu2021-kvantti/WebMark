@@ -1,5 +1,5 @@
 version: "3.7"
-   
+
 services:
   db:
     image: postgres:13.1
@@ -9,17 +9,25 @@ services:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD-postgres}
     container_name: db
 
+  rabbitmq:
+    image: rabbitmq:3.8
+    container_name: rabbitmq
+
   web:
-    build: .
+    build:
+      context: .
+      args:
+        - LIBMARK_VERSION=e3cc4bbe82a44d94edac2d9eba7455c2d12cfe01
     environment:
       - DATABASE_NAME=${DATABASE_NAME-postgres}
       - DATABASE_USER=${DATABASE_USER-postgres}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD-postgres}
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
+      - BROKER_URL=pyamqp://guest@rabbitmq//
     command: sh -c "
-      python manage.py makemigrations && 
-      python manage.py migrate && 
+      python manage.py makemigrations WebCLI &&
+      python manage.py migrate &&
       python manage.py runserver 0.0.0.0:8000"
     container_name: web
     volumes:
@@ -28,3 +36,19 @@ services:
       - "8000:8000"
     depends_on:
       - db
+
+  benchmark:
+    build:
+      context: BenchMark/
+      args:
+        - LIBMARK_VERSION=21f0ffa0a29c5ae76ca90fdee326e9b4710cfe54
+    command: conda run --no-capture-output -n benchmark
+             watchmedo auto-restart --directory=./ --pattern=*.py --recursive
+             -- celery -A benchmark worker -l info
+    container_name: benchmark
+    volumes:
+      - ./BenchMark:/code
+    environment:
+      - BROKER_URL=pyamqp://guest@rabbitmq//
+      - DJANGO_API_URL=http://web:8000/handleResult
+

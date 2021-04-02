@@ -114,12 +114,14 @@ def algorithm_details_view(request, algorithm_id):
     molecules_with_metrics = get_molecules_with_metrics(versions)
     selected_molecule = get_selected_molecule(params, molecules_with_metrics)
     metrics_graph_data = get_metrics_graph_data(selected_molecule, algorithm)
+    molecules = Molecule.objects.all()
 
     data = {'algorithm': algorithm, 'versions': versions, 'params': params,
             'metrics_graph_data': metrics_graph_data, 'metrics': metrics,
             'molecules_with_metrics': molecules_with_metrics,
             'selected_version': selected_version,
             'selected_metrics': selected_metrics,
-            'selected_molecule': selected_molecule}
+            'selected_molecule': selected_molecule,
+            'molecules': molecules}
 
     return render(request, 'WebCLI/algorithm.html', data)

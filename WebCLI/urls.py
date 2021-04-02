@@ -3,13 +3,16 @@ from django.urls import path
 from .views.new_algorithm import new_algorithm
 from .views.new_molecule import new_molecule
 from .views.new_algorithm_type import new_algorithm_type
+from .views.view_molecule import view_molecule
 from .views.new_version import add_version
 from .views.update_algorithm import update_algorithm
 from .views.compare_algorithms import compare_algorithms
 from .views.algorithm_details_view import algorithm_details_view
+from .views.test_algorithm import test_algorithm
 from .views.homepage import AlgorithmListView
 from .views.my_algorithms import MyAlgorithmListView
 from .forms import SignUpView
+from .views.worker_api import handle_result
 
 urlpatterns = [
     path('', AlgorithmListView.as_view(), name='home'),
@@ -22,4 +25,7 @@ urlpatterns = [
     path('compare/<int:a1_id>/<int:a2_id>', compare_algorithms, name="compare_algorithms"),
     path('addVersion/', add_version, name='add_version'),
     path('updateAlgorithm/', update_algorithm, name='updateAlgorithm'),
+    path('handleResult', handle_result),
+    path('test/', test_algorithm, name='test_algorithm'),
+    path('molecule/', view_molecule, name='viewMolecule')
 ]

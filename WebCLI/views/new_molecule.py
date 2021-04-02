@@ -9,6 +9,9 @@ def new_molecule(request):
     form = MoleculeForm()
     if request.method == "POST":
         m = MoleculeForm(request.POST)
-        m.save()
+        if m.is_valid():
+            m.save()
+        else:
+            form = m
     data = {'molecules': Molecule.objects.all(), 'form': form}
     return render(request, 'WebCLI/newMolecule.html', data)
