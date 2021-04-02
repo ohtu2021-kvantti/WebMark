@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class Algorithm_type(models.Model):
@@ -52,31 +53,20 @@ class Metrics(models.Model):
     algorithm_version = models.ForeignKey(Algorithm_version, on_delete=models.CASCADE)
     molecule = models.ForeignKey(Molecule, on_delete=models.CASCADE)
     verified = models.BooleanField(default=False)
-    iterations = models.IntegerField(null=True, blank=True)
     measurements = models.IntegerField(null=True, blank=True)
-    circuit_depth = models.IntegerField(null=True, blank=True)
-    accuracy = models.FloatField(null=True, blank=True)
-    in_analyzed_queue = models.BooleanField(default=False)
     last_analyze_ok = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.molecule.name
-
-
-class Analyzed_results(models.Model):
-    metrics = models.ForeignKey(Metrics, on_delete=models.CASCADE)
-    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(default=timezone.now())
     qubit_count = models.IntegerField(null=True, blank=True)
     gate_depth = models.IntegerField(null=True, blank=True)
     average_iterations = models.FloatField(null=True, blank=True)
     success_rate = models.FloatField(null=True, blank=True)
 
     def __str__(self):
-        return 'string not supported'
+        return self.molecule.name
 
 
 class Average_history(models.Model):
-    analyzed_results = models.ForeignKey(Analyzed_results, on_delete=models.CASCADE)
+    analyzed_results = models.ForeignKey(Metrics, on_delete=models.CASCADE)
     data = models.FloatField(null=True, blank=True)
     iteration_number = models.IntegerField(null=True, blank=True)
 
@@ -85,7 +75,7 @@ class Average_history(models.Model):
 
 
 class Accuracy_history(models.Model):
-    analyzed_results = models.ForeignKey(Analyzed_results, on_delete=models.CASCADE)
+    analyzed_results = models.ForeignKey(Metrics, on_delete=models.CASCADE)
     data = models.FloatField(null=True, blank=True)
     iteration_number = models.IntegerField(null=True, blank=True)
 

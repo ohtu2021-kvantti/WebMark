@@ -112,9 +112,6 @@
                 <thead>
                     <tr>
                         <th>Metrics
-                            {% ifequal request.user.pk algorithm.user.pk %}
-                                - <a href="{% url 'add_metrics'%}?index={{params.version_id}}">Add metrics of a new molecule manually</a>
-                            {% endifequal %}
                         </th>
                     </tr>
                 </thead>
@@ -128,20 +125,20 @@
                         <td>{{ selected_metrics.verified }}</td>
                     </tr>
                     <tr>
-                        <th>iterations</th>
-                        <td>{{ selected_metrics.iterations }}</td>
+                        <th>gate depth</th>
+                        <td>{{ selected_metrics.gate_depth }}</td>
                     </tr>
                     <tr>
-                        <th>measurements</th>
-                        <td>{{ selected_metrics.measurements }}</td>
+                        <th>qubit count</th>
+                        <td>{{ selected_metrics.qubit_count }}</td>
                     </tr>
                     <tr>
-                        <th>circuit depth</th>
-                        <td>{{ selected_metrics.circuit_depth }}</td>
+                        <th>average iterations depth</th>
+                        <td>{{ selected_metrics.average_iterations }}</td>
                     </tr>
                     <tr>
-                        <th>accuracy</th>
-                        <td>{{ selected_metrics.accuracy }}</td>
+                        <th>success rate</th>
+                        <td>{{ selected_metrics.success_rate }}</td>
                     </tr>
                 </tbody>
             </table>
