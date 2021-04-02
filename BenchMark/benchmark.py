@@ -29,7 +29,6 @@ def benchmark_task(metrics_id, molecule, circuit, optimizer_module, optimizer_me
             "success_rate": result.success_rate})
     }
 
-    print(data)
     requests.post(
         os.getenv("DJANGO_API_URL", "http://localhost:8000/handleResult"),
         data=data
