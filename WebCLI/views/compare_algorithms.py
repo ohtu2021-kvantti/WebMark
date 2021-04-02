@@ -52,10 +52,11 @@ def compare_algorithms(request, a1_id, a2_id):
         # dummy data
         graph_data = [[0, 0, 0], [1, 2, 4], [2, 4, 8], [3, 6, 10], [4, 6, 10]]
         algo_data = [["Algorithm comparison", a1.name, a2.name],
-                     ["Iterations", metrics1.iterations, metrics2.iterations],
-                     ["Measurements", metrics1.measurements, metrics2.measurements],
-                     ["Circuit depth", metrics1.circuit_depth, metrics2.circuit_depth],
-                     ["Accuracy", metrics1.accuracy, metrics2.accuracy]]
+                     ["gate_depth", metrics1.gate_depth, metrics2.gate_depth],
+                     ["qubit_count", metrics1.qubit_count, metrics2.qubit_count],
+                     ["average_iterations", metrics1.average_iterations,
+                      metrics2.average_iterations],
+                     ["success_rate", metrics1.success_rate, metrics2.success_rate]]
 
     if ((not a1.public and request.user.pk != a1.user.pk) or
        (not a2.public and request.user.pk != a2.user.pk)):
