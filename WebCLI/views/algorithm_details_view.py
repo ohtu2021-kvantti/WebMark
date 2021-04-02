@@ -86,13 +86,15 @@ def get_metrics_graph_data(selected_molecule, algorithm):
     if selected_molecule:
         metrics_graph_data_query = Metrics.objects.raw('''
             SELECT metrics.id, ROW_NUMBER() OVER(ORDER BY version.timestamp) as row_num,
-            metrics.gate_depth, metrics.qubit_count, metrics.average_iterations, metrics.success_rate
+            metrics.gate_depth, metrics.qubit_count, metrics.average_iterations,
+            metrics.success_rate
             FROM "WebCLI_algorithm_version" version
             LEFT JOIN "WebCLI_metrics" metrics ON metrics.algorithm_version_id = version.id
             AND metrics.molecule_id = %s
             WHERE version.algorithm_id_id = %s''', [selected_molecule.pk, algorithm.pk])
 
-        return [[row.row_num, row.gate_depth, row.qubit_count, row.average_iterations, row.success_rate]
+        return [[row.row_num, row.gate_depth, row.qubit_count, row.average_iterations,
+                 row.success_rate]
                 for row in metrics_graph_data_query]
     return []
 
