@@ -3,7 +3,6 @@ from django.urls import path
 from .views.new_algorithm import new_algorithm
 from .views.new_molecule import new_molecule
 from .views.new_algorithm_type import new_algorithm_type
-from .views.add_metrics import add_metrics
 from .views.view_molecule import view_molecule
 from .views.new_version import add_version
 from .views.update_algorithm import update_algorithm
@@ -22,7 +21,6 @@ urlpatterns = [
     path('newMolecule/', new_molecule, name='newMolecule'),
     path('newAlgorithmType/', new_algorithm_type, name='newAlgorithmType'),
     path('algorithm/<int:algorithm_id>', algorithm_details_view, name='algorithm_details'),
-    path('addMetrics/', add_metrics, name='add_metrics'),
     path('myAlgorithms/', MyAlgorithmListView.as_view(), name="myAlgorithms"),
     path('compare/<int:a1_id>/<int:a2_id>', compare_algorithms, name="compare_algorithms"),
     path('addVersion/', add_version, name='add_version'),
