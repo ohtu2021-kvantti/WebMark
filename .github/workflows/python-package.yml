@@ -72,14 +72,16 @@ jobs:
       if: ${{ github.event_name == 'push'}}
       uses: docker/login-action@v1
       with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Build WebMark and push
       if: ${{ github.event_name == 'push'}}
       uses: docker/build-push-action@v2
       with:
         push: true
         tags: tapanih/quantmark_web:latest
+        build-args:
+          LIBMARK_VERSION: main
     - name: Build BenchMark and push
       if: ${{ github.event_name == 'push'}}
       uses: docker/build-push-action@v2
@@ -87,3 +89,5 @@ jobs:
         push: true
         context: BenchMark/
         tags: tapanih/quantmark_benchmark:latest
+        build-args:
+          LIBMARK_VERSION: main

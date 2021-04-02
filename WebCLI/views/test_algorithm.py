@@ -15,10 +15,10 @@ def test_algorithm(request):
         metrics = Metrics(
             algorithm_version=version,
             molecule=molecule,
-            iterations=None,
-            measurements=None,
-            circuit_depth=None,
-            accuracy=None)
+            gate_depth=None,
+            qubit_count=None,
+            average_iterations=None,
+            success_rate=None)
         metrics.save()
         metrics_id = metrics.pk
 

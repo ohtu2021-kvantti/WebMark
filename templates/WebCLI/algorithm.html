@@ -205,6 +205,63 @@
                 {% endifequal %}
                 {% endfor %}
             </select>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Metrics
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>molecule</th>
+                        <td>{{ selected_metrics.molecule.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>verified</th>
+                        <td>{{ selected_metrics.verified }}</td>
+                    </tr>
+                    <tr>
+                        <th>gate depth</th>
+                        <td>{{ selected_metrics.gate_depth }}</td>
+                    </tr>
+                    <tr>
+                        <th>qubit count</th>
+                        <td>{{ selected_metrics.qubit_count }}</td>
+                    </tr>
+                    <tr>
+                        <th>average iterations depth</th>
+                        <td>{{ selected_metrics.average_iterations }}</td>
+                    </tr>
+                    <tr>
+                        <th>success rate</th>
+                        <td>{{ selected_metrics.success_rate }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex flex-column align-items-center">
+            <div class="mt-3">
+                <b>Select molecule to graph:</b>
+                <select onchange="window.location.href=this.value">
+                    {% for m in molecules_with_metrics %}
+                    {% ifequal m.pk selected_molecule.pk %}
+                    <option
+                        value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
+                        selected="selected">
+                        {{ m.name }}
+                    </option>
+                    {% else %}
+                    <option
+                        value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ m.pk }}">
+                        {{ m.name }}
+                    </option>
+                    {% endifequal %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div id="metrics-chart"></div>
         </div>
         <div id="metrics-chart"></div>
     </div>

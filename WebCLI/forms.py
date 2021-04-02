@@ -54,14 +54,14 @@ class AlgorithmVersionForm(ModelForm):
 class MetricsForm(ModelForm):
     class Meta:
         model = Metrics
-        fields = ['algorithm_version', 'molecule', 'iterations',
-                  'measurements', 'circuit_depth', 'accuracy']
+        fields = ['algorithm_version', 'molecule', 'gate_depth',
+                  'qubit_count', 'average_iterations', 'success_rate']
         widgets = {
             'algorithm_version': HiddenInput(),
-            'iterations': NumberInput(attrs={'min': 0, 'max': 1000000}),
-            'measurements': NumberInput(attrs={'min': 0, 'max': 1000000}),
-            'circuit_depth': NumberInput(attrs={'min': 0, 'max': 1000000}),
-            'accuracy': NumberInput(attrs={'min': 0, 'max': 1000000}),
+            'gate_depth': NumberInput(attrs={'min': 0, 'max': 1000000}),
+            'qubit_count': NumberInput(attrs={'min': 0, 'max': 1000000}),
+            'averaget_iterations': NumberInput(attrs={'min': 0, 'max': 1000000}),
+            'success_rate': NumberInput(attrs={'min': 0, 'max': 1000000}),
         }
 
 
