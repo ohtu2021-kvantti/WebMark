@@ -11,7 +11,7 @@
                     <tr>
                         <th>Algorithm details
                             {% ifequal request.user.pk algorithm.user.pk %}
-                            - <a href="{% url 'updateAlgorithm'%}?index={{algorithm.pk}}">update details</a>
+                                - <a href="{% url 'updateAlgorithm'%}?index={{algorithm.pk}}">update details</a>
                             {% endifequal %}
                         </th>
                     </tr>
@@ -34,16 +34,16 @@
                         <td>{{ algorithm.public }}</td>
                     </tr>
                     {% if algorithm.article_link %}
-                    <tr>
-                        <th>paper</th>
-                        <td><a href="{{ algorithm.article_link }}" target="_blank">{{ algorithm.article_link }}</a></td>
-                    </tr>
+                        <tr>
+                            <th>paper</th>
+                            <td><a href="{{ algorithm.article_link }}" target="_blank">{{ algorithm.article_link }}</a></td>
+                        </tr>
                     {% endif %}
                     {% if algorithm.github_link %}
-                    <tr>
-                        <th>Github</th>
-                        <td><a href="{{ algorithm.github_link }}" target="_blank">{{ algorithm.github_link }}</a></td>
-                    </tr>
+                        <tr>
+                            <th>Github</th>
+                            <td><a href="{{ algorithm.github_link }}" target="_blank">{{ algorithm.github_link }}</a></td>
+                        </tr>
                     {% endif %}
                 </tbody>
             </table>
@@ -52,18 +52,18 @@
             {% timezone "Europe/Helsinki" %}
             <select onchange="window.location.href=this.value">
                 {% for version in versions %}
-                {% ifequal version.pk params.version_id %}
-                <option
-                    value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}"
-                    selected="selected">
-                    Version {{ version.version_number }}: {{ version.timestamp|date:'d.n.Y, G:i' }}
-                </option>
-                {% else %}
-                <option
-                    value="{{ algorithm.get_absolute_url }}?version_id={{ version.pk }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}">
-                    Version {{ version.version_number }}: {{ version.timestamp|date:'d.n.Y, G:i' }}
-                </option>
-                {% endifequal %}
+                    {% ifequal version.pk params.version_id %}
+                        <option
+                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}"
+                            selected="selected">
+                            Version {{ version.version_number }}: {{ version.timestamp|date:'d.n.Y, G:i' }}
+                        </option>
+                    {% else %}
+                        <option
+                            value="{{ algorithm.get_absolute_url }}?version_id={{ version.pk }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}">
+                            Version {{ version.version_number }}: {{ version.timestamp|date:'d.n.Y, G:i' }}
+                        </option>
+                    {% endifequal %}
                 {% endfor %}
             </select>
             {% endtimezone %}
@@ -73,7 +73,7 @@
                     <tr>
                         <th colspan="2">Algorithm
                             {% ifequal request.user.pk algorithm.user.pk %}
-                            - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
+                                - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
                             {% endifequal %}
                         </th>
                     </tr>
@@ -83,9 +83,9 @@
                             <select onchange="window.location.href=this.value">
                                 <option value="" disabled selected>Select molecule</option>
                                 {% for m in molecules %}
-                                <option value="{% url 'test_algorithm'%}?molecule={{ m.pk }}&version={{ selected_version.pk }}">
-                                    {{ m.name }}
-                                </option>
+                                    <option value="{% url 'test_algorithm'%}?molecule={{ m.pk }}&version={{ selected_version.pk }}">
+                                        {{ m.name }}
+                                    </option>
                                 {% endfor %}
                             </select>
                         </td>
@@ -127,18 +127,18 @@
 
             <select onchange="window.location.href=this.value">
                 {% for m in metrics %}
-                {% ifequal m selected_metrics %}
-                <option
-                    value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
-                    selected="selected">
-                    {{ m.molecule.name }}
-                </option>
-                {% else %}
-                <option
-                    value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ m.pk }}&molecule_id={{ params.molecule_id }}">
-                    {{ m.molecule.name }}
-                </option>
-                {% endifequal %}
+                    {% ifequal m selected_metrics %}
+                        <option
+                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
+                            selected="selected">
+                            {{ m.molecule.name }}
+                        </option>
+                    {% else %}
+                        <option
+                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ m.pk }}&molecule_id={{ params.molecule_id }}">
+                            {{ m.molecule.name }}
+                        </option>
+                    {% endifequal %}
                 {% endfor %}
             </select>
 
@@ -147,8 +147,7 @@
                     <tr>
                         <th>Metrics
                             {% ifequal request.user.pk algorithm.user.pk %}
-                            - <a href="{% url 'add_metrics'%}?index={{params.version_id}}">Add metrics of a new molecule
-                                manually</a>
+                                - <a href="{% url 'add_metrics'%}?index={{params.version_id}}">Add metrics of a new molecule manually</a>
                             {% endifequal %}
                         </th>
                     </tr>
@@ -186,18 +185,18 @@
                 <b>Select molecule to graph:</b>
                 <select onchange="window.location.href=this.value">
                     {% for m in molecules_with_metrics %}
-                    {% ifequal m.pk selected_molecule.pk %}
-                    <option
-                        value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
-                        selected="selected">
-                        {{ m.name }}
-                    </option>
-                    {% else %}
-                    <option
-                        value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ m.pk }}">
-                        {{ m.name }}
-                    </option>
-                    {% endifequal %}
+                        {% ifequal m.pk selected_molecule.pk %}
+                            <option
+                                value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
+                                selected="selected">
+                                {{ m.name }}
+                            </option>
+                        {% else %}
+                            <option
+                                value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ m.pk }}">
+                                {{ m.name }}
+                            </option>
+                        {% endifequal %}
                     {% endfor %}
                 </select>
             </div>
