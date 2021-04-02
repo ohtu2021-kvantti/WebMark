@@ -12,7 +12,7 @@ def as_analyzed_results(result):
     metrics.gate_depth = result["gate_depth"]
     metrics.average_iterations = result["average_iterations"]
     metrics.success_rate = result["success_rate"]
-    return metrics 
+    return metrics
 
 
 # TODO: set this route to accept from workers only

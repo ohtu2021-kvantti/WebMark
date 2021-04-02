@@ -151,10 +151,6 @@
             <thead>
                 <tr>
                     <th>Metrics
-                        {% ifequal request.user.pk algorithm.user.pk %}
-                        - <a href="{% url 'add_metrics'%}?index={{params.version_id}}">Add metrics of a new molecule
-                            manually</a>
-                        {% endifequal %}
                     </th>
                 </tr>
             </thead>
@@ -280,9 +276,9 @@
         const rows = JSON.parse(document.getElementById('metrics-graph-data').textContent);
         const ticks = Array.from({ length: rows.length }, (_, i) => i + 1);
         data.addColumn('number', "version");
-        data.addColumn('number', "iterations");
-        data.addColumn('number', "measurements");
-        data.addColumn('number', "circuit depth");
+        data.addColumn('number', "gate depth");
+        data.addColumn('number', "qubit count");
+        data.addColumn('number', "average iterations depth");
         data.addColumn('number', "accuracy");
         data.addRows(rows);
 
