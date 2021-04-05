@@ -26,4 +26,4 @@ def test_algorithm(request):
         metrics_id, model_to_dict(molecule), version.circuit,
         version.optimizer_module, version.optimizer_method
     )
-    return redirect('/myAlgorithms/')
+    return redirect('myAlgorithms')
