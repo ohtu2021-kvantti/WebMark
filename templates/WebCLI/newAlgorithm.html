@@ -10,7 +10,7 @@
         <div class="text-center"><a href="{{ a.get_absolute_url }}">{{a.name}}</a></div>
     {% endfor %}
     <h2>New algorithm</h2>
-    <form method="post">
+    <form method="post", method-url="{% url 'load_methods' %}", id="versionForm">
         {% csrf_token %}
         {% bootstrap_form aform %}
         {% bootstrap_form vform %}
@@ -20,4 +20,23 @@
         </div>
         {% endbuttons %}
     </form>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        $("#id_optimizer_module").change(function () {
+            var url = $("#versionForm").attr("method-url")
+            var module = $(this).val();
+
+            $.ajax({ 
+                url: url, 
+                data: {
+                    'module': module 
+                },
+                success: function (data) { 
+                    $("#id_optimizer_method").html(data);
+                }
+            });
+
+        });
+    </script>
 {% endblock %}

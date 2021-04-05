@@ -9,7 +9,7 @@ from ..forms import AlgorithmVersionForm
 @login_required
 def new_algorithm(request):
     aform = AlgorithmForm(initial={'user': request.user})
-    vform = AlgorithmVersionForm()
+    vform = AlgorithmVersionForm(initial={'optimizer_module': 'scipy'})
     if request.method == "POST":
         algorithm_form = AlgorithmForm(request.POST)
         new_algorithm = algorithm_form.save(commit=False)
