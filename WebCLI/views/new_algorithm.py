@@ -1,3 +1,4 @@
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
@@ -30,6 +31,7 @@ def new_algorithm(request):
                                    optimizer_module=avf.data['optimizer_module'],
                                    optimizer_method=avf.data['optimizer_method'])
             nv.save()
+            return HttpResponseRedirect('/newAlgorithm/')
     data = {'algorithms': Algorithm.objects.filter(user=request.user), 'aform': aform,
             'vform': vform}
     return render(request, 'WebCLI/newAlgorithm.html', data)
