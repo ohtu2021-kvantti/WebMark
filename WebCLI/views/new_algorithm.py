@@ -6,6 +6,7 @@ from ..forms import AlgorithmForm
 from ..forms import AlgorithmVersionForm
 from ..misc.optimizer_methods import get_modules
 
+
 @login_required
 def new_algorithm(request):
     aform = AlgorithmForm(initial={'user': request.user})
