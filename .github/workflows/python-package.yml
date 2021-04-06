@@ -80,8 +80,7 @@ jobs:
       with:
         push: true
         tags: tapanih/quantmark_web:latest
-        build-args:
-          LIBMARK_VERSION: main
+        build-args: LIBMARK_VERSION=main
     - name: Build BenchMark and push
       if: ${{ github.event_name == 'push'}}
       uses: docker/build-push-action@v2
@@ -89,5 +88,4 @@ jobs:
         push: true
         context: BenchMark/
         tags: tapanih/quantmark_benchmark:latest
-        build-args:
-          LIBMARK_VERSION: main
+        build-args: LIBMARK_VERSION=main

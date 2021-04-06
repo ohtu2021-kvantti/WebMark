@@ -1,35 +1,50 @@
 # copy of the docker-compose.yml that exists on the staging server
 version: "3.7"
-   
+
 services:
-  quantmark_db:
+  quantmark-db:
     image: postgres:13.1
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    container_name: quantmark_db
+    container_name: quantmark-db
     restart: unless-stopped
 
-  quantmark_web:
+  quantmark-rabbitmq:
+    image: rabbitmq:3.8
+    container_name: quantmark-rabbitmq
+    restart: unless-stopped
+
+  quantmark-web:
     image: tapanih/quantmark_web
     environment:
       - DATABASE_NAME=postgres
       - DATABASE_USER=postgres
       - DATABASE_PASSWORD=postgres
-      - DATABASE_HOST=quantmark_db
+      - DATABASE_HOST=quantmark-db
       - DATABASE_PORT=5432
       - ROOT_DIR=quantmark/
+      - BROKER_URL=pyamqp://guest@quantmark-rabbitmq//
     command: sh -c "
-      python manage.py makemigrations WebCLI && 
-      python manage.py migrate && 
+      python manage.py makemigrations WebCLI &&
+      python manage.py migrate &&
       gunicorn WebMark.wsgi -b 0.0.0.0:8000"
-    container_name: quantmark_web
+    container_name: quantmark-web
     restart: unless-stopped
     depends_on:
-      - quantmark_db
+      - quantmark-db
+
+  quantmark-benchmark:
+    image: tapanih/quantmark_benchmark
+    environment:
+    - BROKER_URL=pyamqp://guest@quantmark-rabbitmq//
+    - DJANGO_API_URL=http://quantmark-web:8000/quantmark/handleResult
+    command: conda run --no-capture-output -n benchmark celery -A benchmark worker -l info
+    container_name: quantmark-benchmark
+    restart: unless-stopped
 
 networks:
   default:
-    external: 
+    external:
       name: ohtup
