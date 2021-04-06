@@ -4,12 +4,12 @@ from django.utils import timezone
 from ..models import Algorithm, Algorithm_version
 from ..forms import AlgorithmForm
 from ..forms import AlgorithmVersionForm
-
+from ..misc.optimizer_methods import get_modules
 
 @login_required
 def new_algorithm(request):
     aform = AlgorithmForm(initial={'user': request.user})
-    vform = AlgorithmVersionForm(initial={'optimizer_module': 'scipy'})
+    vform = AlgorithmVersionForm(initial={'optimizer_module': get_modules()[0]})
     if request.method == "POST":
         algorithm_form = AlgorithmForm(request.POST)
         new_algorithm = algorithm_form.save(commit=False)
