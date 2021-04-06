@@ -10,7 +10,7 @@
         <div class="text-center"><a href="{{ a.get_absolute_url }}">{{a.name}}</a></div>
     {% endfor %}
     <h2>New algorithm</h2>
-    <form method="post", method-url="{% url 'load_methods' %}", id="versionForm">
+    <form method="post" method-url="{% url 'load_methods' %}" id="versionForm">
         {% csrf_token %}
         {% bootstrap_form aform %}
         {% bootstrap_form vform %}

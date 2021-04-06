@@ -25,10 +25,7 @@
         </table>
     </div>
 
-
-
-
-    <form method="post", method-url="{% url 'load_methods' %}", id="versionForm">
+    <form method="post" method-url="{% url 'load_methods' %}" id="versionForm">
         {% csrf_token %}
         {% bootstrap_form form %}
         {% buttons %}
@@ -37,7 +34,6 @@
         </div>
         {% endbuttons %}
     </form>
-
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script>
@@ -57,6 +53,4 @@
 
         });
     </script>
-
-
-    {% endblock %}
+{% endblock %}
