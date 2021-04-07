@@ -77,19 +77,21 @@
                             {% endifequal %}
                         </th>
                     </tr>
-                    <tr>
-                        <td>
-                            Select molecule to measure metrics of algorithm
-                            <select onchange="window.location.href=this.value">
-                                <option value="" disabled selected>Select molecule</option>
-                                {% for m in molecules %}
-                                    <option value="{% url 'test_algorithm'%}?molecule={{ m.pk }}&version={{ selected_version.pk }}">
-                                        {{ m.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                    </tr>
+                    {% ifequal request.user.pk algorithm.user.pk %}
+                        <tr>
+                            <td>
+                                Select molecule to measure metrics of algorithm
+                                <select onchange="window.location.href=this.value">
+                                    <option value="" disabled selected>Select molecule</option>
+                                    {% for m in molecules %}
+                                        <option value="{% url 'test_algorithm'%}?molecule={{ m.pk }}&version={{ selected_version.pk }}">
+                                            {{ m.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                    {% endifequal %}
                 </thead>
                 <tbody>
                     <tr>
