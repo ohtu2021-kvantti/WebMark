@@ -22,7 +22,7 @@ def test_algorithm(request):
         metrics.save()
         metrics_id = metrics.pk
         average_history = Average_history(
-            analyzed_results=metrics_id,
+            analyzed_results=metrics,
             data=None,
             iteration_number=None)
         average_history.save()

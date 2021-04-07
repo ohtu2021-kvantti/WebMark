@@ -15,14 +15,17 @@ def as_analyzed_results(result):
     return metrics
 
 def as_average_history(result):
-    average_history = Average_history.objects.get(fk=result["metrics_id"])
+    # tässä joku ongelma
+    average_history = Average_history.objects.get(pk= result["metrics_id"])
     print("tÄLLÄISTÄ " + result["average_history"])
     average_history.data = result["average_history"]
-    return metrics
+    return average_history
 
 # TODO: set this route to accept from workers only
 @csrf_exempt
 def handle_result(request):
     analyzed_results = json.loads(request.POST["data"], object_hook=as_analyzed_results)
     analyzed_results.save()
+    average_history = json.loads(request.POST["data"], object_hook=as_average_history)
+    average_history.save()
     return HttpResponse("ok")
