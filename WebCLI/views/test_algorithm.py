@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from ..models import Molecule, Algorithm_version
 from WebCLI.celery.task_sender import send_benchmark_task
 from django.forms.models import model_to_dict
-from WebCLI.models import Metrics
+from WebCLI.models import Metrics, Average_history
 
 
 def test_algorithm(request):
@@ -21,6 +21,11 @@ def test_algorithm(request):
             success_rate=None)
         metrics.save()
         metrics_id = metrics.pk
+        average_history = Average_history(
+            analyzed_results=metrics_id,
+            data=None,
+            iteration_number=None)
+        )
 
     send_benchmark_task(
         metrics_id, model_to_dict(molecule), version.circuit,
