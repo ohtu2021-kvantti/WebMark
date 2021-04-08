@@ -1,8 +1,10 @@
 from django.test import TestCase
+from unittest import mock
 from django.contrib.auth.models import User
-from ..models import Molecule, Algorithm_type, Algorithm, Algorithm_version, Metrics
+from ..models import Molecule, Algorithm_type, Average_history, Algorithm, Algorithm_version, Metrics
 from django.urls import reverse
 from django.utils import timezone
+from ..views.worker_api import as_average_history
 import datetime
 import pytz
 
@@ -229,3 +231,9 @@ class TestViewData(TestCase):
         a = Algorithm.objects.get(name='Algo4')
         response = self.client.get('/updateAlgorithm/?index='+str(a.pk))
         self.assertEqual(response.status_code, 403)
+
+    def test_get_benchmark_results_average_history(self):
+        mock_libmark = mock.Mock()
+        result = {'average_history': [0.23, 0.34, 0.45, 0.56], 'metrics_id': 1 }
+        as_average_history(result)
+        self.assertEqual(Average_history.objects.all(), 4)
