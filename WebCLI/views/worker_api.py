@@ -15,9 +15,13 @@ def as_analyzed_results(result):
     return metrics
 
 def as_average_history(result):
-    average_history = Average_history.objects.get(fk=result["metrics_id"])
-    print("tÄLLÄISTÄ " + result["average_history"])
-    average_history.data = result["average_history"]
+    histories = result["average_history"]
+    for i in range(len(histories)):
+        average_history = Average_history(
+            analyzed_results=Metrics.objects.get(pk=result["metrics_id"]),
+            data=histories[i],
+            iteration_number=i)
+        average_history.save()
     return average_history
 
 # TODO: set this route to accept from workers only
@@ -25,4 +29,6 @@ def as_average_history(result):
 def handle_result(request):
     analyzed_results = json.loads(request.POST["data"], object_hook=as_analyzed_results)
     analyzed_results.save()
+    avg_history_results = json.loads(request.POST["data"], object_hook=as_average_history)
+    avg_history_results.save()
     return HttpResponse("ok")

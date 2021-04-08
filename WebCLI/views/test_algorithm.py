@@ -21,12 +21,6 @@ def test_algorithm(request):
             success_rate=None)
         metrics.save()
         metrics_id = metrics.pk
-        average_history = Average_history(
-            analyzed_results=metrics_id,
-            data=None,
-            iteration_number=None)
-        average_history.save()
-
 
     send_benchmark_task(
         metrics_id, model_to_dict(molecule), version.circuit,
