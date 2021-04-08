@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from ..models import Metrics, Average_history
+from ..models import Metrics, Average_history, Accuracy_history
 from django.utils import timezone
 import json
 
@@ -26,6 +26,17 @@ def as_average_history(result):
     return average_history
 
 
+def as_accuracy_history(result):
+    histories = result["accuracy_history"]
+    for i in range(len(histories)):
+        accuracy_history = Accuracy_history(
+            analyzed_results=Metrics.objects.get(pk=result["metrics_id"]),
+            data=histories[i],
+            iteration_number=i)
+        accuracy_history.save()
+    return accuracy_history
+
+
 # TODO: set this route to accept from workers only
 @csrf_exempt
 def handle_result(request):
@@ -33,4 +44,6 @@ def handle_result(request):
     analyzed_results.save()
     avg_history_results = json.loads(request.POST["data"], object_hook=as_average_history)
     avg_history_results.save()
+    avg_accuracy_results = json.loads(request.POST["data"], object_hook=as_accuracy_history)
+    avg_accuracy_results.save()
     return HttpResponse("ok")
