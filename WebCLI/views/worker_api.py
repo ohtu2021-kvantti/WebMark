@@ -18,7 +18,7 @@ def as_average_history(result):
     average_history = Average_history.objects.get(fk=result["metrics_id"])
     print("tÄLLÄISTÄ " + result["average_history"])
     average_history.data = result["average_history"]
-    return metrics
+    return average_history
 
 # TODO: set this route to accept from workers only
 @csrf_exempt
