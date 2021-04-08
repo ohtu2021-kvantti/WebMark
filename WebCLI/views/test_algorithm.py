@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from ..models import Molecule, Algorithm_version
 from WebCLI.celery.task_sender import send_benchmark_task
 from django.forms.models import model_to_dict
-from WebCLI.models import Metrics, Average_history
+from WebCLI.models import Metrics
 
 
 def test_algorithm(request):

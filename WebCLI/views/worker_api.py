@@ -14,6 +14,7 @@ def as_analyzed_results(result):
     metrics.success_rate = result["success_rate"]
     return metrics
 
+
 def as_average_history(result):
     histories = result["average_history"]
     for i in range(len(histories)):
@@ -23,6 +24,7 @@ def as_average_history(result):
             iteration_number=i)
         average_history.save()
     return average_history
+
 
 # TODO: set this route to accept from workers only
 @csrf_exempt
