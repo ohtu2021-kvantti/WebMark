@@ -78,24 +78,26 @@
                             {% endifequal %}
                         </th>
                     </tr>
-                    <tr>
-                        <td>
-                            <form>
-                                Select molecule to measure metrics of algorithm
-                                <select id="mole_id">
-                                    <option value="" disabled selected>Select molecule</option>
-                                    {% for m in molecules %}
-                                        <option
-                                            value="{% url 'test_algorithm'%}?molecule={{ m.pk }}&version={{ selected_version.pk }}">
-                                            {{ m.name }}
-                                        </option>
-                                    {% endfor %}
+                    {% ifequal request.user.pk algorithm.user.pk %}
+                        <tr>
+                            <td>
+                                <form>
+                                    Select molecule to measure metrics of algorithm
+                                    <select id="mole_id">
+                                        <option value="" disabled selected>Select molecule</option>
+                                        {% for m in molecules %}
+                                            <option
+                                                value="{% url 'test_algorithm'%}?molecule={{ m.pk }}&version={{ selected_version.pk }}">
+                                                {{ m.name }}
+                                            </option>
+                                        {% endfor %}
 
-                                </select>
-                                <a class="btn btn-primary" onclick="run()">Run</a>
-                            </form>
-                        </td>
-                    </tr>
+                                    </select>
+                                    <a class="btn btn-primary" onclick="run()">Run</a>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endifequal %}
                 </thead>
                 <tbody>
                     <tr>
