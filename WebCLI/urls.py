@@ -27,5 +27,5 @@ urlpatterns = [
     path('updateAlgorithm/', update_algorithm, name='updateAlgorithm'),
     path('handleResult', handle_result),
     path('test/', test_algorithm, name='test_algorithm'),
-    path('molecule/', view_molecule, name='viewMolecule')
+    path('molecule/<int:molecule_id>', view_molecule, name='viewMolecule')
 ]
