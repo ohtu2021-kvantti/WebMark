@@ -18,7 +18,7 @@
     <h2>Existing molecules</h2>
     {% for m in molecules %}
         <div class="text-center">
-            <a href="/molecule/?index={{ m.pk }}">
+            <a href="{{ m.get_absolute_url }}">
                 {{ m.name }} - {{ m.structure }}
             </a>
         </div>
