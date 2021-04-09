@@ -25,7 +25,7 @@
         </table>
     </div>
 
-    <form method="post">
+    <form method="post" method-url="{% url 'load_methods' %}" id="versionForm">
         {% csrf_token %}
         {% bootstrap_form form %}
         {% buttons %}
@@ -34,4 +34,23 @@
         </div>
         {% endbuttons %}
     </form>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        $("#id_optimizer_module").change(function () {
+            var url = $("#versionForm").attr("method-url")
+            var module = $(this).val();
+
+            $.ajax({ 
+                url: url, 
+                data: {
+                    'module': module 
+                },
+                success: function (data) { 
+                    $("#id_optimizer_method").html(data);
+                }
+            });
+
+        });
+    </script>
 {% endblock %}
