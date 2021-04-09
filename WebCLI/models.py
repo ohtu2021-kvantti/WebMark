@@ -17,6 +17,10 @@ class Molecule(models.Model):
     basis_set = models.TextField(default="")
     transformation = models.TextField(blank=True, default="")
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('viewMolecule', args=[str(self.pk)])
+
     def __str__(self):
         return self.name
 

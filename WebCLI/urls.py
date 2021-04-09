@@ -27,6 +27,6 @@ urlpatterns = [
     path('updateAlgorithm/', update_algorithm, name='updateAlgorithm'),
     path('handleResult', handle_result),
     path('test/', test_algorithm, name='test_algorithm'),
-    path('molecule/', view_molecule, name='viewMolecule'),
     path('methods_of_module/', load_methods, name='load_methods')
+    path('molecule/<int:molecule_id>', view_molecule, name='viewMolecule')
 ]

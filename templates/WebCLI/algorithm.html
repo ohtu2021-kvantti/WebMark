@@ -2,14 +2,14 @@
 {% load version_selector_form %}
 {% load metrics_selector_form %}
 {% block title %}Algorithm view{% endblock %}
-
 {% block content %}
     <div class="d-flex flex-row flex-wrap justify-content-center">
         <div>
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Algorithm details
+                        <th>
+                            Algorithm details
                             {% ifequal request.user.pk algorithm.user.pk %}
                                 - <a href="{% url 'updateAlgorithm'%}?index={{algorithm.pk}}">update details</a>
                             {% endifequal %}
@@ -71,29 +71,37 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th colspan="2">Algorithm
+                        <th colspan="2">
+                            Algorithm
                             {% ifequal request.user.pk algorithm.user.pk %}
                                 - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
                             {% endifequal %}
                         </th>
                     </tr>
-                    <tr>
-                        <td>
-                            Select molecule to measure metrics of algorithm
-                            <select onchange="window.location.href=this.value">
-                                <option value="" disabled selected>Select molecule</option>
-                                {% for m in molecules %}
-                                    <option value="{% url 'test_algorithm'%}?molecule={{ m.pk }}&version={{ selected_version.pk }}">
-                                        {{ m.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                    </tr>
+                    {% ifequal request.user.pk algorithm.user.pk %}
+                        <tr>
+                            <td>
+                                <form>
+                                    Select molecule to measure metrics of algorithm
+                                    <select id="mole_id">
+                                        <option value="" disabled selected>Select molecule</option>
+                                        {% for m in molecules %}
+                                            <option
+                                                value="{% url 'test_algorithm'%}?molecule={{ m.pk }}&version={{ selected_version.pk }}">
+                                                {{ m.name }}
+                                            </option>
+                                        {% endfor %}
+
+                                    </select>
+                                    <a class="btn btn-primary" onclick="run()">Run</a>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endifequal %}
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="2">
+                        <td colspan=" 2">
                             <p>Description:</p>
                             <code>{{ selected_version.algorithm|linebreaks }}</code>
                         </td>
@@ -197,7 +205,6 @@
                     {% endfor %}
                 </select>
             </div>
-            <div id="metrics-chart"></div>
         </div>
     </div>
 
@@ -214,9 +221,9 @@
             const rows = JSON.parse(document.getElementById('metrics-graph-data').textContent);
             const ticks = Array.from({ length: rows.length }, (_, i) => i + 1);
             data.addColumn('number', "version");
-            data.addColumn('number', "iterations");
-            data.addColumn('number', "measurements");
-            data.addColumn('number', "circuit depth");
+            data.addColumn('number', "gate depth");
+            data.addColumn('number', "qubit count");
+            data.addColumn('number', "average iterations depth");
             data.addColumn('number', "accuracy");
             data.addRows(rows);
 
@@ -240,6 +247,15 @@
             const chart = new google.visualization.LineChart(document.getElementById('metrics-chart'));
             chart.draw(data, options);
         }
-    </script>
 
+        function run() {
+            var x = document.getElementById('mole_id');
+            console.log(x.value)
+            if (x.value == "") {
+                return;
+            }
+            var y = document.getElementById('href_id');
+            window.location.href = x.value
+        }
+    </script>
 {% endblock %}}

@@ -28,7 +28,7 @@ SECRET_KEY = '(enfmztw6!r!b7^_s31p68cqm-)w8g(qru+od0bc9oz&6_0q!9'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'ohtup-staging.cs.helsinki.fi', '0.0.0.0', '127.0.0.1', 'localhost', 'web', 'quantmark_web'
+    'ohtup-staging.cs.helsinki.fi', '0.0.0.0', '127.0.0.1', 'localhost', 'web', 'quantmark-web'
 ]
 
 # Application definition
@@ -121,6 +121,10 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# Redirects
+
+LOGIN_URL = 'login'
 
 LOGIN_REDIRECT_URL = 'home'
 
