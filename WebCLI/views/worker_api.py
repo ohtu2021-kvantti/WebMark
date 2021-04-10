@@ -17,23 +17,31 @@ def as_analyzed_results(result):
 
 def as_average_history(result):
     histories = result["average_history"]
-    for i in range(len(histories)):
-        average_history = Average_history(
-            analyzed_results=Metrics.objects.get(pk=result["metrics_id"]),
-            data=histories[i],
-            iteration_number=i)
-        average_history.save()
-    return average_history
+    existing_avg_history = Average_history.objects.filter(analyzed_results=result["metrics_id"])
+    if len(existing_avg_history) > 0:
+        return existing_avg_history[0]
+    else:
+        for i in range(len(histories)):
+            average_history = Average_history(
+                analyzed_results=Metrics.objects.get(pk=result["metrics_id"]),
+                data=histories[i],
+                iteration_number=i+1)
+            average_history.save()
+        return average_history
 
 
 def as_accuracy_history(result):
     histories = result["accuracy_history"]
-    for i in range(len(histories)):
-        accuracy_history = Accuracy_history(
-            analyzed_results=Metrics.objects.get(pk=result["metrics_id"]),
-            data=histories[i],
-            iteration_number=i)
-        accuracy_history.save()
+    existing_acc_history = Accuracy_history.objects.filter(analyzed_results=result["metrics_id"])
+    if len(existing_acc_history) > 0:
+        return existing_acc_history[0]
+    else:
+        for i in range(len(histories)):
+            accuracy_history = Accuracy_history(
+                analyzed_results=Metrics.objects.get(pk=result["metrics_id"]),
+                data=histories[i],
+                iteration_number=i+1)
+            accuracy_history.save()
     return accuracy_history
 
 
