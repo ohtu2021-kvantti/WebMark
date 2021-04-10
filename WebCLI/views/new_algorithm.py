@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from ..models import Algorithm, Algorithm_version
@@ -31,6 +31,7 @@ def new_algorithm(request):
                                    optimizer_module=avf.data['optimizer_module'],
                                    optimizer_method=avf.data['optimizer_method'])
             nv.save()
+            return redirect('newAlgorithm')
     data = {'algorithms': Algorithm.objects.filter(user=request.user), 'aform': aform,
             'vform': vform}
     return render(request, 'WebCLI/newAlgorithm.html', data)
