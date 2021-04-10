@@ -136,7 +136,7 @@ def algorithm_details_view(request, algorithm_id):
 
     data = {'algorithm': algorithm, 'versions': versions, 'params': params,
             'metrics_graph_data': metrics_graph_data, 'metrics': metrics,
-            'avg_history_graph_data': avg_history_graph_data,  
+            'avg_history_graph_data': avg_history_graph_data,
             'molecules_with_metrics': molecules_with_metrics,
             'selected_version': selected_version,
             'selected_metrics': selected_metrics,
