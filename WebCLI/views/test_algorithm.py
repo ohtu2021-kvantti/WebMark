@@ -1,12 +1,17 @@
 from django.shortcuts import redirect
 from ..models import Molecule, Algorithm_version
+from django.core.exceptions import PermissionDenied
+from django.contrib.auth.decorators import login_required
 from WebCLI.celery.task_sender import send_benchmark_task
 from django.forms.models import model_to_dict
 from WebCLI.models import Metrics
 
 
+@login_required
 def test_algorithm(request):
     version = Algorithm_version.objects.get(pk=request.GET.get("version"))
+    if request.user.pk != version.algorithm_id.user.pk:
+        raise PermissionDenied
     molecule = Molecule.objects.get(pk=request.GET.get("molecule"))
     existing_metrics = Metrics.objects.filter(algorithm_version=version, molecule=molecule)
     if len(existing_metrics) > 0:

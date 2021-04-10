@@ -4,7 +4,7 @@ from .views.new_algorithm import new_algorithm
 from .views.new_molecule import new_molecule
 from .views.new_algorithm_type import new_algorithm_type
 from .views.view_molecule import view_molecule
-from .views.new_version import add_version
+from .views.new_version import add_version, load_methods
 from .views.update_algorithm import update_algorithm
 from .views.compare_algorithms import compare_algorithms
 from .views.algorithm_details_view import algorithm_details_view
@@ -27,5 +27,6 @@ urlpatterns = [
     path('updateAlgorithm/', update_algorithm, name='updateAlgorithm'),
     path('handleResult', handle_result),
     path('test/', test_algorithm, name='test_algorithm'),
-    path('molecule/', view_molecule, name='viewMolecule')
+    path('methods_of_module/', load_methods, name='load_methods'),
+    path('molecule/<int:molecule_id>', view_molecule, name='viewMolecule')
 ]
