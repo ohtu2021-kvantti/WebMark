@@ -15,34 +15,32 @@ def as_analyzed_results(result):
     return metrics
 
 
-def as_average_history(result):
-    histories = result["average_history"]
-    existing_avg_history = Average_history.objects.filter(analyzed_results=result["metrics_id"])
-    if len(existing_avg_history) > 0:
-        return existing_avg_history[0]
-    else:
-        for i in range(len(histories)):
-            average_history = Average_history(
-                analyzed_results=Metrics.objects.get(pk=result["metrics_id"]),
-                data=histories[i],
-                iteration_number=i+1)
-            average_history.save()
-        return average_history
+def as_history(result):
+    avg_histories = result["average_history"]
+    avg_existing_history = Average_history.objects.filter(analyzed_results=result["metrics_id"])
+    acc_histories = result["accuracy_history"]
+    acc_existing_history = Accuracy_history.objects.filter(analyzed_results=result["metrics_id"])
 
-
-def as_accuracy_history(result):
-    histories = result["accuracy_history"]
-    existing_acc_history = Accuracy_history.objects.filter(analyzed_results=result["metrics_id"])
-    if len(existing_acc_history) > 0:
-        return existing_acc_history[0]
-    else:
-        for i in range(len(histories)):
-            accuracy_history = Accuracy_history(
+    if len(avg_existing_history) < 1:
+        for i in range(len(avg_histories)):
+            history = Average_history(
                 analyzed_results=Metrics.objects.get(pk=result["metrics_id"]),
-                data=histories[i],
+                data=avg_histories[i],
                 iteration_number=i+1)
-            accuracy_history.save()
-    return accuracy_history
+            history.save()
+    else:
+        history = avg_existing_history[0]
+    if len(acc_existing_history) < 1:
+        for i in range(len(acc_histories)):
+            history = Accuracy_history(
+                analyzed_results=Metrics.objects.get(pk=result["metrics_id"]),
+                data=acc_histories[i],
+                iteration_number=i+1)
+            history.save()
+    else:
+        history = acc_existing_history[0]
+
+    return history
 
 
 # TODO: set this route to accept from workers only
@@ -50,8 +48,6 @@ def as_accuracy_history(result):
 def handle_result(request):
     analyzed_results = json.loads(request.POST["data"], object_hook=as_analyzed_results)
     analyzed_results.save()
-    avg_history_results = json.loads(request.POST["data"], object_hook=as_average_history)
-    avg_history_results.save()
-    avg_accuracy_results = json.loads(request.POST["data"], object_hook=as_accuracy_history)
-    avg_accuracy_results.save()
+    history_results = json.loads(request.POST["data"], object_hook=as_history)
+    history_results.save()
     return HttpResponse("ok")

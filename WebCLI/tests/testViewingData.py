@@ -4,7 +4,7 @@ from ..models import Molecule, Algorithm_type, Average_history, Algorithm
 from ..models import Algorithm_version, Metrics, Accuracy_history
 from django.urls import reverse
 from django.utils import timezone
-from ..views.worker_api import as_average_history, as_accuracy_history
+from ..views.worker_api import as_history
 import datetime
 import pytz
 
@@ -124,7 +124,7 @@ class AlgorithmComparisonTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_get_benchmark_results_average_history(self):
+    def test_get_benchmark_results_histories(self):
         av1 = Algorithm_version(algorithm_id=self.my_algorithm,
                                 timestamp=timezone.now(),
                                 algorithm='algo description',
@@ -149,38 +149,11 @@ class AlgorithmComparisonTest(TestCase):
             success_rate=None)
         metrics.save()
         metricsObject = Metrics.objects.get(gate_depth=381)
-        result = {'average_history': [0.23, 0.34, 0.45, 0.56], 'metrics_id': metricsObject.pk}
-        as_average_history(result)
-        self.assertEqual(len(Average_history.objects.all()), 4)
-
-    def test_get_benchmark_results_accuracy_history(self):
-        av1 = Algorithm_version(algorithm_id=self.my_algorithm,
-                                timestamp=timezone.now(),
-                                algorithm='algo description',
-                                circuit="circuit:\nRy(target=(0,), parameter=a)\nX(target=(2,))",
-                                optimizer_module='scipy',
-                                optimizer_method='BFGS')
-        molecule = Molecule(
-            name="hydrogen",
-            structure="H 0.0 0.0 0.0",
-            active_orbitals="A1 0",
-            basis_set="scipy",
-            transformation="BFGS"
-        )
-        molecule.save()
-        av1.save()
-        metrics = Metrics(
-            algorithm_version=av1,
-            molecule=molecule,
-            gate_depth=381,
-            qubit_count=None,
-            average_iterations=None,
-            success_rate=None)
-        metrics.save()
-        metricsObject = Metrics.objects.get(gate_depth=381)
-        result = {'accuracy_history': [0.73, 0.32, 0.10, 0.95, 0.73],
+        result = {'average_history': [0.23, 0.34, 0.45, 0.56],
+                  'accuracy_history': [0.73, 0.32, 0.10, 0.95, 0.73],
                   'metrics_id': metricsObject.pk}
-        as_accuracy_history(result)
+        as_history(result)
+        self.assertEqual(len(Average_history.objects.all()), 4)
         self.assertEqual(len(Accuracy_history.objects.all()), 5)
 
 
