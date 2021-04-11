@@ -3,16 +3,7 @@ from django.shortcuts import redirect, render
 from django.core.exceptions import PermissionDenied
 from ..models import Algorithm, Molecule, Algorithm_version, Metrics
 from django.db.models import F
-
-
-def to_positive_int_or_none(value):
-    if not value:
-        return None
-    try:
-        int_value = int(value)
-        return int_value if int_value > 0 else None
-    except ValueError:
-        return None
+from WebCLI.misc.helpers import to_positive_int_or_none
 
 
 def get_algorithm_details_view_params(request):

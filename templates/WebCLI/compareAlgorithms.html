@@ -11,14 +11,67 @@
                 <thead>
                     <tr>
                         <th>Select version:</th>
-                        <td>{% version_selector_form 'selector1' 'item1_id' versions1 av1 av2.pk %}</td>
-                        <td>{% version_selector_form 'selector2' 'item2_id' versions2 av2 av1.pk %}</td>
+                        {% load tz %}
+                        {% timezone "Europe/Helsinki" %}
+                        <td>
+                            <select onchange="window.location.href=this.value">
+                                {% for version in versions1 %}
+                                    {% ifequal version.pk params.version1_id %}
+                                        <option
+                                            value="{% url 'compare_algorithms' params.version1_id params.version2_id %}?metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}"
+                                            selected="selected">
+                                            {{ version.timestamp|date:'d.n.Y, G:i' }}
+                                        </option>
+                                    {% else %}
+                                        <option
+                                            value="{% url 'compare_algorithms' version.pk params.version2_id %}?metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}">
+                                            {{ version.timestamp|date:'d.n.Y, G:i' }}
+                                        </option>
+                                    {% endifequal %}
+                                {% endfor %}
+                            </select>
+                        </td>
+                        {% endtimezone %}
+                        <td>
+                            <select onchange="window.location.href=this.value">
+                                {% for version in versions2 %}
+                                    {% ifequal version.pk params.version2_id %}
+                                        <option
+                                            value="{% url 'compare_algorithms' params.version1_id params.version2_id %}?metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}"
+                                            selected="selected">
+                                            {{ version.timestamp|date:'d.n.Y, G:i' }}
+                                        </option>
+                                    {% else %}
+                                        <option
+                                            value="{% url 'compare_algorithms' params.version1_id version.pk %}?metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}">
+                                            {{ version.timestamp|date:'d.n.Y, G:i' }}
+                                        </option>
+                                    {% endifequal %}
+                                {% endfor %}
+                            </select>
+                        </td>
                     </tr>
                 </thead>
                 <thead>
                     <tr>
                         <th>Select molecule:</th>
                         {% if molecule %}
+                            <select onchange="window.location.href=this.value">
+                                {% for m in common_molecules %}
+                                    {% ifequal m.pk selected_molecule.pk %}
+                                        <option
+                                            value="{% url 'compare_algorithms' params.version1_id params.version2_id %}?metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}"
+                                            selected="selected">
+                                            {{ m.name }}
+                                        </option>
+                                    {% else %}
+                                        <option
+                                            value="{% url 'compare_algorithms' params.version1_id params.version2_id %}?metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{m.pk}}">
+                                            {{ m.name }}
+                                        </option>
+                                    {% endifequal %}
+                                {% endfor %}
+                            </select>
                             <td>{% molecule_selector_form 'selector3' 'item3_id' common_molecules molecule av1.pk av2.pk %}</td>
                         {% else %}
                             <td>No common molecules</td>
@@ -43,23 +96,23 @@
                     </tr>
                     <tr>
                         <th>gate depth</th>
-                        <td>{{ metrics1.gate_depth }}</td>
-                        <td>{{ metrics2.gate_depth }}</td>
+                        <td>{{ selected_metrics1.gate_depth }}</td>
+                        <td>{{ selected_metrics2.gate_depth }}</td>
                     </tr>
                     <tr>
                         <th>qubit count</th>
-                        <td>{{ metrics1.qubit_count }}</td>
-                        <td>{{ metrics2.qubit_count }}</td>
+                        <td>{{ selected_metrics1.qubit_count }}</td>
+                        <td>{{ selected_metrics2.qubit_count }}</td>
                     </tr>
                     <tr>
                         <th>average iterations</th>
-                        <td>{{ metrics1.average_iterations }}</td>
-                        <td>{{ metrics2.average_iterations }}</td>
+                        <td>{{ selected_metrics1.average_iterations }}</td>
+                        <td>{{ selected_metrics2.average_iterations }}</td>
                     </tr>
                     <tr>
                         <th>success rate</th>
-                        <td>{{ metrics1.success_rate }}</td>
-                        <td>{{ metrics2.success_rate }}</td>
+                        <td>{{ selected_metrics1.success_rate }}</td>
+                        <td>{{ selected_metrics2.success_rate }}</td>
                     </tr>
                 </tbody>
             </table>
