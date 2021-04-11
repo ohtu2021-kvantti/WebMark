@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load version_selector_form %}
-{% load metrics_selector_form %}
 {% block title %}Algorithm view{% endblock %}
 {% block content %}
     <div class="d-flex flex-row flex-wrap justify-content-center">
@@ -185,7 +184,7 @@
                         <td>{{ selected_metrics.qubit_count }}</td>
                     </tr>
                     <tr>
-                        <th>Average iterations depth</th>
+                        <th>Average iterations</th>
                         <td>{{ selected_metrics.average_iterations }}</td>
                     </tr>
                     <tr>
@@ -273,7 +272,7 @@
     {% if messages %}
         {% for message in messages %}
             {% if message.tags %}
-                <script>alert('{{ message }}')</script> 
+                <script>alert('{{ message }}')</script>
             {% endif %}
         {% endfor %}
     {% endif %}
