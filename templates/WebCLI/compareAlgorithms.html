@@ -42,29 +42,24 @@
                         <td>{{ a2.user.username }}</td>
                     </tr>
                     <tr>
-                        <th>molecule</th>
-                        <td>{{ metrics1.molecule.name }}</td>
-                        <td>{{ metrics2.molecule.name }}</td>
+                        <th>gate depth</th>
+                        <td>{{ metrics1.gate_depth }}</td>
+                        <td>{{ metrics2.gate_depth }}</td>
                     </tr>
                     <tr>
-                        <th>iterations</th>
-                        <td>{{ metrics1.iterations }}</td>
-                        <td>{{ metrics2.iterations }}</td>
+                        <th>qubit count</th>
+                        <td>{{ metrics1.qubit_count }}</td>
+                        <td>{{ metrics2.qubit_count }}</td>
                     </tr>
                     <tr>
-                        <th>measurements</th>
-                        <td>{{ metrics1.measurements }}</td>
-                        <td>{{ metrics2.measurements }}</td>
+                        <th>average iterations</th>
+                        <td>{{ metrics1.average_iterations }}</td>
+                        <td>{{ metrics2.average_iterations }}</td>
                     </tr>
                     <tr>
-                        <th>circuit depth</th>
-                        <td>{{ metrics1.circuit_depth }}</td>
-                        <td>{{ metrics2.circuit_depth }}</td>
-                    </tr>
-                    <tr>
-                        <th>accuracy</th>
-                        <td>{{ metrics1.accuracy }}</td>
-                        <td>{{ metrics2.accuracy }}</td>
+                        <th>success rate</th>
+                        <td>{{ metrics1.success_rate }}</td>
+                        <td>{{ metrics2.success_rate }}</td>
                     </tr>
                 </tbody>
             </table>
