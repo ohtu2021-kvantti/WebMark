@@ -7,6 +7,7 @@ from django.forms.models import model_to_dict
 from WebCLI.models import Metrics
 from django.contrib import messages
 
+
 @login_required
 def test_algorithm(request):
     version = Algorithm_version.objects.get(pk=request.GET.get("version"))
@@ -33,7 +34,7 @@ def test_algorithm(request):
             gate_depth=None,
             qubit_count=None,
             average_iterations=None,
-            success_rate=None, 
+            success_rate=None,
             in_analyze_queue=True)
         metrics.save()
     send_benchmark_task(
