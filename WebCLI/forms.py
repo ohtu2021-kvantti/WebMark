@@ -7,6 +7,7 @@ from .models import Algorithm, Molecule, Algorithm_type, Algorithm_version, Metr
 import quantmark as qm
 from .misc.optimizer_methods import get_methods, get_modules
 
+BASIS_SET_CHOICES = ['sto-3g']
 
 class AlgorithmForm(ModelForm):
     class Meta:
@@ -94,7 +95,7 @@ class MoleculeForm(ModelForm):
         }
         widgets = {
             'name': TextInput(),
-            'basis_set': TextInput(),
+            'basis_set': Select(choices=((x, x) for x in BASIS_SET_CHOICES)),
             'transformation': TextInput(),
             'structure': Textarea(attrs={'rows': 6, 'cols': 50}),
             'active_orbitals': Textarea(attrs={'rows': 6, 'cols': 50}),
