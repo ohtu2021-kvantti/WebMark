@@ -1,10 +1,11 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
-from django.forms import ModelForm, Textarea, HiddenInput
+from django.forms import ModelForm, Textarea, HiddenInput, Select, ChoiceField
 from django.forms.widgets import NumberInput, TextInput
 from .models import Algorithm, Molecule, Algorithm_type, Algorithm_version, Metrics
 import quantmark as qm
+from .misc.optimizer_methods import get_methods, get_modules
 
 
 class AlgorithmForm(ModelForm):
@@ -28,6 +29,12 @@ class AlgorithmTypeForm(ModelForm):
 
 
 class AlgorithmVersionForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'initial' in kwargs:
+            methods = get_methods(kwargs['initial']['optimizer_module'])
+            self.fields['optimizer_method'] = ChoiceField(choices=((x, x) for x in methods))
+
     def clean_circuit(self):
         circuit = self.clean().get('circuit')
         if not qm.circuit.validate_circuit_syntax(circuit):
@@ -43,8 +50,8 @@ class AlgorithmVersionForm(ModelForm):
             'algorithm_id': HiddenInput(),
             'algorithm': Textarea(attrs={'rows': 6}),
             'circuit': Textarea(attrs={'rows': 10}),
-            'optimizer_method': TextInput(),
-            'optimizer_module': TextInput(),
+            'optimizer_module': Select(choices=((x, x) for x in get_modules()),
+                                       attrs={'class': 'form-control'}),
         }
         labels = {
             'algorithm': 'Description',

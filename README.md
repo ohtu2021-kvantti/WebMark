@@ -21,7 +21,7 @@ Requirements: see [requirements.txt](requirements.txt)
 
 ## Setting up the development environment using Docker (recommended)
 
-Install [Docker](https://docs.docker.com/engine/install/) according to the instructions.
+Install Docker [Engine](https://docs.docker.com/engine/install/) and Docker [Compose](https://docs.docker.com/compose/install/) according to the instructions.
 
 Navigate to the project root and run the development environment with command:
 ```
