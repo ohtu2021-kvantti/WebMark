@@ -5,9 +5,8 @@ from django.forms import ModelForm, Textarea, HiddenInput, Select, ChoiceField
 from django.forms.widgets import NumberInput, TextInput
 from .models import Algorithm, Molecule, Algorithm_type, Algorithm_version, Metrics
 import quantmark as qm
-from .misc.optimizer_methods import get_methods, get_modules
+from .misc.analyze_options import optimizer_methods, optimizer_modules, basis_set_options
 
-BASIS_SET_CHOICES = ['sto-3g']
 
 class AlgorithmForm(ModelForm):
     class Meta:
@@ -33,7 +32,7 @@ class AlgorithmVersionForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if 'initial' in kwargs:
-            methods = get_methods(kwargs['initial']['optimizer_module'])
+            methods = optimizer_methods(kwargs['initial']['optimizer_module'])
             self.fields['optimizer_method'] = ChoiceField(choices=((x, x) for x in methods))
 
     def clean_circuit(self):
@@ -51,7 +50,7 @@ class AlgorithmVersionForm(ModelForm):
             'algorithm_id': HiddenInput(),
             'algorithm': Textarea(attrs={'rows': 6}),
             'circuit': Textarea(attrs={'rows': 10}),
-            'optimizer_module': Select(choices=((x, x) for x in get_modules()),
+            'optimizer_module': Select(choices=((x, x) for x in optimizer_modules()),
                                        attrs={'class': 'form-control'}),
         }
         labels = {
@@ -95,7 +94,7 @@ class MoleculeForm(ModelForm):
         }
         widgets = {
             'name': TextInput(),
-            'basis_set': Select(choices=((x, x) for x in BASIS_SET_CHOICES)),
+            'basis_set': Select(choices=((x, x) for x in basis_set_options())),
             'transformation': TextInput(),
             'structure': Textarea(attrs={'rows': 6, 'cols': 50}),
             'active_orbitals': Textarea(attrs={'rows': 6, 'cols': 50}),

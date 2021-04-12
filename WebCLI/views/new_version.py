@@ -3,7 +3,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 from ..models import Algorithm, Algorithm_version
 from ..forms import AlgorithmVersionForm
-from ..misc.optimizer_methods import get_methods, get_modules
+from ..misc.analyze_options import optimizer_methods, optimizer_modules
 
 
 def add_version(request):
@@ -34,6 +34,7 @@ def add_version(request):
 
 def load_methods(request):
     module = request.GET.get('module')
-    if module in get_modules():
-        return render(request, 'WebCLI/methods_of_module.html', {'methods': get_methods(module)})
+    if module in optimizer_modules():
+        return render(request, 'WebCLI/methods_of_module.html',
+                      {'methods': optimizer_methods(module)})
     return render(request, 'WebCLI/methods_of_module.html', {'methods': []})
