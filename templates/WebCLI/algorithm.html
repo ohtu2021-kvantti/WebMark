@@ -169,7 +169,7 @@
                     <tr>
                         <th>Analyze timestamp</th>
                         {% timezone "Europe/Helsinki" %}
-                            <td>{{ selected_metrics.timestamp|date:'d.n.Y, G:i' }}</td>
+                        <td>{{ selected_metrics.timestamp|date:'d.n.Y, G:i' }}</td>
                         {% endtimezone %}
                     </tr>
                     <tr>
@@ -271,11 +271,11 @@
     </script>
 
     {% if messages %}
-    {% for message in messages %}
-        {% if message.tags %}  <script>alert("{{ message }}")</script> {% endif %}
-
-    {% endfor %}
-
+        {% for message in messages %}
+            {% if message.tags %}
+                <script>alert('{{ message }}')</script> 
+            {% endif %}
+        {% endfor %}
     {% endif %}
 
 {% endblock %}}
