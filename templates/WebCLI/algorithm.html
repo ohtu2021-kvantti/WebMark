@@ -95,6 +95,9 @@
                                     </select>
                                     <a class="btn btn-primary" onclick="run()">Run</a>
                                 </form>
+                                {% if message %}
+                                    <p><b>{{ message }}</b></p>
+                                {% endif  %}
                             </td>
                         </tr>
                     {% endifequal %}
@@ -159,27 +162,37 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <th>molecule</th>
+                        <th>Molecule</th>
                         <td>{{ selected_metrics.molecule.name }}</td>
                     </tr>
                     <tr>
-                        <th>verified</th>
-                        <td>{{ selected_metrics.verified }}</td>
+                        <th>Last analyze ok</th>
+                        <td>{{ selected_metrics.last_analyze_ok }}</td>
                     </tr>
                     <tr>
-                        <th>gate depth</th>
+                        <th>Analyze timestamp</th>
+                        {% timezone "Europe/Helsinki" %}
+                            <td>{{ selected_metrics.timestamp|date:'d.n.Y, G:i' }}</td>
+                        {% endtimezone %}
+                    </tr>
+                    <tr>
+                        <th>In analyze queue</th>
+                        <td>{{ selected_metrics.in_analyze_queue }}</td>
+                    </tr>
+                    <tr>
+                        <th>Gate depth</th>
                         <td>{{ selected_metrics.gate_depth }}</td>
                     </tr>
                     <tr>
-                        <th>qubit count</th>
+                        <th>Qubit count</th>
                         <td>{{ selected_metrics.qubit_count }}</td>
                     </tr>
                     <tr>
-                        <th>average iterations depth</th>
+                        <th>Average iterations depth</th>
                         <td>{{ selected_metrics.average_iterations }}</td>
                     </tr>
                     <tr>
-                        <th>success rate</th>
+                        <th>Success rate</th>
                         <td>{{ selected_metrics.success_rate }}</td>
                     </tr>
                 </tbody>
@@ -259,4 +272,13 @@
             window.location.href = x.value
         }
     </script>
+
+    {% if messages %}
+    {% for message in messages %}
+        {% if message.tags %}  <script>alert("{{ message }}")</script> {% endif %}
+
+    {% endfor %}
+
+    {% endif %}
+
 {% endblock %}}

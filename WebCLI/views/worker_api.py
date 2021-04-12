@@ -5,13 +5,15 @@ from django.utils import timezone
 import json
 
 
-def as_analyzed_results(result):
+def as_metrics(result):
     metrics = Metrics.objects.get(pk=result["metrics_id"])
     metrics.qubit_count = result["qubit_count"]
     metrics.timestamp = timezone.now()
     metrics.gate_depth = result["gate_depth"]
     metrics.average_iterations = result["average_iterations"]
     metrics.success_rate = result["success_rate"]
+    metrics.in_analyze_queue = False
+    metrics.last_analyze_ok = True
     return metrics
 
 
@@ -40,8 +42,8 @@ def as_accuracy_history(result):
 # TODO: set this route to accept from workers only
 @csrf_exempt
 def handle_result(request):
-    analyzed_results = json.loads(request.POST["data"], object_hook=as_analyzed_results)
-    analyzed_results.save()
+    metrics = json.loads(request.POST["data"], object_hook=as_metrics)
+    metrics.save()
     avg_history_results = json.loads(request.POST["data"], object_hook=as_average_history)
     avg_history_results.save()
     avg_accuracy_results = json.loads(request.POST["data"], object_hook=as_accuracy_history)
