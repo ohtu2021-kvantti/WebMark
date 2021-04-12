@@ -15,12 +15,12 @@ def test_algorithm(request):
         raise PermissionDenied
     molecule = Molecule.objects.get(pk=request.GET.get("molecule"))
     existing_metrics = Metrics.objects.filter(algorithm_version=version, molecule=molecule)
-    send_task=True
+    send_task = True
     if len(existing_metrics) > 0:
         metrics = existing_metrics[0]
         if metrics.in_analyze_queue:
             messages.info(request, 'Task is already in queue!')
-            send_task=False
+            send_task = False
         else:
             metrics.in_analyze_queue = True
             metrics.save()
