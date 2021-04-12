@@ -32,8 +32,11 @@ class AlgorithmVersionForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if 'initial' in kwargs:
-            methods = optimizer_methods(kwargs['initial']['optimizer_module'])
-            self.fields['optimizer_method'] = ChoiceField(choices=((x, x) for x in methods))
+            module = kwargs['initial']['optimizer_module']
+        else:
+            module = args[0].get('optimizer_module')
+        methods = optimizer_methods(module)
+        self.fields['optimizer_method'] = ChoiceField(choices=((x, x) for x in methods))
 
     def clean_circuit(self):
         circuit = self.clean().get('circuit')
