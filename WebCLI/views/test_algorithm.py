@@ -8,13 +8,7 @@ from WebCLI.models import Metrics
 from django.contrib import messages
 
 
-@login_required
-def test_algorithm(request):
-    version = Algorithm_version.objects.get(pk=request.GET.get("version"))
-    if request.user.pk != version.algorithm_id.user.pk:
-        raise PermissionDenied
-    molecule = Molecule.objects.get(pk=request.GET.get("molecule"))
-    existing_metrics = Metrics.objects.filter(algorithm_version=version, molecule=molecule)
+def create_task(request, version, existing_metrics, molecule):
     send_task = True
     if len(existing_metrics) > 0:
         metrics = existing_metrics[0]
@@ -41,6 +35,19 @@ def test_algorithm(request):
             metrics.pk, model_to_dict(molecule), version.circuit,
             version.optimizer_module, version.optimizer_method
         )
+    return metrics
+
+
+@login_required
+def test_algorithm(request):
+    version = Algorithm_version.objects.get(pk=request.GET.get("version"))
+    if request.user.pk != version.algorithm_id.user.pk:
+        raise PermissionDenied
+    molecule = Molecule.objects.get(pk=request.GET.get("molecule"))
+    existing_metrics = Metrics.objects.filter(algorithm_version=version, molecule=molecule)
+
+    metrics = create_task(request, version, existing_metrics, molecule)
+
     response = redirect('algorithm_details', algorithm_id=version.algorithm_id.pk)
     response['Location'] += '?version_id='+str(version.pk)+'&metrics_id='+str(metrics.pk)
     return response
