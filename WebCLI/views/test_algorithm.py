@@ -9,15 +9,13 @@ from django.contrib import messages
 
 
 def create_task(request, version, existing_metrics, molecule):
-    send_task = True
     if len(existing_metrics) > 0:
         metrics = existing_metrics[0]
         if metrics.in_analyze_queue:
             messages.info(request, 'Task is already in queue!')
-            send_task = False
+            return metrics
         else:
             metrics.in_analyze_queue = True
-            metrics.save()
             messages.info(request, 'Algorithm version will be analyzed again')
     else:
         messages.info(request, 'Algorithm version will be analyzed')
@@ -29,12 +27,11 @@ def create_task(request, version, existing_metrics, molecule):
             average_iterations=None,
             success_rate=None,
             in_analyze_queue=True)
-        metrics.save()
-    if send_task:
-        send_benchmark_task(
-            metrics.pk, model_to_dict(molecule), version.circuit,
-            version.optimizer_module, version.optimizer_method
-        )
+    metrics.save()
+    send_benchmark_task(
+        metrics.pk, model_to_dict(molecule), version.circuit,
+        version.optimizer_module, version.optimizer_method
+    )
     return metrics
 
 
