@@ -42,6 +42,12 @@ def as_accuracy_history(result):
 # TODO: set this route to accept from workers only
 @csrf_exempt
 def handle_result(request):
+    if "error" in request.POST:
+        metrics = Metrics.objects.get(pk=int(request.POST["metrics_id"]))
+        metrics.last_analyze_ok = False
+        metrics.in_analyze_queue = False
+        metrics.save()
+        return HttpResponse("error")
     metrics = json.loads(request.POST["data"], object_hook=as_metrics)
     metrics.save()
     avg_history_results = json.loads(request.POST["data"], object_hook=as_average_history)
