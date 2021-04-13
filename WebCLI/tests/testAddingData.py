@@ -3,43 +3,6 @@ from django.contrib.auth.models import User
 from ..models import Molecule, Algorithm_type, Algorithm, Algorithm_version
 
 
-class TestLogin(TestCase):
-    def test_signup(self):
-        c = Client()
-        response = c.post(
-            '/signup/',
-            {'username': 'testuser1', 'password1': 'sekred010', 'password2': 'sekred010'}
-        )
-        self.assertEqual(response.status_code, 302)
-        response = c.login(username='testuser1', password='sekred010')
-        self.assertEqual(response, True)
-
-    def test_login(self):
-        c = Client()
-        c.post(
-            '/signup/',
-            {'username': 'testuser2', 'password1': 'sekred010', 'password2': 'sekred010'}
-        )
-        c.post(
-            '/accounts/login/',
-            {'username': 'testuser2', 'password': 'sekred010'})
-        response = str(c.get('/').content)
-        self.assertFalse(response.find('logged in - testuser2') < 0)
-
-    def test_logout(self):
-        c = Client()
-        c.post(
-            '/signup/',
-            {'username': 'testuser4', 'password1': 'sekred010', 'password2': 'sekred010'}
-        )
-        c.post(
-            '/accounts/login/',
-            {'username': 'testuser4', 'password': 'sekred010'})
-        c.get('/accounts/logout/')
-        response = str(c.get('/').content)
-        self.assertTrue(response.find('logged in - testuser4') < 0)
-
-
 class TestAddDataAsUser(TestCase):
     @classmethod
     def setUpClass(cls):
