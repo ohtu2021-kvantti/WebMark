@@ -1,27 +1,16 @@
 from django.shortcuts import render, redirect
 from django.core.exceptions import PermissionDenied
 from ..models import Algorithm, Molecule, Algorithm_version, Metrics
-from WebCLI.misc.helpers import to_positive_int_or_none
+from WebCLI.misc.helpers import get_metrics, get_selected_version
+from WebCLI.misc.helpers import get_selected_metrics, to_positive_int_or_none
 from django.db.models.expressions import RawSQL
-from django.db.models import F
 from WebCLI.models import Accuracy_history, Average_history
 import itertools
 
 
 def get_comparison_view_params(request):
-    version1_id = to_positive_int_or_none(request.GET.get("version1_id"))
-    metrics1_id = to_positive_int_or_none(request.GET.get("metrics1_id"))
-    version2_id = to_positive_int_or_none(request.GET.get("version2_id"))
-    metrics2_id = to_positive_int_or_none(request.GET.get("metrics2_id"))
-    molecule_id = to_positive_int_or_none(request.GET.get("molecule_id"))
-
-    return {
-        "version1_id": version1_id,
-        "metrics1_id": metrics1_id,
-        "version2_id": version2_id,
-        "metrics2_id": metrics2_id,
-        "molecule_id": molecule_id
-    }
+    keys = ["version1_id", "metrics1_id", "version2_id", "metrics2_id", "molecule_id"]
+    return {k: to_positive_int_or_none(request.GET.get(k)) for k in keys}
 
 
 def get_versions(algorithm):
@@ -29,17 +18,6 @@ def get_versions(algorithm):
     query = query.annotate(version_number=RawSQL("ROW_NUMBER() OVER(ORDER BY timestamp)", []))
     query = query.order_by('-timestamp')
     return query
-
-
-def get_selected_version(params, param_key, versions):
-    if params[param_key]:
-        try:
-            return Algorithm_version.objects.get(pk=params[param_key])
-        except Algorithm_version.DoesNotExist:
-            return None
-    else:
-        params[param_key] = versions[0].pk
-        return versions[0]
 
 
 def get_selected_versions(params, versions1, versions2):
@@ -55,34 +33,16 @@ def get_common_molecules(versions1, versions2):
     return common_molecules
 
 
-def get_metrics(params, versions1, versions2):
-    metrics1 = get_metrics_of_version(params["version1_id"], versions1)
-    metrics2 = get_metrics_of_version(params["version2_id"], versions2)
+def get_all_metrics(params, versions1, versions2):
+    metrics1 = get_metrics(params["version1_id"], versions1)
+    metrics2 = get_metrics(params["version2_id"], versions2)
     return (metrics1, metrics2)
 
 
-def get_metrics_of_version(version_id, versions):
-    if version_id:
-        return Metrics.objects.filter(algorithm_version__pk=version_id)
-    else:
-        return Metrics.objects.filter(algorithm_version=versions[0])
-
-
-def get_selected_metrics(params, metrics1, metrics2):
-    selected_metrics1 = get_metrics_by_id(params, "metrics1_id", metrics1)
-    selected_metrics2 = get_metrics_by_id(params, "metrics2_id", metrics2)
+def get_all_selected_metrics(params, metrics1, metrics2):
+    selected_metrics1 = get_selected_metrics(params, "metrics1_id", metrics1)
+    selected_metrics2 = get_selected_metrics(params, "metrics2_id", metrics2)
     return (selected_metrics1, selected_metrics2)
-
-
-def get_metrics_by_id(params, param_key, metrics):
-    metric_id = params[param_key]
-    if metric_id and any(metric.pk == metric_id for metric in metrics):
-        return Metrics.objects.get(pk=metric_id)
-
-    if len(metrics) > 0:
-        params[param_key] = metrics[0].pk
-        return metrics[0]
-    return None
 
 
 def get_selected_molecule(params, common_molecules):
@@ -136,8 +96,8 @@ def compare_algorithms(request, a1_id, a2_id):
 
     (versions1, versions2) = (get_versions(a1), get_versions(a2))
     params = get_comparison_view_params(request)
-    (metrics1, metrics2) = get_metrics(params, versions1, versions2)
-    (selected_metrics1, selected_metrics2) = get_selected_metrics(params, metrics1, metrics2)
+    (metrics1, metrics2) = get_all_metrics(params, versions1, versions2)
+    (selected_metrics1, selected_metrics2) = get_all_selected_metrics(params, metrics1, metrics2)
     (av1, av2) = get_selected_versions(params, versions1, versions2)
     common_molecules = get_common_molecules(versions1, versions2)
     selected_molecule = get_selected_molecule(params, common_molecules)

@@ -3,7 +3,8 @@ from django.shortcuts import redirect, render
 from django.core.exceptions import PermissionDenied
 from ..models import Algorithm, Molecule, Algorithm_version, Metrics
 from django.db.models import F
-from WebCLI.misc.helpers import to_positive_int_or_none
+from WebCLI.misc.helpers import get_metrics, get_selected_version
+from WebCLI.misc.helpers import get_selected_metrics, to_positive_int_or_none
 
 
 def get_algorithm_details_view_params(request):
@@ -23,35 +24,6 @@ def get_versions(algorithm):
     query = query.annotate(version_number=RawSQL("ROW_NUMBER() OVER(ORDER BY timestamp)", []))
     query = query.order_by('-timestamp')
     return query
-
-
-def get_metrics(params, versions):
-    if params["version_id"]:
-        return Metrics.objects.filter(algorithm_version__pk=params["version_id"])
-    else:
-        return Metrics.objects.filter(algorithm_version=versions[0])
-
-
-def get_selected_metrics(params, metrics):
-    metric_id = params["metrics_id"]
-    if metric_id and any(metric.pk == metric_id for metric in metrics):
-        return Metrics.objects.get(pk=metric_id)
-
-    if len(metrics) > 0:
-        params["metrics_id"] = metrics[0].pk
-        return metrics[0]
-    return None
-
-
-def get_selected_version(params, versions):
-    if params["version_id"]:
-        try:
-            return Algorithm_version.objects.get(pk=params["version_id"])
-        except Algorithm_version.DoesNotExist:
-            return None
-    else:
-        params["version_id"] = versions[0].pk
-        return versions[0]
 
 
 def get_selected_molecule(params, molecules_with_metrics):
@@ -101,9 +73,9 @@ def algorithm_details_view(request, algorithm_id):
 
     versions = get_versions(algorithm)
     params = get_algorithm_details_view_params(request)
-    metrics = get_metrics(params, versions)
-    selected_metrics = get_selected_metrics(params, metrics)
-    selected_version = get_selected_version(params, versions)
+    metrics = get_metrics(params["version_id"], versions)
+    selected_metrics = get_selected_metrics(params, "metrics_id", metrics)
+    selected_version = get_selected_version(params, "version_id", versions)
     molecules_with_metrics = get_molecules_with_metrics(versions)
     selected_molecule = get_selected_molecule(params, molecules_with_metrics)
     metrics_graph_data = get_metrics_graph_data(selected_molecule, algorithm)
