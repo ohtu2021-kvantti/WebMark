@@ -4,6 +4,8 @@ from ..models import Algorithm, Molecule, Algorithm_version, Metrics
 from WebCLI.misc.helpers import to_positive_int_or_none
 from django.db.models.expressions import RawSQL
 from django.db.models import F
+from WebCLI.models import Accuracy_history, Average_history
+import itertools
 
 
 def get_comparison_view_params(request):
@@ -96,13 +98,30 @@ def get_selected_molecule(params, common_molecules):
         return selected_molecule
 
 
-def get_algo_data(a1, a2, metrics1, metrics2):
-    return [["Algorithm comparison", a1.name, a2.name],
-            ["gate_depth", metrics1.gate_depth, metrics2.gate_depth],
-            ["qubit_count", metrics1.qubit_count, metrics2.qubit_count],
-            ["average_iterations", metrics1.average_iterations,
-            metrics2.average_iterations],
-            ["success_rate", metrics1.success_rate, metrics2.success_rate]]
+def get_average_history_graph_data(selected_metrics1, selected_metrics2):
+    if selected_metrics1 and selected_metrics2:
+        history_data1 = Average_history.objects.values_list("data", flat=True)
+        history_data1 = history_data1.filter(analyzed_results=selected_metrics1)
+        history_data2 = Average_history.objects.values_list("data", flat=True)
+        history_data2 = history_data2.filter(analyzed_results=selected_metrics2)
+        return histories_to_graph_data(history_data1, history_data2)
+    return []
+
+
+def get_accuracy_history_graph_data(selected_metrics1, selected_metrics2):
+    if selected_metrics1 and selected_metrics2:
+        history_data1 = Accuracy_history.objects.values_list("data", flat=True)
+        history_data1 = history_data1.filter(analyzed_results=selected_metrics1)
+        history_data2 = Accuracy_history.objects.values_list("data", flat=True)
+        history_data2 = history_data2.filter(analyzed_results=selected_metrics2)
+        return histories_to_graph_data(history_data1, history_data2)
+    return []
+
+
+def histories_to_graph_data(history_data1, history_data2):
+    graph_data_length = max(len(history_data1), len(history_data2))
+    iterations = list(range(1, graph_data_length+1))
+    return list(itertools.zip_longest(iterations, history_data1, history_data2))
 
 
 def compare_algorithms(request, a1_id, a2_id):
@@ -122,9 +141,12 @@ def compare_algorithms(request, a1_id, a2_id):
     (av1, av2) = get_selected_versions(params, versions1, versions2)
     common_molecules = get_common_molecules(versions1, versions2)
     selected_molecule = get_selected_molecule(params, common_molecules)
-    graph_data = [[0, 0, 0], [1, 2, 4], [2, 4, 8], [3, 6, 10], [4, 6, 10]]
-    algo_data = get_algo_data(a1, a2, selected_metrics1, selected_metrics2)
-
+    average_history_graph_data = get_average_history_graph_data(
+        selected_metrics1, selected_metrics2
+    )
+    accuracy_history_graph_data = get_accuracy_history_graph_data(
+        selected_metrics1, selected_metrics2
+    )
 
     return render(request, 'WebCLI/compareAlgorithms.html',
                   {'params': params, 'a1': a1, 'av1': av1, 'a2': a2, 'av2': av2,
@@ -132,4 +154,5 @@ def compare_algorithms(request, a1_id, a2_id):
                    'selected_metrics1': selected_metrics1, 'selected_metrics2': selected_metrics2,
                    'common_molecules': common_molecules, 'molecule': selected_molecule,
                    'versions1': versions1, 'versions2': versions2,
-                   'graph_data': graph_data, 'algo_data': algo_data})
+                   'average_history_graph_data': average_history_graph_data,
+                   'accuracy_history_graph_data': accuracy_history_graph_data})

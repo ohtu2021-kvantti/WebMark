@@ -118,12 +118,12 @@
             </table>
         </div>
         <div class="d-flex flex-column align-items-center m-auto">
-            <div id="chart-div"></div>
-            <div id="chart-link-div"></div>
+            <div id="average-history-chart-div"></div>
+            <div id="average-history-download-link-div"></div>
         </div>
         <div class="d-flex flex-column align-items-center m-auto">
-            <div id="chart2-div"></div>
-            <div id="chart2-link-div"></div>
+            <div id="accuracy-history-chart-div"></div>
+            <div id="accuracy-history-download-link-div"></div>
         </div>
     </div>
 
@@ -131,7 +131,8 @@
     <!-- parse template variables to JSON so they can be safely accessed in JS code -->
     {{ a1.name|json_script:"a1-name" }}
     {{ a2.name|json_script:"a2-name" }}
-    {{ graph_data|json_script:"graph-data"}}
+    {{ average_history_graph_data|json_script:"average-history-graph-data" }}
+    {{ accuracy_history_graph_data|json_script:"accuracy-history-graph-data" }}
     {{ algo_data|json_script:"algo-data"}}
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -139,51 +140,74 @@
         google.charts.load('current', { packages: ['bar', 'corechart', 'line'] });
         google.charts.setOnLoadCallback(drawChart);
 
+
+
+        function createHistoryDataTable(a1Name, a2Name, graphData) {
+            const dataTable = new google.visualization.DataTable();
+            dataTable.addColumn('number', 'Iteration number');
+            dataTable.addColumn('number', a1Name);
+            dataTable.addColumn('number', a2Name);
+            dataTable.addRows(graphData);
+            return dataTable;
+        }
+
+        function createLineChartWithDownloadLink(chartDivName, downloadLinkDivName) {
+            const chart = new google.visualization.LineChart(document.getElementById(chartDivName));
+            const linkDiv = document.getElementById(downloadLinkDivName);
+            google.visualization.events.addListener(chart, 'ready', () => {
+                linkDiv.innerHTML = `<a href=${chart.getImageURI()} download=chart>Download as PNG</a>`;
+            });
+            return chart;
+        }
+
         function drawChart() {
             const data = new google.visualization.DataTable();
             const a1Name = JSON.parse(document.getElementById('a1-name').textContent);
             const a2Name = JSON.parse(document.getElementById('a2-name').textContent);
-            const graphData = JSON.parse(document.getElementById('graph-data').textContent);
-            data.addColumn('number', 'X');
-            data.addColumn('number', a1Name);
-            data.addColumn('number', a2Name);
-            data.addRows(graphData);
+            const averageHistoryGraphData = JSON.parse(document.getElementById('average-history-graph-data').textContent);
+            const accuracyHistoryGraphData = JSON.parse(document.getElementById('accuracy-history-graph-data').textContent);
 
-            const algoData = JSON.parse(document.getElementById('algo-data').textContent);
-            // convert null values to zeros
-            const algoDataCleaned = algoData.map(a => a.map(value => value === null ? 0 : value));
-            const columnChartData = google.visualization.arrayToDataTable(algoDataCleaned);
+            const averageHistoryDataTable = createHistoryDataTable(a1Name, a2Name, averageHistoryGraphData);
+            const accuracyHistoryDataTable = createHistoryDataTable(a1Name, a2Name, accuracyHistoryGraphData);
+
+            const ticks = Array.from({ length: averageHistoryGraphData.length }, (_, i) => i + 1);
 
             const baseOptions = {
                 width: 600,
                 height: 480,
-            };
-
-            const lineChartOptions = {
-                ...baseOptions,
-                title: "NOTE: Graphs are a work-in-progress and currently show dummy data",
                 hAxis: {
-                    title: 'Iterations'
+                    title: 'Iterations',
+                    viewWindow: {
+                        min: 1,
+                        max: averageHistoryGraphData.length
+                    },
+                    ticks
                 },
                 vAxis: {
-                    title: 'Accuracy'
+                    title: 'Value'
+                },
+                explorer: {
+                    axis: 'vertical',
+                    keepInBounds: true,
+                    maxZoomIn: 0.05
                 }
             };
 
-            const chart = new google.visualization.LineChart(document.getElementById('chart-div'));
-            const linkDiv = document.getElementById("chart-link-div");
-            google.visualization.events.addListener(chart, 'ready', () => {
-                linkDiv.innerHTML = `<a href=${chart.getImageURI()} download=chart>Download as PNG</a>`;
-            });
+            const averageHistoryChartOptions = {
+                ...baseOptions,
+                title: "Average history",
+            };
 
-            const chart2 = new google.visualization.ColumnChart(document.getElementById('chart2-div'));
-            const link2Div = document.getElementById("chart2-link-div");
-            google.visualization.events.addListener(chart2, 'ready', () => {
-                link2Div.innerHTML = `<a href=${chart2.getImageURI()} download=chart>Download as PNG</a>`;
-            });
+            const accuracyHistoryChartOptions = {
+                ...baseOptions,
+                title: "Accuracy history",
+            };
 
-            chart.draw(data, lineChartOptions);
-            chart2.draw(columnChartData, baseOptions);
+            const averageHistoryChart = createLineChartWithDownloadLink('average-history-chart-div', "average-history-download-link-div");
+            const accuracyHistoryChart = createLineChartWithDownloadLink('accuracy-history-chart-div', 'accuracy-history-download-link-div')
+
+            averageHistoryChart.draw(averageHistoryDataTable, averageHistoryChartOptions);
+            accuracyHistoryChart.draw(accuracyHistoryDataTable, accuracyHistoryChartOptions);
         }
     </script>
 {% endblock %}
