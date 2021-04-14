@@ -160,6 +160,11 @@
             return chart;
         }
 
+        function getMinAndMax(array) {
+            const temp = array.map(arr => arr.slice(1)).flat().filter(x => x != null);
+            return { min: Math.min(...temp), max: Math.max(...temp) };
+        }
+
         function drawChart() {
             const data = new google.visualization.DataTable();
             const a1Name = JSON.parse(document.getElementById('a1-name').textContent);
@@ -169,7 +174,6 @@
 
             const averageHistoryDataTable = createHistoryDataTable(a1Name, a2Name, averageHistoryGraphData);
             const accuracyHistoryDataTable = createHistoryDataTable(a1Name, a2Name, accuracyHistoryGraphData);
-
             const ticks = Array.from({ length: averageHistoryGraphData.length }, (_, i) => i + 1);
 
             const baseOptions = {
@@ -183,24 +187,28 @@
                     },
                     ticks
                 },
-                vAxis: {
-                    title: 'Value'
-                },
                 explorer: {
                     axis: 'vertical',
                     keepInBounds: true,
-                    maxZoomIn: 0.05
                 }
             };
 
             const averageHistoryChartOptions = {
                 ...baseOptions,
                 title: "Average history",
+                vAxis: {
+                    title: "Average value",
+                    viewWindow: getMinAndMax(averageHistoryGraphData),
+                },
             };
 
             const accuracyHistoryChartOptions = {
                 ...baseOptions,
                 title: "Accuracy history",
+                vAxis: {
+                    title: "Accuracy value",
+                    viewWindow: getMinAndMax(accuracyHistoryGraphData),
+                },
             };
 
             const averageHistoryChart = createLineChartWithDownloadLink('average-history-chart-div', "average-history-download-link-div");
