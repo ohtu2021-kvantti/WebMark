@@ -18,13 +18,13 @@
                                 {% for version in versions1 %}
                                     {% ifequal version.pk params.version1_id %}
                                         <option
-                                            value="{% url 'compare_algorithms' params.version1_id params.version2_id %}?metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}"
+                                            value="{% url 'compare_algorithms' a1.pk a2.pk %}?version1_id={{ params.version1_id }}&version2_id={{ params.version2_id }}&metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}"
                                             selected="selected">
                                             {{ version.timestamp|date:'d.n.Y, G:i' }}
                                         </option>
                                     {% else %}
                                         <option
-                                            value="{% url 'compare_algorithms' version.pk params.version2_id %}?metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}">
+                                            value="{% url 'compare_algorithms' a1.pk a2.pk %}?version1_id={{ version.pk }}&version2_id={{ params.version2_id }}&metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}">
                                             {{ version.timestamp|date:'d.n.Y, G:i' }}
                                         </option>
                                     {% endifequal %}
@@ -37,13 +37,13 @@
                                 {% for version in versions2 %}
                                     {% ifequal version.pk params.version2_id %}
                                         <option
-                                            value="{% url 'compare_algorithms' params.version1_id params.version2_id %}?metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}"
+                                            value="{% url 'compare_algorithms' a1.pk a2.pk %}?version1_id={{ params.version1_id }}&version2_id={{ params.version2_id }}&metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}"
                                             selected="selected">
                                             {{ version.timestamp|date:'d.n.Y, G:i' }}
                                         </option>
                                     {% else %}
                                         <option
-                                            value="{% url 'compare_algorithms' params.version1_id version.pk %}?metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}">
+                                            value="{% url 'compare_algorithms' a1.pk a2.pk %}?version1_id={{ params.version1_id }}&version2_id={{ version.pk }}&metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}">
                                             {{ version.timestamp|date:'d.n.Y, G:i' }}
                                         </option>
                                     {% endifequal %}
