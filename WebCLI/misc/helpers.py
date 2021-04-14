@@ -1,4 +1,5 @@
 from WebCLI.models import Algorithm_version, Metrics
+from django.db.models.expressions import RawSQL
 
 
 def to_positive_int_or_none(value):
@@ -9,6 +10,13 @@ def to_positive_int_or_none(value):
         return int_value if int_value > 0 else None
     except ValueError:
         return None
+
+
+def get_versions(algorithm):
+    query = Algorithm_version.objects.filter(algorithm_id=algorithm)
+    query = query.annotate(version_number=RawSQL("ROW_NUMBER() OVER(ORDER BY timestamp)", []))
+    query = query.order_by('-timestamp')
+    return query
 
 
 def get_selected_version(params, param_key, versions):
