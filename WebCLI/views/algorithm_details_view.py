@@ -1,7 +1,6 @@
-from django.db.models.expressions import RawSQL
 from django.shortcuts import redirect, render
 from django.core.exceptions import PermissionDenied
-from ..models import Algorithm, Molecule, Algorithm_version, Metrics
+from ..models import Algorithm, Molecule, Metrics
 from django.db.models import F
 from WebCLI.misc.helpers import get_metrics, get_selected_version
 from WebCLI.misc.helpers import get_selected_metrics, get_versions, to_positive_int_or_none
