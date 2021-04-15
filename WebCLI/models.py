@@ -59,6 +59,7 @@ class Metrics(models.Model):
     verified = models.BooleanField(default=False)
     measurements = models.IntegerField(null=True, blank=True)
     last_analyze_ok = models.BooleanField(default=False)
+    in_analyze_queue = models.BooleanField(default=False)
     timestamp = models.DateTimeField(default=timezone.now())
     qubit_count = models.IntegerField(null=True, blank=True)
     gate_depth = models.IntegerField(null=True, blank=True)
@@ -70,7 +71,7 @@ class Metrics(models.Model):
 
 
 class Average_history(models.Model):
-    analyzed_results = models.ForeignKey(Metrics, on_delete=models.CASCADE)
+    metrics = models.ForeignKey(Metrics, on_delete=models.CASCADE)
     data = models.FloatField(null=True, blank=True)
     iteration_number = models.IntegerField(null=True, blank=True)
 
@@ -79,7 +80,7 @@ class Average_history(models.Model):
 
 
 class Accuracy_history(models.Model):
-    analyzed_results = models.ForeignKey(Metrics, on_delete=models.CASCADE)
+    metrics = models.ForeignKey(Metrics, on_delete=models.CASCADE)
     data = models.FloatField(null=True, blank=True)
     iteration_number = models.IntegerField(null=True, blank=True)
 
