@@ -21,7 +21,7 @@ def as_average_history(result):
     histories = result["average_history"]
     for i in range(len(histories)):
         average_history = Average_history(
-            analyzed_results=Metrics.objects.get(pk=result["metrics_id"]),
+            metrics=Metrics.objects.get(pk=result["metrics_id"]),
             data=histories[i],
             iteration_number=i)
         average_history.save()
@@ -32,7 +32,7 @@ def as_accuracy_history(result):
     histories = result["accuracy_history"]
     for i in range(len(histories)):
         accuracy_history = Accuracy_history(
-            analyzed_results=Metrics.objects.get(pk=result["metrics_id"]),
+            metrics=Metrics.objects.get(pk=result["metrics_id"]),
             data=histories[i],
             iteration_number=i)
         accuracy_history.save()

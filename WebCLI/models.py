@@ -71,7 +71,7 @@ class Metrics(models.Model):
 
 
 class Average_history(models.Model):
-    analyzed_results = models.ForeignKey(Metrics, on_delete=models.CASCADE)
+    metrics = models.ForeignKey(Metrics, on_delete=models.CASCADE)
     data = models.FloatField(null=True, blank=True)
     iteration_number = models.IntegerField(null=True, blank=True)
 
@@ -80,7 +80,7 @@ class Average_history(models.Model):
 
 
 class Accuracy_history(models.Model):
-    analyzed_results = models.ForeignKey(Metrics, on_delete=models.CASCADE)
+    metrics = models.ForeignKey(Metrics, on_delete=models.CASCADE)
     data = models.FloatField(null=True, blank=True)
     iteration_number = models.IntegerField(null=True, blank=True)
 
