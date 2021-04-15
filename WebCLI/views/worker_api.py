@@ -21,6 +21,9 @@ def as_history(result):
     acc_histories = result["accuracy_history"]
     acc_existing_history = Accuracy_history.objects.filter(analyzed_results=result["metrics_id"])
 
+    if len(avg_existing_history) > 0 & len(acc_existing_history) > 0:
+        history = avg_existing_history[0]
+        return history
     if len(avg_existing_history) < 1:
         for i in range(len(avg_histories)):
             history = Average_history(
@@ -28,8 +31,7 @@ def as_history(result):
                 data=avg_histories[i],
                 iteration_number=i+1)
             history.save()
-    else:
-        history = avg_existing_history[0]
+
     if len(acc_existing_history) < 1:
         for i in range(len(acc_histories)):
             history = Accuracy_history(
@@ -37,8 +39,6 @@ def as_history(result):
                 data=acc_histories[i],
                 iteration_number=i+1)
             history.save()
-    else:
-        history = acc_existing_history[0]
 
     return history
 
