@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from ..models import Metrics, Average_history, Accuracy_history
 from django.utils import timezone
 import json
+from WebMark.settings import API_KEY
 
 
 def as_metrics(result):
@@ -39,9 +40,16 @@ def as_accuracy_history(result):
     return accuracy_history
 
 
-# TODO: set this route to accept from workers only
+def has_permission(request):
+    token = request.headers.get("Authorization")
+    return token == API_KEY
+
+
 @csrf_exempt
 def handle_result(request):
+    if not has_permission(request):
+        print("ACCESS DENIED")
+        return HttpResponse("ok")
     if "error" in request.POST:
         metrics = Metrics.objects.get(pk=int(request.POST["metrics_id"]))
         metrics.last_analyze_ok = False
