@@ -95,36 +95,40 @@
                         <td>{{ a1.user.username }}</td>
                         <td>{{ a2.user.username }}</td>
                     </tr>
-                    <tr>
-                        <th>gate depth</th>
-                        <td>{{ selected_metrics1.gate_depth }}</td>
-                        <td>{{ selected_metrics2.gate_depth }}</td>
-                    </tr>
-                    <tr>
-                        <th>qubit count</th>
-                        <td>{{ selected_metrics1.qubit_count }}</td>
-                        <td>{{ selected_metrics2.qubit_count }}</td>
-                    </tr>
-                    <tr>
-                        <th>average iterations</th>
-                        <td>{{ selected_metrics1.average_iterations }}</td>
-                        <td>{{ selected_metrics2.average_iterations }}</td>
-                    </tr>
-                    <tr>
-                        <th>success rate</th>
-                        <td>{{ selected_metrics1.success_rate }}</td>
-                        <td>{{ selected_metrics2.success_rate }}</td>
-                    </tr>
+                    {% if molecule %}
+                        <tr>
+                            <th>gate depth</th>
+                            <td>{{ selected_metrics1.gate_depth }}</td>
+                            <td>{{ selected_metrics2.gate_depth }}</td>
+                        </tr>
+                        <tr>
+                            <th>qubit count</th>
+                            <td>{{ selected_metrics1.qubit_count }}</td>
+                            <td>{{ selected_metrics2.qubit_count }}</td>
+                        </tr>
+                        <tr>
+                            <th>average iterations</th>
+                            <td>{{ selected_metrics1.average_iterations }}</td>
+                            <td>{{ selected_metrics2.average_iterations }}</td>
+                        </tr>
+                        <tr>
+                            <th>success rate</th>
+                            <td>{{ selected_metrics1.success_rate }}</td>
+                            <td>{{ selected_metrics2.success_rate }}</td>
+                        </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>
-        <div class="d-flex flex-column align-items-center m-auto">
-            <div id="average-history-chart-div"></div>
-            <div id="average-history-download-link-div"></div>
-        </div>
-        <div class="d-flex flex-column align-items-center m-auto">
-            <div id="accuracy-history-chart-div"></div>
-            <div id="accuracy-history-download-link-div"></div>
+        <div {% if not molecule %} style="display: none;" {% endif %}>
+            <div class="d-flex flex-column align-items-center m-auto">
+                <div id="average-history-chart-div"></div>
+                <div id="average-history-download-link-div"></div>
+            </div>
+            <div class="d-flex flex-column align-items-center m-auto">
+                <div id="accuracy-history-chart-div"></div>
+                <div id="accuracy-history-download-link-div"></div>
+            </div>
         </div>
     </div>
 

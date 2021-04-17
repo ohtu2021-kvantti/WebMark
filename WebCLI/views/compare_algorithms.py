@@ -18,9 +18,9 @@ def get_selected_versions(params, versions1, versions2):
     return (version1, version2)
 
 
-def get_common_molecules(versions1, versions2):
-    molecules1 = Metrics.objects.filter(algorithm_version__in=versions1).values("molecule")
-    molecules2 = Metrics.objects.filter(algorithm_version__in=versions2).values("molecule")
+def get_common_molecules(version1, version2):
+    molecules1 = Metrics.objects.filter(algorithm_version=version1).values("molecule")
+    molecules2 = Metrics.objects.filter(algorithm_version=version2).values("molecule")
     common_molecules = Molecule.objects.filter(pk__in=molecules1.intersection(molecules2))
     return common_molecules
 
@@ -38,16 +38,17 @@ def get_all_selected_metrics(params, metrics1, metrics2):
 
 
 def get_selected_molecule(params, common_molecules):
+    if len(common_molecules) == 0:
+        params["molecule_id"] = None
+        return None
     if params["molecule_id"]:
         try:
             return Molecule.objects.get(pk=params["molecule_id"])
         except Molecule.DoesNotExist:
             return None
-
-    elif len(common_molecules) > 0:
-        selected_molecule = common_molecules[0]
-        params["molecule_id"] = selected_molecule.pk
-        return selected_molecule
+    selected_molecule = common_molecules[0]
+    params["molecule_id"] = selected_molecule.pk
+    return selected_molecule
 
 
 def get_history_graph_data(HistoryModel, selected_metrics1, selected_metrics2):
@@ -81,7 +82,7 @@ def compare_algorithms(request, a1_id, a2_id):
     (metrics1, metrics2) = get_all_metrics(params, versions1, versions2)
     (selected_metrics1, selected_metrics2) = get_all_selected_metrics(params, metrics1, metrics2)
     (av1, av2) = get_selected_versions(params, versions1, versions2)
-    common_molecules = get_common_molecules(versions1, versions2)
+    common_molecules = get_common_molecules(av1, av2)
     selected_molecule = get_selected_molecule(params, common_molecules)
     average_history_graph_data = get_history_graph_data(
         Average_history, selected_metrics1, selected_metrics2
