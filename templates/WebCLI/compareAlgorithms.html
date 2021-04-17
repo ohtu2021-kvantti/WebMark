@@ -56,23 +56,24 @@
                     <tr>
                         <th>Select molecule:</th>
                         {% if molecule %}
-                            <select onchange="window.location.href=this.value">
-                                {% for m in common_molecules %}
-                                    {% ifequal m.pk selected_molecule.pk %}
-                                        <option
-                                            value="{% url 'compare_algorithms' params.version1_id params.version2_id %}?metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}"
-                                            selected="selected">
-                                            {{ m.name }}
-                                        </option>
-                                    {% else %}
-                                        <option
-                                            value="{% url 'compare_algorithms' params.version1_id params.version2_id %}?metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{m.pk}}">
-                                            {{ m.name }}
-                                        </option>
-                                    {% endifequal %}
-                                {% endfor %}
-                            </select>
-                            <td>{% molecule_selector_form 'selector3' 'item3_id' common_molecules molecule av1.pk av2.pk %}</td>
+                            <td>
+                                <select onchange="window.location.href=this.value">
+                                    {% for m in common_molecules %}
+                                        {% ifequal m.pk molecule.pk %}
+                                            <option
+                                                value="{% url 'compare_algorithms' a1.pk a2.pk %}?version1_id={{ params.version1_id }}&version2_id={{ params.version2_id }}&metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}"
+                                                selected="selected">
+                                                {{ m.name }}
+                                            </option>
+                                        {% else %}
+                                            <option
+                                                value="{% url 'compare_algorithms' a1.pk a2.pk %}?version1_id={{ params.version1_id }}&version2_id={{ params.version2_id }}&metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{m.pk}}">
+                                                {{ m.name }}
+                                            </option>
+                                        {% endifequal %}
+                                    {% endfor %}
+                                </select>
+                            </td>
                         {% else %}
                             <td>No common molecules</td>
                         {% endif %}
