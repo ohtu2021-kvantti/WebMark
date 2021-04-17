@@ -54,9 +54,9 @@ def get_selected_molecule(params, common_molecules):
 def get_history_graph_data(HistoryModel, selected_metrics1, selected_metrics2):
     if selected_metrics1 and selected_metrics2:
         history_data1 = HistoryModel.objects.values_list("data", flat=True)
-        history_data1 = history_data1.filter(analyzed_results=selected_metrics1)
+        history_data1 = history_data1.filter(metrics=selected_metrics1)
         history_data2 = HistoryModel.objects.values_list("data", flat=True)
-        history_data2 = history_data2.filter(analyzed_results=selected_metrics2)
+        history_data2 = history_data2.filter(metrics=selected_metrics2)
         return histories_to_graph_data(history_data1, history_data2)
     return []
 
