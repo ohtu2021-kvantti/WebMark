@@ -60,7 +60,7 @@ class Metrics(models.Model):
     measurements = models.IntegerField(null=True, blank=True)
     last_analyze_ok = models.BooleanField(default=False)
     in_analyze_queue = models.BooleanField(default=False)
-    timestamp = models.DateTimeField(default=timezone.now())
+    timestamp = models.DateTimeField(default=timezone.now)
     qubit_count = models.IntegerField(null=True, blank=True)
     gate_depth = models.IntegerField(null=True, blank=True)
     average_iterations = models.FloatField(null=True, blank=True)
