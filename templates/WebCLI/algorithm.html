@@ -7,7 +7,7 @@
                 <thead>
                     <tr>
                         <th>
-                            Algorithm details
+                            <h2>Algorithm details</h2>
                             {% ifequal request.user.pk algorithm.user.pk %}
                                 - <a href="{% url 'updateAlgorithm'%}?index={{algorithm.pk}}">update details</a>
                             {% endifequal %}
@@ -46,56 +46,39 @@
                 </tbody>
             </table>
 
-            {% load tz %}
-            {% timezone "Europe/Helsinki" %}
-            <select onchange="window.location.href=this.value">
-                {% for version in versions %}
-                    {% ifequal version.pk params.version_id %}
-                        <option
-                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}"
-                            selected="selected">
-                            Version {{ version.version_number }}: {{ version.timestamp|date:'d.n.Y, G:i' }}
-                        </option>
-                    {% else %}
-                        <option
-                            value="{{ algorithm.get_absolute_url }}?version_id={{ version.pk }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}">
-                            Version {{ version.version_number }}: {{ version.timestamp|date:'d.n.Y, G:i' }}
-                        </option>
-                    {% endifequal %}
-                {% endfor %}
-            </select>
-            {% endtimezone %}
+            <br>
 
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th colspan="2">
-                            Algorithm
+                            <h2>Algorithm version</h2>
+
+                            {% load tz %}
+                            {% timezone "Europe/Helsinki" %}
+                            <select onchange="window.location.href=this.value">
+                                {% for version in versions %}
+                                    {% ifequal version.pk params.version_id %}
+                                        <option
+                                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}"
+                                            selected="selected">
+                                            Version {{ version.version_number }}: {{ version.timestamp|date:'d.n.Y, G:i' }}
+                                        </option>
+                                    {% else %}
+                                        <option
+                                            value="{{ algorithm.get_absolute_url }}?version_id={{ version.pk }}&metrics_id={{ params.metrics_id }}&molecule_id={{params.molecule_id}}">
+                                            Version {{ version.version_number }}: {{ version.timestamp|date:'d.n.Y, G:i' }}
+                                        </option>
+                                    {% endifequal %}
+                                {% endfor %}
+                            </select>
+                            {% endtimezone %}
+
                             {% ifequal request.user.pk algorithm.user.pk %}
                                 - <a href="{% url 'add_version'%}?index={{algorithm.pk}}">add new version</a>
                             {% endifequal %}
                         </th>
                     </tr>
-                    {% ifequal request.user.pk algorithm.user.pk %}
-                        <tr>
-                            <td>
-                                <form>
-                                    Select molecule to measure metrics of algorithm
-                                    <select id="mole_id">
-                                        <option value="" disabled selected>Select molecule</option>
-                                        {% for m in molecules %}
-                                            <option
-                                                value="{% url 'test_algorithm'%}?molecule={{ m.pk }}&version={{ selected_version.pk }}">
-                                                {{ m.name }}
-                                            </option>
-                                        {% endfor %}
-
-                                    </select>
-                                    <a class="btn btn-primary" onclick="run()">Run</a>
-                                </form>
-                            </td>
-                        </tr>
-                    {% endifequal %}
                 </thead>
                 <tbody>
                     <tr>
@@ -129,29 +112,55 @@
                         </td>
                     </tr>
                 </tbody>
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <p>Measure metrics of algorithm version:</p>
+
+                            {% ifequal request.user.pk algorithm.user.pk %}
+                                <form>
+                                    <select id="mole_id">
+                                        <option value="" disabled selected>Select molecule</option>
+                                        {% for m in molecules %}
+                                            <option
+                                                value="{% url 'test_algorithm'%}?molecule={{ m.pk }}&version={{ selected_version.pk }}">
+                                                {{ m.name }}
+                                            </option>
+                                        {% endfor %}
+
+                                    </select>
+                                    <a class="btn btn-primary" onclick="run()">Run</a>
+                                </form>
+                            {% endifequal %}
+
+                        </td>
+                    </tr>
+                </tbody>
             </table>
 
-            <select onchange="window.location.href=this.value">
-                {% for m in metrics %}
-                    {% ifequal m selected_metrics %}
-                        <option
-                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
-                            selected="selected">
-                            {{ m.molecule.name }}
-                        </option>
-                    {% else %}
-                        <option
-                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ m.pk }}&molecule_id={{ params.molecule_id }}">
-                            {{ m.molecule.name }}
-                        </option>
-                    {% endifequal %}
-                {% endfor %}
-            </select>
+            <br>
 
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Metrics
+                        <th>
+                            <h2>Measured metrics</h2>
+                            <select onchange="window.location.href=this.value">
+                                {% for m in metrics %}
+                                    {% ifequal m selected_metrics %}
+                                        <option
+                                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
+                                            selected="selected">
+                                            {{ m.molecule.name }}
+                                        </option>
+                                    {% else %}
+                                        <option
+                                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ m.pk }}&molecule_id={{ params.molecule_id }}">
+                                            {{ m.molecule.name }}
+                                        </option>
+                                    {% endifequal %}
+                                {% endfor %}
+                            </select>
                         </th>
                     </tr>
                 </thead>
@@ -192,60 +201,162 @@
                     </tr>
                 </tbody>
             </table>
+            <p><div id="average-history-chart-div"></div></p>
+            <p><div id="accuracy-history-chart-div"></div></p>
         </div>
-        <div class="d-flex flex-column align-items-center">
-            <div class="mt-3">
-                <b>Select molecule to graph development of metrics between algorithm versions:</b>
-                <select onchange="window.location.href=this.value">
-                    {% for m in molecules_with_metrics %}
-                        {% ifequal m.pk selected_molecule.pk %}
-                            <option
-                                value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
-                                selected="selected">
-                                {{ m.name }}
-                            </option>
-                        {% else %}
-                            <option
-                                value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ m.pk }}">
-                                {{ m.name }}
-                            </option>
-                        {% endifequal %}
-                    {% endfor %}
-                </select>
-            </div>
-            <div id="qubit-chart"></div>
-            <div id="gate-chart"></div>
-            <div id="iterations-chart"></div>
-            <div id="success-chart"></div>
+
+        <br>
+
+        <div class="d-flex flex-column">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            <h2>Algorithm version comparison</h2>
+                            <div class="mt-3">
+                                <b>Select molecule:</b>
+                                <select onchange="window.location.href=this.value">
+                                    {% for m in molecules_with_metrics %}
+                                        {% ifequal m.pk selected_molecule.pk %}
+                                            <option
+                                                value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
+                                                selected="selected">
+                                                {{ m.name }}
+                                            </option>
+                                        {% else %}
+                                            <option
+                                                value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ m.pk }}">
+                                                {{ m.name }}
+                                            </option>
+                                        {% endifequal %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div id="gate-chart"></div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div id="qubit-chart"></div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div id="iterations-chart"></div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div id="success-chart"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
     {{ metrics_graph_data|json_script:"metrics-graph-data"}}
+    {{ average_history_graph_data|json_script:"average-history-graph-data" }}
+    {{ accuracy_history_graph_data|json_script:"accuracy-history-graph-data" }}
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
 
         google.charts.load('current', { packages: ['corechart', 'line'] });
-        google.charts.setOnLoadCallback(drawChart);
+        google.charts.setOnLoadCallback(drawCharts);
 
-        function drawChart() {
+        function createHistoryDataTable(graphData) {
+            const dataTable = new google.visualization.DataTable();
+            dataTable.addColumn('number', 'Iteration number');
+            dataTable.addColumn('number', 'Value');
+            dataTable.addRows(graphData);
+            return dataTable;
+        }
+
+        function getMinAndMax(array) {
+            const temp = array.map(arr => arr.slice(1)).flat().filter(x => x != null);
+            return { min: Math.min(...temp), max: Math.max(...temp) };
+        }
+
+        function drawHistoryCharts() {
             const data = new google.visualization.DataTable();
-            const rows = JSON.parse(document.getElementById('metrics-graph-data').textContent);
-            const ticks = Array.from({ length: rows.length }, (_, i) => i + 1);
-            data.addColumn('number', "version");
-            data.addColumn('number', "gate depth");
-            data.addColumn('number', "qubit count");
-            data.addColumn('number', "average iterations");
-            data.addColumn('number', "success rate");
-            data.addRows(rows);
+            const averageHistoryGraphData = JSON.parse(document.getElementById('average-history-graph-data').textContent);
+            const accuracyHistoryGraphData = JSON.parse(document.getElementById('accuracy-history-graph-data').textContent);
 
-            const options = {
+            const averageHistoryDataTable = createHistoryDataTable(averageHistoryGraphData);
+            const accuracyHistoryDataTable = createHistoryDataTable(accuracyHistoryGraphData);
+            const ticks = Array.from({ length: averageHistoryGraphData.length }, (_, i) => i + 1);
+
+            const baseOptions = {
                 width: 600,
                 height: 480,
+                legend: {position: 'none'},
+                hAxis: {
+                    title: 'Iterations',
+                    viewWindow: {
+                        min: 1,
+                        max: averageHistoryGraphData.length
+                    },
+                    ticks
+                },
+            };
+
+            const averageHistoryChartOptions = {
+                ...baseOptions,
+                title: "Average history",
+                vAxis: {
+                    title: "Average value",
+                    viewWindow: getMinAndMax(averageHistoryGraphData),
+                },
+            };
+
+            const accuracyHistoryChartOptions = {
+                ...baseOptions,
+                title: "Accuracy history",
+                vAxis: {
+                    title: "Accuracy value",
+                    viewWindow: getMinAndMax(accuracyHistoryGraphData),
+                },
+            };
+
+            if (averageHistoryGraphData.length>0) {
+                const averageHistoryChart = new google.visualization.LineChart(document.getElementById('average-history-chart-div'));
+                averageHistoryChart.draw(averageHistoryDataTable, averageHistoryChartOptions);
+            }
+            if (accuracyHistoryGraphData.length>0) {
+                const accuracyHistoryChart = new google.visualization.LineChart(document.getElementById('accuracy-history-chart-div'));
+                accuracyHistoryChart.draw(accuracyHistoryDataTable, accuracyHistoryChartOptions);
+            }
+        }
+
+        function drawCharts() {
+            drawVersionChart();
+            drawHistoryCharts();
+        }
+
+        function drawSingleChart(view, column_id, column_name, div, length) {
+            chart = new google.visualization.LineChart(document.getElementById(div));
+            ticks = Array.from({ length: length }, (_, i) => i + 1);
+            options = {
+                width: 600,
+                height: 480,
+                title: column_name,
+                legend: {position: 'none'},
                 hAxis: {
                     viewWindow: {
                         min: 1,
-                        max: rows.length
                     },
                     ticks,
                     title: 'Version number'
@@ -254,21 +365,27 @@
                     title: 'Value'
                 }
             };
+            view.setColumns([0,column_id]);
+            chart.draw(view, options);
+        }
+
+        function drawVersionChart() {
+            const data = new google.visualization.DataTable();
+            const rows = JSON.parse(document.getElementById('metrics-graph-data').textContent);
+            
+            data.addColumn('number', "version");
+            data.addColumn('number', "gate depth");
+            data.addColumn('number', "qubit count");
+            data.addColumn('number', "average iterations");
+            data.addColumn('number', "success rate");
+            data.addRows(rows);
 
             var view = new google.visualization.DataView(data)
-            
-            const qubit_chart = new google.visualization.LineChart(document.getElementById('qubit-chart'));
-            view.setColumns([0,1])
-            qubit_chart.draw(view, options);
-            const gate_chart = new google.visualization.LineChart(document.getElementById('gate-chart'));
-            view.setColumns([0,2])
-            gate_chart.draw(view, options);
-            const iterations_chart = new google.visualization.LineChart(document.getElementById('iterations-chart'));
-            view.setColumns([0,3])
-            iterations_chart.draw(view, options);
-            const succes_chart = new google.visualization.LineChart(document.getElementById('success-chart'));
-            view.setColumns([0,4])
-            succes_chart.draw(view, options);
+
+            drawSingleChart(view, 1, 'gate depth', 'gate-chart', rows.length)
+            drawSingleChart(view, 2, 'qubit count', 'qubit-chart', rows.length)
+            drawSingleChart(view, 3, 'average iterations', 'iterations-chart', rows.length)
+            drawSingleChart(view, 4, 'success rate', 'success-chart', rows.length)
         }
 
         function run() {

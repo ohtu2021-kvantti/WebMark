@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render
 from django.core.exceptions import PermissionDenied
-from ..models import Algorithm, Molecule, Metrics
+from ..models import Algorithm, Molecule, Metrics, Accuracy_history, Average_history
 from django.db.models import F
 from WebCLI.misc.helpers import get_metrics, get_selected_version
 from WebCLI.misc.helpers import get_selected_metrics, get_versions, to_positive_int_or_none
@@ -54,6 +54,13 @@ def get_metrics_graph_data(selected_molecule, algorithm):
     return []
 
 
+def history_data(HistoryModel, selected_metrics):
+    history_data = HistoryModel.objects.values_list("data", flat=True)
+    history_data = history_data.filter(metrics=selected_metrics)
+    iterations = list(range(1, len(history_data)+1))
+    return list(zip(iterations, history_data))
+
+
 def algorithm_details_view(request, algorithm_id):
     try:
         algorithm = Algorithm.objects.get(pk=algorithm_id)
@@ -73,12 +80,17 @@ def algorithm_details_view(request, algorithm_id):
     metrics_graph_data = get_metrics_graph_data(selected_molecule, algorithm)
     molecules = Molecule.objects.all()
 
+    accuracy_history = history_data(Accuracy_history, selected_metrics)
+    average_history = history_data(Average_history, selected_metrics)
+
     data = {'algorithm': algorithm, 'versions': versions, 'params': params,
             'metrics_graph_data': metrics_graph_data, 'metrics': metrics,
             'molecules_with_metrics': molecules_with_metrics,
             'selected_version': selected_version,
             'selected_metrics': selected_metrics,
             'selected_molecule': selected_molecule,
-            'molecules': molecules}
+            'molecules': molecules,
+            'accuracy_history_graph_data': accuracy_history,
+            'average_history_graph_data': average_history}
 
     return render(request, 'WebCLI/algorithm.html', data)
