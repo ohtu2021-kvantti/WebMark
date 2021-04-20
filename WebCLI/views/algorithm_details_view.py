@@ -1,6 +1,10 @@
 from django.shortcuts import redirect, render
 from django.core.exceptions import PermissionDenied
+<<<<<<< HEAD
 from ..models import Algorithm, Molecule, Metrics, Accuracy_history, Average_history
+=======
+from ..models import Average_history, Metrics,  Algorithm, Molecule
+>>>>>>> main
 from django.db.models import F
 from WebCLI.misc.helpers import get_metrics, get_selected_version
 from WebCLI.misc.helpers import get_selected_metrics, get_versions, to_positive_int_or_none
@@ -78,6 +82,7 @@ def algorithm_details_view(request, algorithm_id):
     molecules_with_metrics = get_molecules_with_metrics(versions)
     selected_molecule = get_selected_molecule(params, molecules_with_metrics)
     metrics_graph_data = get_metrics_graph_data(selected_molecule, algorithm)
+    avg_history_graph_data = get_avg_history_graph_data(selected_metrics)
     molecules = Molecule.objects.all()
 
     accuracy_history = history_data(Accuracy_history, selected_metrics)
@@ -85,6 +90,7 @@ def algorithm_details_view(request, algorithm_id):
 
     data = {'algorithm': algorithm, 'versions': versions, 'params': params,
             'metrics_graph_data': metrics_graph_data, 'metrics': metrics,
+            'avg_history_graph_data': avg_history_graph_data,
             'molecules_with_metrics': molecules_with_metrics,
             'selected_version': selected_version,
             'selected_metrics': selected_metrics,
