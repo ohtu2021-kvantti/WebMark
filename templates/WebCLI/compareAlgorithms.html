@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
 
-{% load version_selector_form %}
-{% load molecule_selector_form %}
 {% block title %}Algorithm comparison{% endblock %}
 
 {% block content %}
@@ -11,15 +9,69 @@
                 <thead>
                     <tr>
                         <th>Select version:</th>
-                        <td>{% version_selector_form 'selector1' 'item1_id' versions1 av1 av2.pk %}</td>
-                        <td>{% version_selector_form 'selector2' 'item2_id' versions2 av2 av1.pk %}</td>
+                        {% load tz %}
+                        {% timezone "Europe/Helsinki" %}
+                        <td>
+                            <select onchange="window.location.href=this.value">
+                                {% for version in versions1 %}
+                                    {% ifequal version.pk params.version1_id %}
+                                        <option
+                                            value="{% url 'compare_algorithms' a1.pk a2.pk %}?version1_id={{ params.version1_id }}&version2_id={{ params.version2_id }}&metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}"
+                                            selected="selected">
+                                            {{ version.timestamp|date:'d.n.Y, G:i' }}
+                                        </option>
+                                    {% else %}
+                                        <option
+                                            value="{% url 'compare_algorithms' a1.pk a2.pk %}?version1_id={{ version.pk }}&version2_id={{ params.version2_id }}&metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}">
+                                            {{ version.timestamp|date:'d.n.Y, G:i' }}
+                                        </option>
+                                    {% endifequal %}
+                                {% endfor %}
+                            </select>
+                        </td>
+                        {% endtimezone %}
+                        <td>
+                            <select onchange="window.location.href=this.value">
+                                {% for version in versions2 %}
+                                    {% ifequal version.pk params.version2_id %}
+                                        <option
+                                            value="{% url 'compare_algorithms' a1.pk a2.pk %}?version1_id={{ params.version1_id }}&version2_id={{ params.version2_id }}&metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}"
+                                            selected="selected">
+                                            {{ version.timestamp|date:'d.n.Y, G:i' }}
+                                        </option>
+                                    {% else %}
+                                        <option
+                                            value="{% url 'compare_algorithms' a1.pk a2.pk %}?version1_id={{ params.version1_id }}&version2_id={{ version.pk }}&metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}">
+                                            {{ version.timestamp|date:'d.n.Y, G:i' }}
+                                        </option>
+                                    {% endifequal %}
+                                {% endfor %}
+                            </select>
+                        </td>
                     </tr>
                 </thead>
                 <thead>
                     <tr>
                         <th>Select molecule:</th>
                         {% if molecule %}
-                            <td>{% molecule_selector_form 'selector3' 'item3_id' common_molecules molecule av1.pk av2.pk %}</td>
+                            <td>
+                                <select onchange="window.location.href=this.value">
+                                    {% for m in common_molecules %}
+                                        {% ifequal m.pk molecule.pk %}
+                                            <option
+                                                value="{% url 'compare_algorithms' a1.pk a2.pk %}?version1_id={{ params.version1_id }}&version2_id={{ params.version2_id }}&metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{params.molecule_id}}"
+                                                selected="selected">
+                                                {{ m.name }}
+                                            </option>
+                                        {% else %}
+                                            <option
+                                                value="{% url 'compare_algorithms' a1.pk a2.pk %}?version1_id={{ params.version1_id }}&version2_id={{ params.version2_id }}&metrics1_id={{ params.metrics1_id }}&metrics2_id={{ params.metrics2_id }}&molecule_id={{m.pk}}">
+                                                {{ m.name }}
+                                            </option>
+                                        {% endifequal %}
+                                    {% endfor %}
+                                </select>
+                            </td>
                         {% else %}
                             <td>No common molecules</td>
                         {% endif %}
@@ -41,41 +93,42 @@
                         <td>{{ a1.user.username }}</td>
                         <td>{{ a2.user.username }}</td>
                     </tr>
-                    <tr>
-                        <th>molecule</th>
-                        <td>{{ metrics1.molecule.name }}</td>
-                        <td>{{ metrics2.molecule.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>iterations</th>
-                        <td>{{ metrics1.iterations }}</td>
-                        <td>{{ metrics2.iterations }}</td>
-                    </tr>
-                    <tr>
-                        <th>measurements</th>
-                        <td>{{ metrics1.measurements }}</td>
-                        <td>{{ metrics2.measurements }}</td>
-                    </tr>
-                    <tr>
-                        <th>circuit depth</th>
-                        <td>{{ metrics1.circuit_depth }}</td>
-                        <td>{{ metrics2.circuit_depth }}</td>
-                    </tr>
-                    <tr>
-                        <th>accuracy</th>
-                        <td>{{ metrics1.accuracy }}</td>
-                        <td>{{ metrics2.accuracy }}</td>
-                    </tr>
+                    {% if molecule %}
+                        <tr>
+                            <th>gate depth</th>
+                            <td>{{ selected_metrics1.gate_depth }}</td>
+                            <td>{{ selected_metrics2.gate_depth }}</td>
+                        </tr>
+                        <tr>
+                            <th>qubit count</th>
+                            <td>{{ selected_metrics1.qubit_count }}</td>
+                            <td>{{ selected_metrics2.qubit_count }}</td>
+                        </tr>
+                        <tr>
+                            <th>average iterations</th>
+                            <td>{{ selected_metrics1.average_iterations }}</td>
+                            <td>{{ selected_metrics2.average_iterations }}</td>
+                        </tr>
+                        <tr>
+                            <th>success rate</th>
+                            <td>{{ selected_metrics1.success_rate }}</td>
+                            <td>{{ selected_metrics2.success_rate }}</td>
+                        </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>
-        <div class="d-flex flex-column align-items-center m-auto">
-            <div id="chart-div"></div>
-            <div id="chart-link-div"></div>
+        <div {% if not molecule %} style="display: none;" {% endif %}>
+            <div class="d-flex flex-column align-items-center m-auto">
+                <div id="average-history-chart-div"></div>
+                <div id="average-history-download-link-div"></div>
+            </div>
         </div>
-        <div class="d-flex flex-column align-items-center m-auto">
-            <div id="chart2-div"></div>
-            <div id="chart2-link-div"></div>
+        <div {% if not molecule %} style="display: none;" {% endif %}>
+            <div class="d-flex flex-column align-items-center m-auto">
+                <div id="accuracy-history-chart-div"></div>
+                <div id="accuracy-history-download-link-div"></div>
+            </div>
         </div>
     </div>
 
@@ -83,7 +136,8 @@
     <!-- parse template variables to JSON so they can be safely accessed in JS code -->
     {{ a1.name|json_script:"a1-name" }}
     {{ a2.name|json_script:"a2-name" }}
-    {{ graph_data|json_script:"graph-data"}}
+    {{ average_history_graph_data|json_script:"average-history-graph-data" }}
+    {{ accuracy_history_graph_data|json_script:"accuracy-history-graph-data" }}
     {{ algo_data|json_script:"algo-data"}}
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -91,51 +145,82 @@
         google.charts.load('current', { packages: ['bar', 'corechart', 'line'] });
         google.charts.setOnLoadCallback(drawChart);
 
+
+
+        function createHistoryDataTable(a1Name, a2Name, graphData) {
+            const dataTable = new google.visualization.DataTable();
+            dataTable.addColumn('number', 'Iteration number');
+            dataTable.addColumn('number', a1Name);
+            dataTable.addColumn('number', a2Name);
+            dataTable.addRows(graphData);
+            return dataTable;
+        }
+
+        function createLineChartWithDownloadLink(chartDivName, downloadLinkDivName) {
+            const chart = new google.visualization.LineChart(document.getElementById(chartDivName));
+            const linkDiv = document.getElementById(downloadLinkDivName);
+            google.visualization.events.addListener(chart, 'ready', () => {
+                linkDiv.innerHTML = `<a href=${chart.getImageURI()} download=chart>Download as PNG</a>`;
+            });
+            return chart;
+        }
+
+        function getMinAndMax(array) {
+            const temp = array.map(arr => arr.slice(1)).flat().filter(x => x != null);
+            return { min: Math.min(...temp), max: Math.max(...temp) };
+        }
+
         function drawChart() {
             const data = new google.visualization.DataTable();
             const a1Name = JSON.parse(document.getElementById('a1-name').textContent);
             const a2Name = JSON.parse(document.getElementById('a2-name').textContent);
-            const graphData = JSON.parse(document.getElementById('graph-data').textContent);
-            data.addColumn('number', 'X');
-            data.addColumn('number', a1Name);
-            data.addColumn('number', a2Name);
-            data.addRows(graphData);
+            const averageHistoryGraphData = JSON.parse(document.getElementById('average-history-graph-data').textContent);
+            const accuracyHistoryGraphData = JSON.parse(document.getElementById('accuracy-history-graph-data').textContent);
 
-            const algoData = JSON.parse(document.getElementById('algo-data').textContent);
-            // convert null values to zeros
-            const algoDataCleaned = algoData.map(a => a.map(value => value === null ? 0 : value));
-            const columnChartData = google.visualization.arrayToDataTable(algoDataCleaned);
+            const averageHistoryDataTable = createHistoryDataTable(a1Name, a2Name, averageHistoryGraphData);
+            const accuracyHistoryDataTable = createHistoryDataTable(a1Name, a2Name, accuracyHistoryGraphData);
+            const ticks = Array.from({ length: averageHistoryGraphData.length }, (_, i) => i + 1);
 
             const baseOptions = {
                 width: 600,
                 height: 480,
-            };
-
-            const lineChartOptions = {
-                ...baseOptions,
-                title: "NOTE: Graphs are a work-in-progress and currently show dummy data",
                 hAxis: {
-                    title: 'Iterations'
+                    title: 'Iterations',
+                    viewWindow: {
+                        min: 1,
+                        max: averageHistoryGraphData.length
+                    },
+                    ticks
                 },
-                vAxis: {
-                    title: 'Accuracy'
+                explorer: {
+                    axis: 'vertical',
+                    keepInBounds: true,
                 }
             };
 
-            const chart = new google.visualization.LineChart(document.getElementById('chart-div'));
-            const linkDiv = document.getElementById("chart-link-div");
-            google.visualization.events.addListener(chart, 'ready', () => {
-                linkDiv.innerHTML = `<a href=${chart.getImageURI()} download=chart>Download as PNG</a>`;
-            });
+            const averageHistoryChartOptions = {
+                ...baseOptions,
+                title: "Average history",
+                vAxis: {
+                    title: "Average value",
+                    viewWindow: getMinAndMax(averageHistoryGraphData),
+                },
+            };
 
-            const chart2 = new google.visualization.ColumnChart(document.getElementById('chart2-div'));
-            const link2Div = document.getElementById("chart2-link-div");
-            google.visualization.events.addListener(chart2, 'ready', () => {
-                link2Div.innerHTML = `<a href=${chart2.getImageURI()} download=chart>Download as PNG</a>`;
-            });
+            const accuracyHistoryChartOptions = {
+                ...baseOptions,
+                title: "Accuracy history",
+                vAxis: {
+                    title: "Accuracy value",
+                    viewWindow: getMinAndMax(accuracyHistoryGraphData),
+                },
+            };
 
-            chart.draw(data, lineChartOptions);
-            chart2.draw(columnChartData, baseOptions);
+            const averageHistoryChart = createLineChartWithDownloadLink('average-history-chart-div', "average-history-download-link-div");
+            const accuracyHistoryChart = createLineChartWithDownloadLink('accuracy-history-chart-div', 'accuracy-history-download-link-div')
+
+            averageHistoryChart.draw(averageHistoryDataTable, averageHistoryChartOptions);
+            accuracyHistoryChart.draw(accuracyHistoryDataTable, accuracyHistoryChartOptions);
         }
     </script>
 {% endblock %}

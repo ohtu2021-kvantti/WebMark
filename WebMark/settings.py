@@ -138,6 +138,8 @@ ALGORITHMS_PER_PAGE = 20
 
 USING_CELERY = False if os.getenv("USING_CELERY") == "False" else True
 
+API_KEY = os.getenv("API_KEY")
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
