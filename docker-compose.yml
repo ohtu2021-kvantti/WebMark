@@ -25,6 +25,7 @@ services:
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
       - BROKER_URL=pyamqp://guest@rabbitmq//
+      - API_KEY=${API_KEY}
     command: sh -c "
       python manage.py makemigrations WebCLI &&
       python manage.py migrate &&
@@ -51,4 +52,5 @@ services:
     environment:
       - BROKER_URL=pyamqp://guest@rabbitmq//
       - DJANGO_API_URL=http://web:8000/handleResult
+      - API_KEY=${API_KEY}
 

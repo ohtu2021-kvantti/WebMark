@@ -6,10 +6,16 @@ METHODS = {
            'rmsprop', 'rmsprop-nesterov']
 }
 
+BASIS_SET_CHOICES = ['sto-3g']
 
-def get_methods(module: str):
+
+def optimizer_methods(module: str):
     return METHODS[module]
 
 
-def get_modules():
+def optimizer_modules():
     return list(METHODS.keys())
+
+
+def basis_set_options():
+    return BASIS_SET_CHOICES
