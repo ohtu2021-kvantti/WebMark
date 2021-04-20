@@ -214,18 +214,21 @@
                 </select>
             </div>
             <div id="metrics-chart"></div>
+            <div id="avg-history-chart"></div>
         </div>
     </div>
 
     {{ metrics_graph_data|json_script:"metrics-graph-data"}}
+    {{ avg_history_graph_data|json_script:"avg-history-graph-data"}}
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
 
         google.charts.load('current', { packages: ['corechart', 'line'] });
-        google.charts.setOnLoadCallback(drawChart);
+        google.charts.setOnLoadCallback(drawComparisonChart);
+        google.charts.setOnLoadCallback(drawAvgHistoryChart);
 
-        function drawChart() {
+        function drawComparisonChart() {
             const data = new google.visualization.DataTable();
             const rows = JSON.parse(document.getElementById('metrics-graph-data').textContent);
             const ticks = Array.from({ length: rows.length }, (_, i) => i + 1);
@@ -257,6 +260,40 @@
             chart.draw(data, options);
         }
 
+        function drawAvgHistoryChart() {
+            const data = new google.visualization.DataTable();
+            const rows = JSON.parse(document.getElementById('avg-history-graph-data').textContent);
+            const ticks = Array.from({ length: rows.length }, (_, i) => i + 1);
+            data.addColumn('number', "Iteration number");
+            data.addColumn('number', "Average result");
+            data.addRows(rows);
+
+            const options = {
+                width: 600,
+                height: 480,
+                title: "Average results from previous benchmark",
+                hAxis: {
+                    viewWindow: {
+                        min: 1,
+                        max: rows.length
+                    },
+                    ticks,
+                    title: 'Iteration number'
+                },
+                vAxis: {
+                    title: 'Value'
+                },
+                explorer: {
+                    axis: 'vertical',
+                    keepInBounds: true,
+                    maxZoomIn: 8.0
+                }
+            };
+
+            const chart = new google.visualization.LineChart(document.getElementById('avg-history-chart'));
+            chart.draw(data, options);
+        }
+    
         function run() {
             var x = document.getElementById('mole_id');
             console.log(x.value)
