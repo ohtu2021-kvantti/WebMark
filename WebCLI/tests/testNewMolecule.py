@@ -2,7 +2,7 @@ from ddf import M, N
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from ..models import Molecule
-import quantmark as qm
+
 
 class TestNewMolecule(TestCase):
 
@@ -25,27 +25,26 @@ class TestNewMolecule(TestCase):
                           'structure': 'H 0.0 0.0 0.0\nLi 0.0 0.0 1.6',
                           'active_orbitals': 'A1 1 2 4 5 7',
                           'basis_set': 'sto-3g',
-                          'transformation': 'Bravyi-Kitaev'}
-        )
+                          'transformation': 'Bravyi-Kitaev'})
         result = len(Molecule.objects.filter(name=test_molecule.name))
         self.assertEqual(result, 1)
 
     def test_add_molecule_with_incorrect_structure(self):
         self.client.post('/newMolecule/',
-                    {'name': 'Lithium hydride2',
-                     'structure': 'H 0.0 0.0 0.0Li 0.0 0.0 1.6',
-                     'active_orbitals': 'A1 1 2 4 5 7',
-                     'basis_set': 'sto-3g',
-                     'transformation': 'Bravyi-Kitaev'})
+                         {'name': 'Lithium hydride2',
+                          'structure': 'H 0.0 0.0 0.0Li 0.0 0.0 1.6',
+                          'active_orbitals': 'A1 1 2 4 5 7',
+                          'basis_set': 'sto-3g',
+                          'transformation': 'Bravyi-Kitaev'})
         result = len(Molecule.objects.filter(name='Lithium hydride2'))
         self.assertEqual(result, 0)
 
     def test_add_molecule_with_incorrect_orbitals(self):
         self.client.post('/newMolecule/',
-                    {'name': 'Lithium hydride3',
-                     'structure': 'H 0.0 0.0 0.0\nLi 0.0 0.0 1.6',
-                     'active_orbitals': '1 2 4 5 7',
-                     'basis_set': 'sto-3g',
-                     'transformation': 'Bravyi-Kitaev'})
+                         {'name': 'Lithium hydride3',
+                          'structure': 'H 0.0 0.0 0.0\nLi 0.0 0.0 1.6',
+                          'active_orbitals': '1 2 4 5 7',
+                          'basis_set': 'sto-3g',
+                          'transformation': 'Bravyi-Kitaev'})
         result = len(Molecule.objects.filter(name='Lithium hydride3'))
         self.assertEqual(result, 0)

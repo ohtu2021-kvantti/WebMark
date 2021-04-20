@@ -6,7 +6,7 @@ import datetime
 import pytz
 
 
-class TestNewAlgorithm(TestCase):
+class TestNewVersion(TestCase):
 
     @classmethod
     def setUpTestAlgorithms(self):
@@ -61,13 +61,14 @@ class TestNewAlgorithm(TestCase):
     def setUp(self):
         self.client.login(username="Bob", password="bobpassword")
 
-    def test_my_algorithms_view(self):
-        response = str(self.client.get("/myAlgorithms/").content)
-        self.assertFalse(response.find('Algo1') < 0)
-        self.assertFalse(response.find('Algo2') < 0)
+    def test_add_new_version_to_other_user_algorithm(self):
+        a = Algorithm.objects.get(name='Algo4')
+        response = self.client.post('/addVersion/?index='+str(a.pk),
+                                    {'algorithm': 'print(1)\nexec()'})
+        self.assertEqual(response.status_code, 403)
+
+    def test_add_new_version_view(self):
+        a = Algorithm.objects.get(name='Algo3')
+        response = str(self.client.get('/addVersion/?index='+str(a.pk)).content)
         self.assertFalse(response.find('Algo3') < 0)
-        self.assertTrue(response.find('Algo4') < 0)
-        self.assertTrue(response.find('Algo5') < 0)
-        self.assertTrue(response.find('Algo6') < 0)
-        self.assertFalse(response.find('https://alink1.com') < 0)
-        self.assertFalse(response.find('https://gtlink1.com') < 0)
+        self.assertFalse(response.find('version2') < 0)

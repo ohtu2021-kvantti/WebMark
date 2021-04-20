@@ -6,7 +6,7 @@ import datetime
 import pytz
 
 
-class TestNewAlgorithm(TestCase):
+class TestHomepage(TestCase):
 
     @classmethod
     def setUpTestAlgorithms(self):
@@ -61,13 +61,9 @@ class TestNewAlgorithm(TestCase):
     def setUp(self):
         self.client.login(username="Bob", password="bobpassword")
 
-    def test_my_algorithms_view(self):
-        response = str(self.client.get("/myAlgorithms/").content)
+    def test_index_view(self):
+        response = str(self.client.get("/").content)
         self.assertFalse(response.find('Algo1') < 0)
-        self.assertFalse(response.find('Algo2') < 0)
-        self.assertFalse(response.find('Algo3') < 0)
-        self.assertTrue(response.find('Algo4') < 0)
+        self.assertTrue(response.find('Algo2') < 0)
+        self.assertFalse(response.find('Algo4') < 0)
         self.assertTrue(response.find('Algo5') < 0)
-        self.assertTrue(response.find('Algo6') < 0)
-        self.assertFalse(response.find('https://alink1.com') < 0)
-        self.assertFalse(response.find('https://gtlink1.com') < 0)
