@@ -290,7 +290,7 @@
         google.charts.setOnLoadCallback(drawCharts);
 
         function drawCharts() {
-            drawVersionChart();
+            drawVersionCharts();
             drawHistoryCharts();
         }
 
@@ -299,12 +299,12 @@
             const averageHistoryGraphData = JSON.parse(document.getElementById('average-history-graph-data').textContent);
             const accuracyHistoryGraphData = JSON.parse(document.getElementById('accuracy-history-graph-data').textContent);
 
-            createHistoryDataTable(averageHistoryGraphData, 'Average history', 'average-history-chart-div');
-            createHistoryDataTable(accuracyHistoryGraphData, 'Accuracy history', 'accuracy-history-chart-div');
+            drawHistoryChart(averageHistoryGraphData, 'Average history', 'average-history-chart-div');
+            drawHistoryChart(accuracyHistoryGraphData, 'Accuracy history', 'accuracy-history-chart-div');
 
         }
 
-        function createHistoryDataTable(graphData, title, div) {
+        function drawHistoryChart(graphData, title, div) {
             dataTable = new google.visualization.DataTable();
             dataTable.addColumn('number', 'iteration');
             dataTable.addColumn('number', title);
@@ -335,7 +335,7 @@
             chart.draw(view, options);
         }
 
-        function drawVersionChart() {
+        function drawVersionCharts() {
             const data = new google.visualization.DataTable();
             const rows = JSON.parse(document.getElementById('metrics-graph-data').textContent);
             
@@ -354,40 +354,6 @@
             drawSingleChart(view, 4, 'success-chart')
         }
 
-        function drawAvgHistoryChart() {
-            const data = new google.visualization.DataTable();
-            const rows = JSON.parse(document.getElementById('avg-history-graph-data').textContent);
-            const ticks = Array.from({ length: rows.length }, (_, i) => i + 1);
-            data.addColumn('number', "Iteration number");
-            data.addColumn('number', "Average result");
-            data.addRows(rows);
-
-            const options = {
-                width: 600,
-                height: 480,
-                title: "Average results from previous benchmark",
-                hAxis: {
-                    viewWindow: {
-                        min: 1,
-                        max: rows.length
-                    },
-                    ticks,
-                    title: 'Iteration number'
-                },
-                vAxis: {
-                    title: 'Value'
-                },
-                explorer: {
-                    axis: 'vertical',
-                    keepInBounds: true,
-                    maxZoomIn: 8.0
-                }
-            };
-
-            const chart = new google.visualization.LineChart(document.getElementById('avg-history-chart'));
-            chart.draw(data, options);
-        }
-    
         function run() {
             var x = document.getElementById('mole_id');
             console.log(x.value)
