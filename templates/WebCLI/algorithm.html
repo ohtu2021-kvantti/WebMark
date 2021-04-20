@@ -1,46 +1,48 @@
 {% extends 'base.html' %}
 {% block title %}Algorithm view{% endblock %}
 {% block content %}
-    <div class="d-flex flex-row flex-wrap justify-content-center">
-        <div>
+    <br>
+    <h2>Algorithm: {{ algorithm.name }}</h2>
+    <div class="d-flex flex-row flex-wrap">
+        <div class="m-5">
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>
-                            <h2>Algorithm details</h2>
+                        <th colspan="2">
+                            <h3>Basic information</h3>
                             {% ifequal request.user.pk algorithm.user.pk %}
-                                - <a href="{% url 'updateAlgorithm'%}?index={{algorithm.pk}}">update details</a>
+                                - <a href="{% url 'updateAlgorithm'%}?index={{algorithm.pk}}">update information</a>
                             {% endifequal %}
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <th>name</th>
-                        <td>{{ algorithm.name }}</td>
+                        <th>Name</th>
+                        <td class>{{ algorithm.name }}</td>
                     </tr>
                     <tr>
-                        <th>type</th>
+                        <th>Type</th>
                         <td>{{ algorithm.algorithm_type.type_name }}</td>
                     </tr>
                     <tr>
-                        <th>author</th>
+                        <th>Author</th>
                         <td>{{ algorithm.user.username }}</td>
                     </tr>
                     <tr>
-                        <th>public?</th>
+                        <th>Public</th>
                         <td>{{ algorithm.public }}</td>
                     </tr>
                     {% if algorithm.article_link %}
                         <tr>
-                            <th>paper</th>
-                            <td><a href="{{ algorithm.article_link }}" target="_blank">{{ algorithm.article_link }}</a></td>
+                            <th>Scientific paper</th>
+                            <td><a href="{{ algorithm.article_link }}" target="_blank">link</a></td>
                         </tr>
                     {% endif %}
                     {% if algorithm.github_link %}
                         <tr>
-                            <th>Github</th>
-                            <td><a href="{{ algorithm.github_link }}" target="_blank">{{ algorithm.github_link }}</a></td>
+                            <th>Github repository</th>
+                            <td><a href="{{ algorithm.github_link }}" target="_blank">link</a></td>
                         </tr>
                     {% endif %}
                 </tbody>
@@ -52,7 +54,7 @@
                 <thead>
                     <tr>
                         <th colspan="2">
-                            <h2>Algorithm version</h2>
+                            <h3>Algorithm version</h3>
 
                             {% load tz %}
                             {% timezone "Europe/Helsinki" %}
@@ -143,8 +145,8 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>
-                            <h2>Measured metrics</h2>
+                        <th colspan="2">
+                            <h3>Metrics of algorithm version</h3>
                             <select onchange="window.location.href=this.value">
                                 {% for m in metrics %}
                                     {% ifequal m selected_metrics %}
@@ -200,38 +202,48 @@
                         <td>{{ selected_metrics.success_rate }}</td>
                     </tr>
                 </tbody>
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <div id="average-history-chart-div"></div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <div id="accuracy-history-chart-div"></div>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
-            <p><div id="average-history-chart-div"></div></p>
-            <p><div id="accuracy-history-chart-div"></div></p>
         </div>
 
         <br>
 
-        <div class="d-flex flex-column">
+        <div class="d-flex flex-column m-5">
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>
-                            <h2>Algorithm version comparison</h2>
-                            <div class="mt-3">
-                                <b>Select molecule:</b>
-                                <select onchange="window.location.href=this.value">
-                                    {% for m in molecules_with_metrics %}
-                                        {% ifequal m.pk selected_molecule.pk %}
-                                            <option
-                                                value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
-                                                selected="selected">
-                                                {{ m.name }}
-                                            </option>
-                                        {% else %}
-                                            <option
-                                                value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ m.pk }}">
-                                                {{ m.name }}
-                                            </option>
-                                        {% endifequal %}
-                                    {% endfor %}
-                                </select>
-                            </div>
+                            <h3>Algorithm version comparison</h3>
+                            <b>Select molecule:</b>
+                            <select onchange="window.location.href=this.value">
+                                {% for m in molecules_with_metrics %}
+                                    {% ifequal m.pk selected_molecule.pk %}
+                                        <option
+                                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ params.molecule_id }}"
+                                            selected="selected">
+                                            {{ m.name }}
+                                        </option>
+                                    {% else %}
+                                        <option
+                                            value="{{ algorithm.get_absolute_url }}?version_id={{ params.version_id }}&metrics_id={{ params.metrics_id }}&molecule_id={{ m.pk }}">
+                                            {{ m.name }}
+                                        </option>
+                                    {% endifequal %}
+                                {% endfor %}
+                            </select>
                         </th>
                     </tr>
                 </thead>
