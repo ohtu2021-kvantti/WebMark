@@ -277,17 +277,9 @@
         google.charts.load('current', { packages: ['corechart', 'line'] });
         google.charts.setOnLoadCallback(drawCharts);
 
-        function createHistoryDataTable(graphData) {
-            const dataTable = new google.visualization.DataTable();
-            dataTable.addColumn('number', 'Iteration number');
-            dataTable.addColumn('number', 'Value');
-            dataTable.addRows(graphData);
-            return dataTable;
-        }
-
-        function getMinAndMax(array) {
-            const temp = array.map(arr => arr.slice(1)).flat().filter(x => x != null);
-            return { min: Math.min(...temp), max: Math.max(...temp) };
+        function drawCharts() {
+            drawVersionChart();
+            drawHistoryCharts();
         }
 
         function drawHistoryCharts() {
@@ -295,77 +287,39 @@
             const averageHistoryGraphData = JSON.parse(document.getElementById('average-history-graph-data').textContent);
             const accuracyHistoryGraphData = JSON.parse(document.getElementById('accuracy-history-graph-data').textContent);
 
-            const averageHistoryDataTable = createHistoryDataTable(averageHistoryGraphData);
-            const accuracyHistoryDataTable = createHistoryDataTable(accuracyHistoryGraphData);
-            const ticks = Array.from({ length: averageHistoryGraphData.length }, (_, i) => i + 1);
+            createHistoryDataTable(averageHistoryGraphData, 'Average history', 'average-history-chart-div');
+            createHistoryDataTable(accuracyHistoryGraphData, 'Accuracy history', 'accuracy-history-chart-div');
 
-            const baseOptions = {
-                width: 600,
-                height: 480,
-                legend: {position: 'none'},
-                hAxis: {
-                    title: 'Iterations',
-                    viewWindow: {
-                        min: 1,
-                        max: averageHistoryGraphData.length
-                    },
-                    ticks
-                },
-            };
+        }
 
-            const averageHistoryChartOptions = {
-                ...baseOptions,
-                title: "Average history",
-                vAxis: {
-                    title: "Average value",
-                    viewWindow: getMinAndMax(averageHistoryGraphData),
-                },
-            };
-
-            const accuracyHistoryChartOptions = {
-                ...baseOptions,
-                title: "Accuracy history",
-                vAxis: {
-                    title: "Accuracy value",
-                    viewWindow: getMinAndMax(accuracyHistoryGraphData),
-                },
-            };
-
-            if (averageHistoryGraphData.length>0) {
-                const averageHistoryChart = new google.visualization.LineChart(document.getElementById('average-history-chart-div'));
-                averageHistoryChart.draw(averageHistoryDataTable, averageHistoryChartOptions);
-            }
-            if (accuracyHistoryGraphData.length>0) {
-                const accuracyHistoryChart = new google.visualization.LineChart(document.getElementById('accuracy-history-chart-div'));
-                accuracyHistoryChart.draw(accuracyHistoryDataTable, accuracyHistoryChartOptions);
+        function createHistoryDataTable(graphData, title, div) {
+            dataTable = new google.visualization.DataTable();
+            dataTable.addColumn('number', 'iteration');
+            dataTable.addColumn('number', title);
+            dataTable.addRows(graphData);
+            if (graphData.length>0) {
+                view = new google.visualization.DataView(dataTable)
+                drawSingleChart(view, 1, div)
             }
         }
 
-        function drawCharts() {
-            drawVersionChart();
-            drawHistoryCharts();
-        }
-
-        function drawSingleChart(view, column_id, column_name, div, length) {
+        function drawSingleChart(view, column_id, div) {
             chart = new google.visualization.LineChart(document.getElementById(div));
-            ticks = Array.from({ length: length }, (_, i) => i + 1);
+            ticks = Array.from({ length: view.getNumberOfRows() }, (_, i) => i + 1);
+            view.setColumns([0,column_id]);
             options = {
                 width: 600,
                 height: 480,
-                title: column_name,
+                title: view.getColumnLabel(1),
                 legend: {position: 'none'},
                 hAxis: {
                     viewWindow: {
                         min: 1,
                     },
                     ticks,
-                    title: 'Version number'
+                    title: view.getColumnLabel(0)
                 },
-                vAxis: {
-                    title: 'Value'
-                }
             };
-            view.setColumns([0,column_id]);
             chart.draw(view, options);
         }
 
@@ -373,19 +327,19 @@
             const data = new google.visualization.DataTable();
             const rows = JSON.parse(document.getElementById('metrics-graph-data').textContent);
             
-            data.addColumn('number', "version");
-            data.addColumn('number', "gate depth");
-            data.addColumn('number', "qubit count");
-            data.addColumn('number', "average iterations");
-            data.addColumn('number', "success rate");
+            data.addColumn('number', "Algorithm version");
+            data.addColumn('number', "Gate depth");
+            data.addColumn('number', "Qubit count");
+            data.addColumn('number', "Average iterations");
+            data.addColumn('number', "Success rate");
             data.addRows(rows);
 
             var view = new google.visualization.DataView(data)
 
-            drawSingleChart(view, 1, 'gate depth', 'gate-chart', rows.length)
-            drawSingleChart(view, 2, 'qubit count', 'qubit-chart', rows.length)
-            drawSingleChart(view, 3, 'average iterations', 'iterations-chart', rows.length)
-            drawSingleChart(view, 4, 'success rate', 'success-chart', rows.length)
+            drawSingleChart(view, 1, 'gate-chart')
+            drawSingleChart(view, 2, 'qubit-chart')
+            drawSingleChart(view, 3, 'iterations-chart')
+            drawSingleChart(view, 4, 'success-chart')
         }
 
         function run() {
