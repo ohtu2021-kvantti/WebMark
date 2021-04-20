@@ -18,6 +18,34 @@ def as_metrics(result):
     return metrics
 
 
+def as_history(result):
+    avg_histories = result["average_history"]
+    avg_existing_history = Average_history.objects.filter(metrics_id=result["metrics_id"])
+    acc_histories = result["accuracy_history"]
+    acc_existing_history = Accuracy_history.objects.filter(metrics_id=result["metrics_id"])
+
+    if len(avg_existing_history) > 0 & len(acc_existing_history) > 0:
+        history = avg_existing_history[0]
+        return history
+    if len(avg_existing_history) < 1:
+        for i in range(len(avg_histories)):
+            history = Average_history(
+                metrics=Metrics.objects.get(pk=result["metrics_id"]),
+                data=avg_histories[i],
+                iteration_number=i+1)
+            history.save()
+
+    if len(acc_existing_history) < 1:
+        for i in range(len(acc_histories)):
+            history = Accuracy_history(
+                metrics=Metrics.objects.get(pk=result["metrics_id"]),
+                data=acc_histories[i],
+                iteration_number=i+1)
+            history.save()
+
+    return history
+
+
 def as_average_history(result):
     histories = result["average_history"]
     for i in range(len(histories)):
@@ -47,6 +75,10 @@ def has_permission(request):
 
 @csrf_exempt
 def handle_result(request):
+    analyzed_results = json.loads(request.POST["data"], object_hook=as_average_history)
+    analyzed_results.save()
+    history_results = json.loads(request.POST["data"], object_hook=as_history)
+    history_results.save()
     if not has_permission(request):
         print("ACCESS DENIED")
         return HttpResponse("ok")
