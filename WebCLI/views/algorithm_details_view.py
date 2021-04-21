@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render
 from django.core.exceptions import PermissionDenied
-from ..models import Average_history, Metrics,  Algorithm, Molecule
+from ..models import Algorithm, Molecule, Metrics, Accuracy_history, Average_history
 from django.db.models import F
 from WebCLI.misc.helpers import get_metrics, get_selected_version
 from WebCLI.misc.helpers import get_selected_metrics, get_versions, to_positive_int_or_none
@@ -54,18 +54,11 @@ def get_metrics_graph_data(selected_molecule, algorithm):
     return []
 
 
-def get_avg_history_graph_data(selected_metrics):
-    if selected_metrics:
-        avg_history_graph_data_query = Average_history.objects.raw('''
-            SELECT avg_his.id, avg_his.iteration_number,
-            avg_his.data
-            FROM "WebCLI_average_history" avg_his
-            LEFT JOIN "WebCLI_metrics" metrics ON avg_his.metrics_id = metrics.id
-            WHERE metrics.id = %s''', [selected_metrics.pk])
-
-        return [[row.iteration_number, row.data]
-                for row in avg_history_graph_data_query]
-    return []
+def history_data(HistoryModel, selected_metrics):
+    history_data = HistoryModel.objects.values_list("data", flat=True)
+    history_data = history_data.filter(metrics=selected_metrics)
+    iterations = list(range(1, len(history_data)+1))
+    return list(zip(iterations, history_data))
 
 
 def algorithm_details_view(request, algorithm_id):
@@ -85,16 +78,19 @@ def algorithm_details_view(request, algorithm_id):
     molecules_with_metrics = get_molecules_with_metrics(versions)
     selected_molecule = get_selected_molecule(params, molecules_with_metrics)
     metrics_graph_data = get_metrics_graph_data(selected_molecule, algorithm)
-    avg_history_graph_data = get_avg_history_graph_data(selected_metrics)
     molecules = Molecule.objects.all()
+
+    accuracy_history = history_data(Accuracy_history, selected_metrics)
+    average_history = history_data(Average_history, selected_metrics)
 
     data = {'algorithm': algorithm, 'versions': versions, 'params': params,
             'metrics_graph_data': metrics_graph_data, 'metrics': metrics,
-            'avg_history_graph_data': avg_history_graph_data,
             'molecules_with_metrics': molecules_with_metrics,
             'selected_version': selected_version,
             'selected_metrics': selected_metrics,
             'selected_molecule': selected_molecule,
-            'molecules': molecules}
+            'molecules': molecules,
+            'accuracy_history_graph_data': accuracy_history,
+            'average_history_graph_data': average_history}
 
     return render(request, 'WebCLI/algorithm.html', data)
