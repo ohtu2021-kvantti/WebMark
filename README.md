@@ -4,20 +4,15 @@
 [![codecov](https://codecov.io/gh/ohtu2021-kvantti/WebMark/branch/main/graph/badge.svg?token=40N85S73PK)](https://codecov.io/gh/ohtu2021-kvantti/WebMark)
 [![Maintainability](https://api.codeclimate.com/v1/badges/25622c2cc42215a674b4/maintainability)](https://codeclimate.com/github/ohtu2021-kvantti/WebMark/maintainability)
 
-Web platform for benchmarking quantum computing algorithms
+Web platform for benchmarking quantum computing algorithms.
 
-## Django - structure
+## Documentation
 
-WebMark = Project
+[Architecture](/docs/architecture.md)
 
-WebCLI = Application
+## Requirements
 
-Requirements: see [requirements.txt](requirements.txt)
-
-## Database schema
-
-<img src="db_schema.png">
-
+See [requirements.txt](requirements.txt)
 
 ## Setting up the development environment using Docker (recommended)
 
