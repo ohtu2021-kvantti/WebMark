@@ -11,10 +11,13 @@ app = Celery('benchmark', broker=os.getenv("BROKER_URL", 'pyamqp://guest@localho
 def benchmark_task(metrics_id, molecule, circuit, optimizer_module, optimizer_method):
     if not molecule["transformation"]:
         molecule["transformation"] = None
+    if not molecule["active_orbitals"]:
+        molecule["active_orbitals"] = None
+    else:
+        molecule["active_orbitals"] = molecule["active_orbitals"].replace("\r", "")
 
     # workaround for a Libmark bug
     molecule["structure"] = molecule["structure"].replace("\r", "")
-    molecule["active_orbitals"] = molecule["active_orbitals"].replace("\r", "")
 
     result = run_benchmark(molecule, circuit, optimizer_module, optimizer_method)
     print(result)
