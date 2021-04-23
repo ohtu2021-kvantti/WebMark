@@ -106,3 +106,14 @@ def in_analysis(request):
         if m.molecule.name not in molecules:
             molecules.append(m.molecule.name)
     return render(request, 'WebCLI/in_analysis.html', {'molecules': molecules})
+
+
+def refresh_metrics(request):
+    metrics_id = request.GET.get('version_id')
+    molecule_id = request.GET.get('molecule_id')
+    metrics = Metrics.objects.filter(algorithm_version=metrics_id, molecule=molecule_id)
+
+    # if metrics[0].qubit_count is not None:
+    #    return HttpResponse("Benchmarking finished")
+
+    return render(request, 'WebCLI/metrics.html', {'metrics': metrics})

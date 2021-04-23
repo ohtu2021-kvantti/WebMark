@@ -1,0 +1,10 @@
+<metrics>
+    {% for metric in metrics %}
+        <div>
+            <a id="qc">{{ metric.qubit_count }}</a>
+            <a id="gd">{{ metric.gate_depth }}</a>
+            <a id="avg">{{ metric.average_iterations }}</a>
+            <a id="sc">{{ metric.success_rate }}</a>
+        </div>
+    {% endfor %}
+</metrics>

@@ -132,6 +132,7 @@
 
                                     </select>
                                     <a class="btn btn-primary" onclick="run()">Run</a>
+                                    <a class="btn btn-secondary" onclick="refresh()">Refresh</a>
                                 </form>
                             {% endifequal %}
 
@@ -183,23 +184,23 @@
                     </tr>
                     <tr>
                         <th>In analyze queue</th>
-                        <td>{{ selected_metrics.in_analyze_queue }}</td>
+                        <td id="analyze_queue">{{ selected_metrics.in_analyze_queue }}</td>
                     </tr>
                     <tr>
                         <th>Gate depth</th>
-                        <td>{{ selected_metrics.gate_depth }}</td>
+                        <td id="refresh_gd">{{ selected_metrics.gate_depth }}</td>
                     </tr>
                     <tr>
                         <th>Qubit count</th>
-                        <td>{{ selected_metrics.qubit_count }}</td>
+                        <td id="refresh_qc">{{ selected_metrics.qubit_count }}</td>
                     </tr>
                     <tr>
                         <th>Average iterations</th>
-                        <td>{{ selected_metrics.average_iterations }}</td>
+                        <td id="refresh_avg_it">{{ selected_metrics.average_iterations }}</td>
                     </tr>
                     <tr>
                         <th>Success rate</th>
-                        <td>{{ selected_metrics.success_rate }}</td>
+                        <td id="refresh_sc">{{ selected_metrics.success_rate }}</td>
                     </tr>
                 </tbody>
                 <tbody>
@@ -284,6 +285,7 @@
     {{ accuracy_history_graph_data|json_script:"accuracy-history-graph-data" }}
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script type="text/javascript">
 
         google.charts.load('current', { packages: ['corechart', 'line'] });
@@ -362,6 +364,24 @@
             }
             var y = document.getElementById('href_id');
             window.location.href = x.value
+        }
+        var taskQueue = null;
+        var counter = 0;
+        function checkPage() {
+            counter++;
+            $('#analyze_queue').load('/in_analysis/?version_id={{ selected_version.pk }}');   
+            $('#refresh_gd').load('/metrics/?version_id={{ selected_version.pk }}&molecule_id={{ selected_metrics.molecule.pk }} #gd'); 
+            $('#refresh_qc').load('/metrics/?version_id={{ selected_version.pk }}&molecule_id={{ selected_metrics.molecule.pk }} #qc');
+            $('#refresh_avg_it').load('/metrics/?version_id={{ selected_version.pk }}&molecule_id={{ selected_metrics.molecule.pk }} #avg');
+            $('#refresh_sc').load('/metrics/?version_id={{ selected_version.pk }}&molecule_id={{ selected_metrics.molecule.pk }} #sc');
+            console.log(counter)
+            if(counter >= 15) {
+                clearInterval(taskQueue)
+            }
+        }
+
+        function refresh() {
+            taskQueue = setInterval(checkPage, 4000);
         }
     </script>
 
