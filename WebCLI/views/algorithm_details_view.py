@@ -111,9 +111,5 @@ def in_analysis(request):
 def refresh_metrics(request):
     metrics_id = request.GET.get('version_id')
     molecule_id = request.GET.get('molecule_id')
-    metrics = Metrics.objects.filter(algorithm_version=metrics_id, molecule=molecule_id)
-
-    # if metrics[0].qubit_count is not None:
-    #    return HttpResponse("Benchmarking finished")
-
+    metrics = Metrics.objects.get(algorithm_version=metrics_id, molecule=molecule_id)
     return render(request, 'WebCLI/metrics.html', {'metrics': metrics})

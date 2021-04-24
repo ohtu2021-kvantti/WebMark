@@ -131,11 +131,10 @@
                                         {% endfor %}
 
                                     </select>
-                                    <a class="btn btn-primary" onclick="run()">Run</a>
-                                    <a class="btn btn-secondary" onclick="refresh()">Refresh</a>
+                                    <a class="btn btn-primary" onclick="analyseMetrics()">Run</a>
                                 </form>
                             {% endifequal %}
-
+                            <div id="in_progress"></div>
                         </td>
                     </tr>
                 </tbody>
@@ -183,24 +182,24 @@
                         {% endtimezone %}
                     </tr>
                     <tr>
-                        <th>In analyze queue</th>
-                        <td id="analyze_queue">{{ selected_metrics.in_analyze_queue }}</td>
+                        <th>Analysis in progress</th>
+                        <td>{{ selected_metrics.in_analyze_queue }}</td>
                     </tr>
                     <tr>
                         <th>Gate depth</th>
-                        <td id="refresh_gd">{{ selected_metrics.gate_depth }}</td>
+                        <td>{{ selected_metrics.gate_depth }}</td>
                     </tr>
                     <tr>
                         <th>Qubit count</th>
-                        <td id="refresh_qc">{{ selected_metrics.qubit_count }}</td>
+                        <td>{{ selected_metrics.qubit_count }}</td>
                     </tr>
                     <tr>
                         <th>Average iterations</th>
-                        <td id="refresh_avg_it">{{ selected_metrics.average_iterations }}</td>
+                        <td>{{ selected_metrics.average_iterations }}</td>
                     </tr>
                     <tr>
                         <th>Success rate</th>
-                        <td id="refresh_sc">{{ selected_metrics.success_rate }}</td>
+                        <td>{{ selected_metrics.success_rate }}</td>
                     </tr>
                 </tbody>
                 <tbody>
@@ -356,41 +355,50 @@
             drawSingleChart(view, 4, 'success-chart')
         }
 
-        function run() {
+        function analyseMetrics() {
             var x = document.getElementById('mole_id');
-            console.log(x.value)
             if (x.value == "") {
                 return;
             }
-            var y = document.getElementById('href_id');
             window.location.href = x.value
         }
+
         var taskQueue = null;
-        var counter = 0;
+        var selectedMoleculeInAnalysis = false;
+        var someMoleculeInAnalysis = false;
+
         function checkPage() {
-            counter++;
-            $('#analyze_queue').load('/in_analysis/?version_id={{ selected_version.pk }}');   
-            $('#refresh_gd').load('/metrics/?version_id={{ selected_version.pk }}&molecule_id={{ selected_metrics.molecule.pk }} #gd'); 
-            $('#refresh_qc').load('/metrics/?version_id={{ selected_version.pk }}&molecule_id={{ selected_metrics.molecule.pk }} #qc');
-            $('#refresh_avg_it').load('/metrics/?version_id={{ selected_version.pk }}&molecule_id={{ selected_metrics.molecule.pk }} #avg');
-            $('#refresh_sc').load('/metrics/?version_id={{ selected_version.pk }}&molecule_id={{ selected_metrics.molecule.pk }} #sc');
-            console.log(counter)
-            if(counter >= 15) {
-                clearInterval(taskQueue)
+            if (someMoleculeInAnalysis) {
+                $.get('/in_analysis/?version_id={{ selected_version.pk }}', function (data) {
+                    document.getElementById('in_progress').innerHTML = data
+                    if (data.length<2) {
+                        clearInterval(taskQueue)
+                        someMoleculeInAnalysis = false;
+                    }
+                });
+            }
+
+            if (selectedMoleculeInAnalysis) {
+                $.get('/metrics/?version_id={{ selected_version.pk }}&molecule_id={{ selected_metrics.molecule.pk }} #aq', function (data) {
+                    $xml = $( $.parseXML( data ) );
+                    if ($xml.find('in_analyze_queue').text()=='False') {
+                        location.reload();
+                    }
+                });
             }
         }
 
-        function refresh() {
-            taskQueue = setInterval(checkPage, 4000);
-        }
-    </script>
+        $.get('/in_analysis/?version_id={{ selected_version.pk }}', function (data) {
+            document.getElementById('in_progress').innerHTML = data
+            if (data.length>1) {
+                someMoleculeInAnalysis = true;
+                if ('{{ selected_metrics.in_analyze_queue }}' == 'True') {
+                    selectedMoleculeInAnalysis = true;
+                }
+                taskQueue = setInterval(checkPage, 10000);
+            }
+        });
 
-    {% if messages %}
-        {% for message in messages %}
-            {% if message.tags %}
-                <script>alert('{{ message }}')</script>
-            {% endif %}
-        {% endfor %}
-    {% endif %}
+    </script>
 
 {% endblock %}}
