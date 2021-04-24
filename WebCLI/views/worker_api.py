@@ -50,16 +50,16 @@ def handle_result(request):
     if not has_permission(request):
         print("ACCESS DENIED")
         return HttpResponse("ok")
-    metricsdata = json.loads(request.POST["data"], object_hook=as_metrics)
     if "error" in request.POST:
-        metrics = Metrics.objects.get(pk=metricsdata.pk)
+        metrics = Metrics.objects.get(pk=int(request.POST["metrics_id"]))
         metrics.last_analyze_ok = False
         metrics.in_analyze_queue = False
         metrics.save()
         return HttpResponse("error")
-    metricsdata.save()
-    Average_history.objects.filter(metrics=metricsdata).delete()
-    Accuracy_history.objects.filter(metrics=metricsdata).delete()
+    metrics = json.loads(request.POST["data"], object_hook=as_metrics)
+    metrics.save()
+    Average_history.objects.filter(metrics=metrics).delete()
+    Accuracy_history.objects.filter(metrics=metrics).delete()
     json.loads(request.POST["data"], object_hook=as_average_history)
     json.loads(request.POST["data"], object_hook=as_accuracy_history)
     return HttpResponse("ok")
