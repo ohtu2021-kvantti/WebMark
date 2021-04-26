@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from ..models import Molecule, Algorithm_type, Average_history, Algorithm
 from ..models import Algorithm_version, Metrics, Accuracy_history
 from django.utils import timezone
-from ..views.worker_api import as_history
+from ..views.worker_api import as_average_history, as_accuracy_history
 import datetime
 import pytz
 
@@ -115,11 +115,11 @@ class TestUpdateAlgorithm(TestCase):
             average_iterations=None,
             success_rate=None)
         metrics.save()
-        metricsObject = Metrics.objects.get(gate_depth=381)
-        result = {'average_history': [0.23, 0.34, 0.45, 0.56],
-                  'accuracy_history': [0.73, 0.32, 0.10, 0.95, 0.73],
-                  'metrics_id': metricsObject.pk}
-        as_history(result)
+        metrics_id = Metrics.objects.get(gate_depth=381).pk
+        result = {'accuracy_history': [0.73, 0.32, 0.10, 0.95, 0.73], 'metrics_id': metrics_id}
+        as_accuracy_history(result)
+        result = {'average_history': [0.23, 0.34, 0.45, 0.56], 'metrics_id': metrics_id}
+        as_average_history(result)
         self.assertEqual(len(Average_history.objects.all()), 4)
         self.assertEqual(len(Accuracy_history.objects.all()), 5)
 
@@ -246,10 +246,10 @@ class TestUpdateAlgorithm(TestCase):
             average_iterations=None,
             success_rate=None)
         metrics.save()
-        metricsObject = Metrics.objects.get(gate_depth=381)
-        result = {'average_history': [0.23, 0.34, 0.45, 0.56],
-                  'accuracy_history': [0.73, 0.32, 0.10, 0.95, 0.73],
-                  'metrics_id': metricsObject.pk}
-        as_history(result)
+        metrics_id = Metrics.objects.get(gate_depth=381).pk
+        result = {'accuracy_history': [0.73, 0.32, 0.10, 0.95, 0.73], 'metrics_id': metrics_id}
+        as_accuracy_history(result)
+        result = {'average_history': [0.23, 0.34, 0.45, 0.56], 'metrics_id': metrics_id}
+        as_average_history(result)
         self.assertEqual(len(Average_history.objects.all()), 4)
         self.assertEqual(len(Accuracy_history.objects.all()), 5)
