@@ -83,6 +83,14 @@ class MoleculeForm(ModelForm):
             self.add_error('structure', 'Atom syntax (one atom per line): Li 0.0 0.0 1.6')
         return structure
 
+    def clean_active_orbitals(self):
+        active_orbitals = self.clean().get('active_orbitals')
+        if (active_orbitals == ''):
+            return active_orbitals
+        if not qm.molecule.validate_orbitals_syntax(active_orbitals):
+            self.add_error('active_orbitals', 'Orbital syntax (one orbital per line): A1 1 2 4 5 7')
+        return active_orbitals
+
     class Meta:
         model = Molecule
         fields = ['name', 'structure', 'active_orbitals', 'basis_set', 'transformation']
