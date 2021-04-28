@@ -48,3 +48,12 @@ class TestNewMolecule(TestCase):
                           'transformation': 'Bravyi-Kitaev'})
         result = len(Molecule.objects.filter(name='Lithium hydride3'))
         self.assertEqual(result, 0)
+
+    def test_add_molecule_with_no_orbitals(self):
+        self.client.post('/newMolecule/',
+                         {'name': 'Lithium hydride3',
+                          'structure': 'H 0.0 0.0 0.0\nLi 0.0 0.0 1.6',
+                          'basis_set': 'sto-3g',
+                          'transformation': 'Bravyi-Kitaev'})
+        result = len(Molecule.objects.filter(name='Lithium hydride3'))
+        self.assertEqual(result, 1)

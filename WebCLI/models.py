@@ -13,7 +13,7 @@ class Algorithm_type(models.Model):
 class Molecule(models.Model):
     name = models.TextField()
     structure = models.TextField()
-    active_orbitals = models.TextField(default="")
+    active_orbitals = models.TextField(blank=True, default="")
     basis_set = models.TextField(default="")
     transformation = models.TextField(blank=True, default="")
 
