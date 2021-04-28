@@ -7,7 +7,7 @@ from .views.view_molecule import view_molecule
 from .views.new_version import add_version, load_methods
 from .views.update_algorithm import update_algorithm
 from .views.compare_algorithms import compare_algorithms
-from .views.algorithm_details_view import algorithm_details_view
+from .views.algorithm_details_view import algorithm_details_view, in_analysis, refresh_metrics
 from .views.test_algorithm import test_algorithm
 from .views.homepage import AlgorithmListView
 from .views.my_algorithms import MyAlgorithmListView
@@ -28,5 +28,7 @@ urlpatterns = [
     path('handleResult', handle_result),
     path('test/', test_algorithm, name='test_algorithm'),
     path('methods_of_module/', load_methods, name='load_methods'),
-    path('molecule/<int:molecule_id>', view_molecule, name='viewMolecule')
+    path('molecule/<int:molecule_id>', view_molecule, name='viewMolecule'),
+    path('in_analysis/', in_analysis, name='in_analysis'),
+    path('metrics/', refresh_metrics, name='refresh_metrics'),
 ]

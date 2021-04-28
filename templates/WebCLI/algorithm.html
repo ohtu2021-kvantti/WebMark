@@ -131,10 +131,10 @@
                                         {% endfor %}
 
                                     </select>
-                                    <a class="btn btn-primary" onclick="run()">Run</a>
+                                    <a class="btn btn-primary" onclick="analyseMetrics()">Run</a>
                                 </form>
                             {% endifequal %}
-
+                            <div id="in_progress"></div>
                         </td>
                     </tr>
                 </tbody>
@@ -182,7 +182,7 @@
                         {% endtimezone %}
                     </tr>
                     <tr>
-                        <th>In analyze queue</th>
+                        <th>Analysis in progress</th>
                         <td>{{ selected_metrics.in_analyze_queue }}</td>
                     </tr>
                     <tr>
@@ -284,6 +284,7 @@
     {{ accuracy_history_graph_data|json_script:"accuracy-history-graph-data" }}
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script type="text/javascript">
 
         google.charts.load('current', { packages: ['corechart', 'line'] });
@@ -354,23 +355,50 @@
             drawSingleChart(view, 4, 'success-chart')
         }
 
-        function run() {
+        function analyseMetrics() {
             var x = document.getElementById('mole_id');
-            console.log(x.value)
             if (x.value == "") {
                 return;
             }
-            var y = document.getElementById('href_id');
             window.location.href = x.value
         }
-    </script>
 
-    {% if messages %}
-        {% for message in messages %}
-            {% if message.tags %}
-                <script>alert('{{ message }}')</script>
-            {% endif %}
-        {% endfor %}
-    {% endif %}
+        var taskQueue = null;
+        var selectedMoleculeInAnalysis = false;
+        var someMoleculeInAnalysis = false;
+
+        function checkPage() {
+            if (someMoleculeInAnalysis) {
+                $.get('/in_analysis/?version_id={{ selected_version.pk }}', function (data) {
+                    document.getElementById('in_progress').innerHTML = data
+                    if (data.length<2) {
+                        clearInterval(taskQueue)
+                        someMoleculeInAnalysis = false;
+                    }
+                });
+            }
+
+            if (selectedMoleculeInAnalysis) {
+                $.get('/metrics/?version_id={{ selected_version.pk }}&molecule_id={{ selected_metrics.molecule.pk }} #aq', function (data) {
+                    $xml = $( $.parseXML( data ) );
+                    if ($xml.find('in_analyze_queue').text()=='False') {
+                        location.reload();
+                    }
+                });
+            }
+        }
+
+        $.get('/in_analysis/?version_id={{ selected_version.pk }}', function (data) {
+            document.getElementById('in_progress').innerHTML = data
+            if (data.length>1) {
+                someMoleculeInAnalysis = true;
+                if ('{{ selected_metrics.in_analyze_queue }}' == 'True') {
+                    selectedMoleculeInAnalysis = true;
+                }
+                taskQueue = setInterval(checkPage, 10000);
+            }
+        });
+
+    </script>
 
 {% endblock %}}

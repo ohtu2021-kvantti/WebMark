@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, render
 from django.core.exceptions import PermissionDenied
 from ..models import Algorithm, Molecule, Metrics, Accuracy_history, Average_history
+from ..models import Algorithm_version
 from django.db.models import F
 from WebCLI.misc.helpers import get_metrics, get_selected_version
 from WebCLI.misc.helpers import get_selected_metrics, get_versions, to_positive_int_or_none
@@ -94,3 +95,21 @@ def algorithm_details_view(request, algorithm_id):
             'average_history_graph_data': average_history}
 
     return render(request, 'WebCLI/algorithm.html', data)
+
+
+def in_analysis(request):
+    module = request.GET.get('version_id')
+    av = Algorithm_version.objects.get(pk=module)
+    metrics = Metrics.objects.filter(algorithm_version=av, in_analyze_queue=True)
+    molecules = []
+    for m in metrics:
+        if m.molecule.name not in molecules:
+            molecules.append(m.molecule.name)
+    return render(request, 'WebCLI/in_analysis.html', {'molecules': molecules})
+
+
+def refresh_metrics(request):
+    metrics_id = request.GET.get('version_id')
+    molecule_id = request.GET.get('molecule_id')
+    metrics = Metrics.objects.get(algorithm_version=metrics_id, molecule=molecule_id)
+    return render(request, 'WebCLI/metrics.html', {'metrics': metrics})
