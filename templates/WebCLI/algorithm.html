@@ -369,7 +369,7 @@
 
         function checkPage() {
             if (someMoleculeInAnalysis) {
-                $.get('/in_analysis/?version_id={{ selected_version.pk }}', function (data) {
+                $.get("{% url 'in_analysis' %}?version_id={{ selected_version.pk }}", function (data) {
                     document.getElementById('in_progress').innerHTML = data
                     if (data.length<2) {
                         clearInterval(taskQueue)
@@ -379,7 +379,7 @@
             }
 
             if (selectedMoleculeInAnalysis) {
-                $.get('/metrics/?version_id={{ selected_version.pk }}&molecule_id={{ selected_metrics.molecule.pk }} #aq', function (data) {
+                $.get("{% url 'refresh_metrics' %}?version_id={{ selected_version.pk }}&molecule_id={{ selected_metrics.molecule.pk }} #aq", function (data) {
                     $xml = $( $.parseXML( data ) );
                     if ($xml.find('in_analyze_queue').text()=='False') {
                         location.reload();
@@ -388,7 +388,7 @@
             }
         }
 
-        $.get('/in_analysis/?version_id={{ selected_version.pk }}', function (data) {
+        $.get("{% url 'in_analysis' %}?version_id={{ selected_version.pk }}", function (data) {
             document.getElementById('in_progress').innerHTML = data
             if (data.length>1) {
                 someMoleculeInAnalysis = true;
