@@ -17,8 +17,8 @@ class AlgorithmForm(ModelForm):
             'name': TextInput(),
             'user': HiddenInput(),
             'article_link': TextInput(attrs={'placeholder': 'e.g. https://www.nature.com/article'}),
-            'github_link': TextInput(attrs={'placeholder': 'e.g. https://www.github.com/user/repo'}),
-            
+            'github_link': TextInput(attrs={'placeholder': 'e.g. https://www.github.com/u/repo'}),
+
         }
 
 
@@ -54,8 +54,10 @@ class AlgorithmVersionForm(ModelForm):
         widgets = {
             'timestamp': HiddenInput(),
             'algorithm_id': HiddenInput(),
-            'algorithm': Textarea(attrs={'rows': 6, 'placeholder': 'Description on what the algorithm does. Pseudocode, for example.'}),
-            'circuit': Textarea(attrs={'rows': 10, 'placeholder': 'e.g. Ry(target=(0,), parameter=a)'}),
+            'algorithm': Textarea(attrs={'rows': 6,
+                                         'placeholder': 'Pseudocode, for example.'}),
+            'circuit': Textarea(attrs={'rows': 10,
+                                       'placeholder': 'e.g. Ry(target=(0,), parameter=a)'}),
             'optimizer_module': Select(choices=((x, x) for x in optimizer_modules()),
                                        attrs={'class': 'form-control'}),
         }
@@ -104,8 +106,10 @@ class MoleculeForm(ModelForm):
             'name': TextInput(),
             'basis_set': Select(choices=((x, x) for x in basis_set_options())),
             'transformation': TextInput(attrs={'placeholder': 'Can be left empty'}),
-            'structure': Textarea(attrs={'rows': 6, 'cols': 50, 'placeholder': 'e.g. Li 0.0 0.0 1.6'}),
-            'active_orbitals': Textarea(attrs={'rows': 6, 'cols': 50, 'placeholder': 'For example "A1 1"'}),
+            'structure': Textarea(attrs={'rows': 6, 'cols': 50,
+                                         'placeholder': 'e.g. Li 0.0 0.0 1.6'}),
+            'active_orbitals': Textarea(attrs={'rows': 6, 'cols': 50,
+                                               'placeholder': 'For example "A1 1"'}),
         }
 
 
