@@ -16,6 +16,9 @@ class AlgorithmForm(ModelForm):
         widgets = {
             'name': TextInput(),
             'user': HiddenInput(),
+            'article_link': TextInput(attrs={'placeholder': 'e.g. https://www.nature.com/article'}),
+            'github_link': TextInput(attrs={'placeholder': 'e.g. https://www.github.com/user/repo'}),
+            
         }
 
 
@@ -51,8 +54,8 @@ class AlgorithmVersionForm(ModelForm):
         widgets = {
             'timestamp': HiddenInput(),
             'algorithm_id': HiddenInput(),
-            'algorithm': Textarea(attrs={'rows': 6}),
-            'circuit': Textarea(attrs={'rows': 10}),
+            'algorithm': Textarea(attrs={'rows': 6, 'placeholder': 'Description on what the algorithm does. Pseudocode, for example.'}),
+            'circuit': Textarea(attrs={'rows': 10, 'placeholder': 'e.g. Ry(target=(0,), parameter=a)'}),
             'optimizer_module': Select(choices=((x, x) for x in optimizer_modules()),
                                        attrs={'class': 'form-control'}),
         }
@@ -100,9 +103,9 @@ class MoleculeForm(ModelForm):
         widgets = {
             'name': TextInput(),
             'basis_set': Select(choices=((x, x) for x in basis_set_options())),
-            'transformation': TextInput(),
-            'structure': Textarea(attrs={'rows': 6, 'cols': 50}),
-            'active_orbitals': Textarea(attrs={'rows': 6, 'cols': 50}),
+            'transformation': TextInput(attrs={'placeholder': 'Can be left empty'}),
+            'structure': Textarea(attrs={'rows': 6, 'cols': 50, 'placeholder': 'e.g. Li 0.0 0.0 1.6'}),
+            'active_orbitals': Textarea(attrs={'rows': 6, 'cols': 50, 'placeholder': 'For example "A1 1"'}),
         }
 
 
