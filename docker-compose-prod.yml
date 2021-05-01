@@ -34,11 +34,7 @@ services:
     restart: unless-stopped
 
   quantmark-web:
-    # image: tapanih/quantmark_web
-    build:
-      context: .
-      args:
-        - LIBMARK_VERSION=e3cc4bbe82a44d94edac2d9eba7455c2d12cfe01
+    image: tapanih/quantmark_web
     environment:
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_USER=${DATABASE_USER}

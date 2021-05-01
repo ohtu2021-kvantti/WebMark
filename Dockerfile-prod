@@ -1,0 +1,26 @@
+# TODO: use this Dockerfile in Github Actions
+FROM python:3.7-slim-buster as build
+
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ARG LIBMARK_VERSION
+
+RUN apt-get update && apt-get -y install git
+WORKDIR /code
+
+COPY requirements.txt .
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /code/wheels -r requirements.txt
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /code/wheels \
+    git+https://github.com/ohtu2021-kvantti/LibMark@${LIBMARK_VERSION}
+
+FROM python:3.7-slim-buster
+
+RUN useradd -ms /bin/bash app
+WORKDIR /home/app/code
+
+COPY --from=build /code/wheels /wheels
+COPY --from=build /code/requirements.txt .
+RUN pip install --no-cache /wheels/*
+COPY . .
+
+USER app

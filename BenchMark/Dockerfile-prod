@@ -1,10 +1,14 @@
+# TODO: use this Dockerfile in Github Actions
 FROM condaforge/mambaforge:4.10.1-0
 
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
 ARG LIBMARK_VERSION
 
-WORKDIR /code
+RUN useradd -ms /bin/bash app
+ENV CODE_DIR=/home/app/code
+WORKDIR $CODE_DIR
+RUN chown -R app:app /opt/conda
+RUN chown -R app:app $CODE_DIR
+USER app
 
 COPY environment.yml .
 RUN mamba env create -f environment.yml
