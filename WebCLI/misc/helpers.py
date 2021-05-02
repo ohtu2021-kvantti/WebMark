@@ -46,3 +46,11 @@ def get_selected_metrics(params, param_key, metrics):
         params[param_key] = metrics[0].pk
         return metrics[0]
     return None
+
+
+def get_transformation_options():
+    t = ['jordan_wigner',
+         'bravyi_kitaev',
+         'bravyi_kitaev_tree',
+         'symmetry_conserving_bravyi_kitaev']
+    return t

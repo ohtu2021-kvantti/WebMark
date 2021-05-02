@@ -6,6 +6,7 @@ from django.forms.widgets import NumberInput, TextInput
 from .models import Algorithm, Molecule, Algorithm_type, Algorithm_version, Metrics
 import quantmark as qm
 from .misc.analyze_options import optimizer_methods, optimizer_modules, basis_set_options
+from .misc.helpers import get_transformation_options
 
 
 class AlgorithmForm(ModelForm):
@@ -105,11 +106,11 @@ class MoleculeForm(ModelForm):
         widgets = {
             'name': TextInput(),
             'basis_set': Select(choices=((x, x) for x in basis_set_options())),
-            'transformation': TextInput(attrs={'placeholder': 'Can be left empty'}),
+            'transformation': Select(choices=((x, x) for x in get_transformation_options())),
             'structure': Textarea(attrs={'rows': 6, 'cols': 50,
-                                         'placeholder': 'e.g. Li 0.0 0.0 1.6'}),
+                                         'placeholder': 'e.g. H 0.0 0.0 0.0\n\tLi 0.0 0.0 1.6'}),
             'active_orbitals': Textarea(attrs={'rows': 6, 'cols': 50,
-                                               'placeholder': 'For example "A1 1"'}),
+                                               'placeholder': 'e.g. A1 1\n\tB1 0'}),
         }
 
 
