@@ -1,3 +1,4 @@
+# Configuration for development (dev server and hot reloading)
 version: "3.7"
 
 services:
@@ -25,10 +26,12 @@ services:
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
       - BROKER_URL=pyamqp://guest@rabbitmq//
-      - API_KEY=${API_KEY}
+      - SECRET_KEY=${SECRET_KEY-secret}
+      - API_KEY=${API_KEY-secret}
+      - DEBUG=True
     command: sh -c "
       python manage.py makemigrations WebCLI &&
-      python manage.py migrate &&
+      python manage.py migrate --noinput &&
       python manage.py runserver 0.0.0.0:8000"
     container_name: web
     volumes:
@@ -52,5 +55,5 @@ services:
     environment:
       - BROKER_URL=pyamqp://guest@rabbitmq//
       - DJANGO_API_URL=http://web:8000/handleResult
-      - API_KEY=${API_KEY}
+      - API_KEY=${API_KEY-secret}
 

@@ -26,9 +26,11 @@ services:
       - DATABASE_PORT=5432
       - ROOT_DIR=quantmark/
       - BROKER_URL=pyamqp://guest@quantmark-rabbitmq//
+      - SECRET_KEY="(enfmztw6!r!b7^_s31p68cqm-)w8g(qru+od0bc9oz&6_0q!9"
+      - DEBUG=True
     command: sh -c "
       python manage.py makemigrations WebCLI &&
-      python manage.py migrate &&
+      python manage.py migrate --noinput &&
       gunicorn WebMark.wsgi -b 0.0.0.0:8000"
     container_name: quantmark-web
     restart: unless-stopped

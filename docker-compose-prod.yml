@@ -1,0 +1,69 @@
+# an example of a "production-ready" configuration
+version: "3.7"
+
+services:
+
+  quantmark-nginx:
+    image: nginx:1.19-alpine
+    container_name: quantmark-nginx
+    restart: unless-stopped
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./staticfiles:/static:ro
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - quantmark-web
+
+  quantmark-db:
+    image: postgres:13.1
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    container_name: quantmark-db
+    restart: unless-stopped
+
+  quantmark-rabbitmq:
+    image: tapanih/rabbitmq-prod:0.1
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    container_name: quantmark-rabbitmq
+    restart: unless-stopped
+
+  quantmark-web:
+    image: tapanih/quantmark_web
+    environment:
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_HOST=quantmark-db
+      - DATABASE_PORT=5432
+      - BROKER_URL=pyamqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@quantmark-rabbitmq//
+      - SECRET_KEY=${SECRET_KEY}
+      - API_KEY=${API_KEY}
+      - DEBUG=False
+    command: sh -c "
+      python manage.py makemigrations WebCLI &&
+      python manage.py migrate --noinput &&
+      python manage.py collectstatic --noinput &&
+      gunicorn WebMark.wsgi -b 0.0.0.0:8000"
+    container_name: quantmark-web
+    restart: unless-stopped
+    volumes:
+      - ./staticfiles:/code/staticfiles
+    depends_on:
+      - quantmark-db
+
+  quantmark-benchmark:
+    image: tapanih/quantmark_benchmark
+    environment:
+    - BROKER_URL=pyamqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@quantmark-rabbitmq//
+    - DJANGO_API_URL=http://quantmark-web:8000/handleResult
+    - API_KEY=${API_KEY}
+    command: conda run --no-capture-output -n benchmark celery -A benchmark worker -l info
+    container_name: quantmark-benchmark
+    restart: unless-stopped
+

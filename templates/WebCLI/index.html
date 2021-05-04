@@ -91,7 +91,6 @@
                 compareButton.classList.add('disabled');
             } else {
                 compareButton.href = "/{{ root_dir }}" + "compare/" + checked[0] + "/" + checked[1];
-                console.log(compareButton.href);
                 compareButton.classList.remove("disabled");
             }
             clearButton.disabled = checked.length === 0;
