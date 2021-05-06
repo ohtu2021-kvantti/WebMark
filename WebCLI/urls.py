@@ -7,12 +7,13 @@ from .views.view_molecule import view_molecule
 from .views.new_version import add_version, load_methods
 from .views.update_algorithm import update_algorithm
 from .views.compare_algorithms import compare_algorithms
-from .views.algorithm_details_view import algorithm_details_view, in_analysis, refresh_metrics
+from .views.algorithm_details_view import algorithm_details_view, in_analysis
+from .views.algorithm_details_view import refresh_metrics, download_metrics
 from .views.test_algorithm import test_algorithm
 from .views.homepage import AlgorithmListView
 from .views.my_algorithms import MyAlgorithmListView
 from .forms import SignUpView
-from .views.worker_api import handle_result, download_result
+from .views.worker_api import handle_result
 
 urlpatterns = [
     path('', AlgorithmListView.as_view(), name='home'),
@@ -26,7 +27,7 @@ urlpatterns = [
     path('addVersion/', add_version, name='add_version'),
     path('updateAlgorithm/', update_algorithm, name='updateAlgorithm'),
     path('handleResult', handle_result),
-    path('downloadResult', download_result),
+    path('downloadMetrics', download_metrics, name='downloadMetrics'),
     path('test/', test_algorithm, name='test_algorithm'),
     path('methods_of_module/', load_methods, name='load_methods'),
     path('molecule/<int:molecule_id>', view_molecule, name='viewMolecule'),

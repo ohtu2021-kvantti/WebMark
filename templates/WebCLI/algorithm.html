@@ -163,6 +163,7 @@
                                     {% endifequal %}
                                 {% endfor %}
                             </select>
+                            <a href="{% url 'downloadMetrics'%}?version_id={{ params.version_id }}&molecule_id={{ selected_metrics.molecule.pk }}" class="btn btn-info" role="button" download>Download</a>
                         </th>
                     </tr>
                 </thead>

@@ -1,3 +1,5 @@
+import csv
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.core.exceptions import PermissionDenied
 from ..models import Algorithm, Molecule, Metrics, Accuracy_history, Average_history
@@ -113,3 +115,26 @@ def refresh_metrics(request):
     molecule_id = request.GET.get('molecule_id')
     metrics = Metrics.objects.get(algorithm_version=metrics_id, molecule=molecule_id)
     return render(request, 'WebCLI/metrics.html', {'metrics': metrics})
+
+
+def download_metrics(request):
+    version_id = request.GET.get('version_id')
+    molecule_id = request.GET.get('molecule_id')
+    print("Version id: " + str(version_id))
+    print("Molecule id: " + str(molecule_id))
+    metrics = Metrics.objects.get(algorithm_version=version_id, molecule=molecule_id)
+    molecule = Molecule.objects.get(pk=molecule_id)
+    response = HttpResponse(
+        content_type='text/csv'
+    )
+
+    writer = csv.writer(response)
+    writer.writerow(['Metrics ID:', version_id])
+    writer.writerow(['Molecule:', molecule.name])
+    writer.writerow(['Gate depth:', metrics.gate_depth])
+    writer.writerow(['Qubit count:', metrics.qubit_count])
+    writer.writerow(['Average iterations:', metrics.average_iterations])
+    writer.writerow(['Success rate:', metrics.success_rate])
+
+    response['Content-Disposition'] = 'attachment; filename="metricsData.csv"'
+    return response
