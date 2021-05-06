@@ -1,25 +1,15 @@
+from typing import List, Optional, Type, Dict
 from django.shortcuts import redirect, render
 from django.core.exceptions import PermissionDenied
+from .AlgorithmViewBase import AlgorithmViewBase
 from ..models import Algorithm, Molecule, Metrics, Accuracy_history, Average_history
 from ..models import Algorithm_version
 from django.db.models import F
-from WebCLI.misc.helpers import get_metrics, get_selected_version
-from WebCLI.misc.helpers import get_selected_metrics, get_versions, to_positive_int_or_none
 
 
-def get_algorithm_details_view_params(request):
-    version_id = to_positive_int_or_none(request.GET.get("version_id"))
-    metrics_id = to_positive_int_or_none(request.GET.get("metrics_id"))
-    molecule_id = to_positive_int_or_none(request.GET.get("molecule_id"))
-
-    return {
-        "version_id": version_id,
-        "metrics_id": metrics_id,
-        "molecule_id": molecule_id
-    }
-
-
-def get_selected_molecule(params, molecules_with_metrics):
+def get_selected_molecule(
+        params: Dict,
+        molecules_with_metrics) -> Optional[Type[Molecule]]:
     if params["molecule_id"]:
         try:
             return Molecule.objects.get(pk=params["molecule_id"])
@@ -38,7 +28,7 @@ def get_molecules_with_metrics(versions):
     return query.values(pk=F("molecule_id"), name=F("molecule__name"))
 
 
-def get_metrics_graph_data(selected_molecule, algorithm):
+def get_metrics_graph_data(selected_molecule, algorithm) -> List[List]:
     if selected_molecule:
         metrics_graph_data_query = Metrics.objects.raw('''
             SELECT metrics.id, ROW_NUMBER() OVER(ORDER BY version.timestamp) as row_num,
@@ -55,46 +45,43 @@ def get_metrics_graph_data(selected_molecule, algorithm):
     return []
 
 
-def history_data(HistoryModel, selected_metrics):
-    history_data = HistoryModel.objects.values_list("data", flat=True)
-    history_data = history_data.filter(metrics=selected_metrics)
-    iterations = list(range(1, len(history_data)+1))
-    return list(zip(iterations, history_data))
+class AlgorithmDetailsView(AlgorithmViewBase):
 
+    def get(self, request, algorithm_id):
+        try:
+            algorithm = Algorithm.objects.get(pk=algorithm_id)
+        except Algorithm.DoesNotExist:
+            return redirect("home")
 
-def algorithm_details_view(request, algorithm_id):
-    try:
-        algorithm = Algorithm.objects.get(pk=algorithm_id)
-    except Algorithm.DoesNotExist:
-        return redirect("home")
+        if not algorithm.public and request.user.pk != algorithm.user.pk:
+            raise PermissionDenied
 
-    if not algorithm.public and request.user.pk != algorithm.user.pk:
-        raise PermissionDenied
+        versions = self.get_versions_with_version_number(algorithm)
+        params = self.get_params(request, ["version_id", "metrics_id", "molecule_id"])
+        metrics = self.get_metrics(params["version_id"], versions)
+        selected_metrics = self.get_selected_metrics(params["metrics_id"], metrics)
+        params["metrics_id"] = selected_metrics.pk if selected_metrics else None
+        selected_version = self.get_selected_version(params["version_id"], versions)
+        params["version_id"] = selected_version.pk if selected_version else None
+        molecules_with_metrics = get_molecules_with_metrics(versions)
+        selected_molecule = get_selected_molecule(params, molecules_with_metrics)
+        metrics_graph_data = get_metrics_graph_data(selected_molecule, algorithm)
+        molecules = Molecule.objects.all()
 
-    versions = get_versions(algorithm)
-    params = get_algorithm_details_view_params(request)
-    metrics = get_metrics(params["version_id"], versions)
-    selected_metrics = get_selected_metrics(params, "metrics_id", metrics)
-    selected_version = get_selected_version(params, "version_id", versions)
-    molecules_with_metrics = get_molecules_with_metrics(versions)
-    selected_molecule = get_selected_molecule(params, molecules_with_metrics)
-    metrics_graph_data = get_metrics_graph_data(selected_molecule, algorithm)
-    molecules = Molecule.objects.all()
+        accuracy_history = self.get_history_graph_data(Accuracy_history, [selected_metrics])
+        average_history = self.get_history_graph_data(Average_history, [selected_metrics])
 
-    accuracy_history = history_data(Accuracy_history, selected_metrics)
-    average_history = history_data(Average_history, selected_metrics)
+        data = {'algorithm': algorithm, 'versions': versions, 'params': params,
+                'metrics_graph_data': metrics_graph_data, 'metrics': metrics,
+                'molecules_with_metrics': molecules_with_metrics,
+                'selected_version': selected_version,
+                'selected_metrics': selected_metrics,
+                'selected_molecule': selected_molecule,
+                'molecules': molecules,
+                'accuracy_history_graph_data': accuracy_history,
+                'average_history_graph_data': average_history}
 
-    data = {'algorithm': algorithm, 'versions': versions, 'params': params,
-            'metrics_graph_data': metrics_graph_data, 'metrics': metrics,
-            'molecules_with_metrics': molecules_with_metrics,
-            'selected_version': selected_version,
-            'selected_metrics': selected_metrics,
-            'selected_molecule': selected_molecule,
-            'molecules': molecules,
-            'accuracy_history_graph_data': accuracy_history,
-            'average_history_graph_data': average_history}
-
-    return render(request, 'WebCLI/algorithm.html', data)
+        return render(request, 'WebCLI/algorithm.html', data)
 
 
 def in_analysis(request):
